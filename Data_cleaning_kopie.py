@@ -36,4 +36,3 @@ for i in bus_plan['start time'].head(10):
 print(df)
 
 # Stap 2.2
-
