@@ -182,13 +182,25 @@ total_distance_km = total_distance_m/1000
 print(total_distance_m,total_distance_km,d_material_total)
 
 
-
-
 # Bus 85% vol is 300 kwh
 
 
+# KPI's
+
+# Berekening aantal bussen
+aantal_ingezette_bussen = bp['bus'].nunique()
+
+# Berekening totale rijafstand: net berekend
+
+# Lege/material trips
+t_material_total = t_bst_to_gar + t_gar_to_bst + t_apt_to_gar + t_gar_to_apt + t_apt_to_bst + t_bst_to_apt
+
+# Berekening wachttijd
 
 
+# Berekening energiegebruik (Matthijs)
+
+# Oplaadtijd
 
 
 
