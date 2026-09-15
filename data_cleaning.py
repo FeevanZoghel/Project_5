@@ -28,12 +28,49 @@ for i in kolommen:
 df = pd.DataFrame({})
 
 # Stap 2.1: controleren of er vreemde tijden in set verstopt zitten
-for i in bus_plan['start time'].head(10):
-    df['Tijd'] = (pd.to_datetime(i, format='%H:%M:%S'))
-    df['Uur'] = df['Tijd'].dt.hour
-    df['Minuut'] = df['Tijd'].dt.minute
-    df['Seconde'] = df['Tijd'].dt.second # Zet alle strings van kolom bus_plan['start time'] om naar tijd / datetime
-print(df)
 
-# Stap 2.2
+# Stap 2.1.1: functie aanmaken die controleert of er geen 'vreemde' tijden in set verstopt zitten
 
+def tijden_check(kolom):
+    # lijsten aanmaken van uren, minuten, seconden en dubbele tekens
+    uren = []
+    minuten = []
+    seconden = []
+    dubbele_tekens = []
+    for i in kolom: # Voor alle tijden itereren in kolom 'start_time'
+        i = str(i) # Tijd omzetten naar string
+        uren.append(int(i[0:2])) # Uren van tijd toevoegen aan lijst 'uren'
+        minuten.append(int(i[3:5])) # Uren van tijd toevoegen aan lijst 'uren'
+        seconden.append(int(i[6:len(i)])) # Uren van tijd toevoegen aan lijst 'uren'
+        if i[2] == ':' and i[5] == ':':
+            dubbele_tekens.append(':') # Dubbel teken toevoegen aan lijst 'dubbele_tekens'
+    for uur in uren:
+       if uur < 0 or uur > 23: # Controleren of de getallen geen inconsistenties bevatten, indien wel wordt de fout gemeld
+           print(uur)
+    for minuut in minuten:
+       if minuut < 0 or minuut > 60: # Controleren of de getallen geen inconsistenties bevatten, indien wel wordt de fout gemeld
+           print(minuut)
+    for seconde in seconden:
+       if seconde < 0 or seconde > 60: # Controleren of de getallen geen inconsistenties bevatten, indien wel wordt de fout gemeld
+           print(seconde)
+    if len(dubbele_tekens) != len(bus_plan['start time']):
+        print('Een of meerdere tijden bevatten inconsistenties')
+    
+tijden_check(bus_plan['start time']) # Met deze functies worden alle fouten, inconsistenties en onregelmatigheden in de kolommen gecheckt
+tijden_check(bus_plan['end time'])
+
+# Stap 2.2: controleren of energieconsumptie overeenkomt met type trip
+activities = [] # Lijst 'activities' toevoegen
+energies = [] # Lijst 'energies' toevoegen
+for i in bus_plan['activity']: # Itereren over kolom 'activity' in bus_plan
+    activities.append(i) # Alle waarden toevoegen aan kolom 'activities'
+for i in bus_plan['energy consumption']: # Itereren over kolom 'energy consumption' in bus_plan
+    energies.append(i) # Alle waarden toevoegen aan kolom 'energies'
+act_con = pd.DataFrame({'activity': activities, 
+                        'energy consumption': energies}) # Dataframe 'act_con' aanmaken
+
+print(act_con[act_con['energy consumption'] < 0]) # Checken of er inderdaad alleen energie wordt opgeladen tijdens het laden: fout in regel 28
+print(act_con[20:40]) # In regel 28: tijdens materiaaltrip kan er nooit energie worden opgeladen. Dit wordt hier hersteld.
+
+filtered = (act_con[act_con['activity'] == 'material trip'])
+print(filtered)
