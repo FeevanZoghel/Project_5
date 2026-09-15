@@ -15,28 +15,59 @@ tt = pd.read_excel('Timetable.xlsx')
 
 total_distance = 0 
 
-start_dis       = dm['start']
-end_dis         = dm['end']
-min_travel_time = dm['min_travel_time']
-max_travel_time = dm['max_travel_time']
-distance_m      = dm['distance_m']
-distance_km     = distance_m/1000
+start_dis           = dm['start']
+end_dis             = dm['end']
+min_travel_time     = dm['min_travel_time']
+max_travel_time     = dm['max_travel_time']
+distance_m          = dm['distance_m']
+distance_km         = distance_m/1000
 
-start_battery = 300 # start waarde van 85%
-min_waarde_battery = (300/85 *100)*.1 # 10 % van de echte waarde aanwezig zijn
-planning = bp.sort_values(['bus','start time']) #sorteerd per bus, per begintijd op chronologische volgorde
-print(planning)
+start_plan          = bp['start location']
+end_plan            = bp['end location']
+start_time          = bp['start time']
+end_time            = bp['end time']
+activity            = bp['activity']
+line                = bp['line']
+energy_consumption  = bp['energy consumption']
+bus_number          = bp['bus'].unique()
+
+start_battery       = 300 # start waarde van 85% (gaan uit van het minimum)
+min_waarde_battery  = (300/85 *100)*.1 # 10 % van de echte waarde aanwezig zijn
+planning_sor        = bp.sort_values(['bus','start time']) #sorteerd per bus, per begintijd op chronologische volgorde
+print(planning_sor)
+empty_bus           = []
+total_usage         = []
+for bus, bus_data in planning_sor.groupby('bus'):
+    battery = start_battery
+
+    for battery_lose in bus_data['energy consumption']:
+        battery -=battery_lose
+
+        if battery<min_waarde_battery and bus not in empty_bus:
+            empty_bus.append(bus)
+    total_usage.append((bus,battery))
+
+# for emptybus in empty_bus:
+#     print(f'Er is niet genoeg energy voor bus {emptybus}')
+# for bus, battery in total_usage:
+#     print(f'Bus number {bus} has a battery content of {battery:.2f} kWh, when finishes his routes')
+total_consumption = 0
+for bus, bus_data in planning_sor.groupby('bus'):
+    total_consumption_bus = 0
+
+    for energy in bus_data['energy consumption']:
+        if energy >0:
+            total_consumption_bus += energy
+    total_consumption+=total_consumption_bus
+    print(f'Bus {bus} used {total_consumption_bus:.2f} kWh')
+print(f'All busses uses a total of {total_consumption:.2f} kWh')
+    
 
 
-print(min_waarde_battery)
 
 
 
 
-
-
-# if battery<min_waarde_battery:
-#     print('de bus is leeg')
 
 
 
