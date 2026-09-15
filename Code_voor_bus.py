@@ -1,6 +1,10 @@
 print('Hello World')
+#Matthijs
 
+import pandas as pd 
 
+df = pd.read_excel('Bus_Planning.xlsx')
+print(df.head())
 
 
 
@@ -96,8 +100,7 @@ print('Hello World')
 
 
 
-
-#
+# Bas
 
 
 
