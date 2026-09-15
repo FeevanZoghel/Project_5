@@ -185,7 +185,10 @@ d_st_to_ar400 = line_400['distance_m'].iloc[1]
 d_ar_to_st401 = line_401['distance_m'].iloc[0]
 d_st_to_ar401 = line_401['distance_m'].iloc[1]
 
-print(d_ar_to_st400,d_st_to_ar400,d_ar_to_st401,d_st_to_ar401)
+print(f'Distance for airport to station (line 400):{d_ar_to_st400}')
+print(f'Distance from station to airport (line 400):{d_st_to_ar400}')
+print(f'Distance from airport to station (line 401): {d_ar_to_st401}')
+print(f'Distance from station to aiport (line 401): {d_st_to_ar401}')
 
 # Verplichte dienstregeling
 # Lijn 400
@@ -203,7 +206,10 @@ d_401 = (t_ar_to_st401 * d_ar_to_st401) + (t_st_to_ar401 * d_st_to_ar401)
 d_service_total_m = d_400+d_401
 d_service_total_km = d_service_total_m/1000
 
-print(d_service_total_km,d_service_total_m) # Material trips moeten nog toegevoegd worden!
+print(f'Total service trip distance of lines 400 and 401 (meters): {d_service_total_m}')
+print(f'Total service trip distance of lines 400 and 401 (kilometers): {d_service_total_km}')
+# Material trips moeten nog toegevoegd worden!
+
 
 # Nu material trips toevoegen 
 # soorten material trips: Station-Garage en andersom, Airport-Garage en andersom,
@@ -230,24 +236,22 @@ d_material_total = (t_bst_to_gar * d_bst_to_gar) + (t_gar_to_bst * d_gar_to_bst)
 total_distance_m = d_service_total_m+d_material_total
 total_distance_km = total_distance_m/1000
 
-print(total_distance_m,total_distance_km,d_material_total)
-
-
-# Bus 85% vol is 300 kwh
-
+print(f'Total distance of service trips and material trips (meters): {total_distance_m}')
+print(f'Total distance of service trips and material trips (kilometers): {total_distance_km}')
+print(f'Total distance of material trips:{material_total}')
 
 # KPI's (overig)
 
 # Berekening aantal bussen
 aantal_ingezette_bussen = bp['bus'].nunique()
-print(aantal_ingezette_bussen)
+print(f'The number of busses used:{aantal_ingezette_bussen}.')
 
 # Berekening totale rijafstand: net berekend
-print(total_distance)
+print(f'Total distance: {total_distance}.')
 
 # Lege/material trips
 t_material_total = t_bst_to_gar + t_gar_to_bst + t_apt_to_gar + t_gar_to_apt + t_apt_to_bst + t_bst_to_apt
-print(t_material_total)
+print(f'Total of empty material trips: {t_material_trips}')
 
 # Berekening wachttijd
 
@@ -259,12 +263,14 @@ bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
 idle = bp[bp['activity'] == 'idle']
 tot_waiting_time_min = (idle['end_dt'] - idle['start_dt']).dt.total_seconds().sum() / 60
 tot_waiting_time_hours = tot_waiting_time_min/60
-avg_waiting_time_per_bus = tot_waiting_time_min/aantal_ingezette_bussen
+avg_waiting_time_per_bus = tot_waiting_time_min/aantal_ingezette_bussen # minuten
 
-print(tot_waiting_time_min,tot_waiting_time_hours,avg_waiting_time_per_bus)
+print(f'Total waiting time in minutes: {tot_waiting_time_min}')
+print(f'Total waiting time in hours: {tot_waiting_time_hours}')
+print(f'Average waiting time per bus: {avg_waiting_time_per_bus}')
 
 
-
+# Bus 85% vol is 300 kwh
 
 
 
