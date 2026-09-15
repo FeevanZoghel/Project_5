@@ -1,4 +1,4 @@
-import pandas as pd
+# import pandas as pd
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
 import numpy as np
@@ -27,7 +27,7 @@ for i in kolommen:
 # Stap 2: voor 'start time', 'end time' en 'energy consumption' kolommen cleanen
 df = pd.DataFrame({})
 
-# Stap 2.1: controleren of er vreemde tijden in set verstopt zitten
+# Stap 2: controleren of er vreemde tijden in set verstopt zitten
 
 # Stap 2.1.1: functie aanmaken die controleert of er geen 'vreemde' tijden in set verstopt zitten
 
@@ -59,18 +59,23 @@ def tijden_check(kolom):
 tijden_check(bus_plan['start time']) # Met deze functies worden alle fouten, inconsistenties en onregelmatigheden in de kolommen gecheckt
 tijden_check(bus_plan['end time'])
 
-# Stap 2.2: controleren of energieconsumptie overeenkomt met type trip
-activities = [] # Lijst 'activities' toevoegen
-energies = [] # Lijst 'energies' toevoegen
-for i in bus_plan['activity']: # Itereren over kolom 'activity' in bus_plan
-    activities.append(i) # Alle waarden toevoegen aan kolom 'activities'
-for i in bus_plan['energy consumption']: # Itereren over kolom 'energy consumption' in bus_plan
-    energies.append(i) # Alle waarden toevoegen aan kolom 'energies'
-act_con = pd.DataFrame({'activity': activities, 
-                        'energy consumption': energies}) # Dataframe 'act_con' aanmaken
+# Stap 3: controleren of energieconsumptie overeenkomt met type trip
+bus_plan[bus_plan['energy consumption'] < 0] # Checken of er inderdaad alleen energie wordt opgeladen tijdens het laden: fout in regel 28 # In regel 28: tijdens materiaaltrip kan er nooit energie worden opgeladen. Dit wordt hier hersteld.
 
-print(act_con[act_con['energy consumption'] < 0]) # Checken of er inderdaad alleen energie wordt opgeladen tijdens het laden: fout in regel 28
-print(act_con[20:40]) # In regel 28: tijdens materiaaltrip kan er nooit energie worden opgeladen. Dit wordt hier hersteld.
 
-filtered = (act_con[act_con['activity'] == 'material trip'])
-print(filtered)
+filtered1 = bus_plan[bus_plan['activity'] == 'material trip'] # Filter 1 aanbrengen; sorteren op material trips
+filtered2 = bus_plan[bus_plan['start location'] == 'ehvbst'] # Filter 2 aanbrengen; sorteren op startlocatie 'ehvbst'
+filtered3 = bus_plan[bus_plan['end location'] == 'ehvgar'] # Filter 3 aanbrengen; sorteren op eindlocatie 'ehvgar'
+filtered123 = bus_plan[
+    (bus_plan['activity'] == 'material trip') &
+    (bus_plan['start location'] == 'ehvbst') & 
+    (bus_plan['end location'] == 'ehvgar')] # Alles samenvoegen tot een gehele filterwijziging
+
+print(filtered123) # Resultaten filter overzichtelijk maken
+bus_plan.loc[28, 'energy consumption'] = 1.98 # Waarde van -157.5 energieconsumptie-eenheden aangepast tot + 1.98, uitgaande van gebruikt filter 'filter123'
+print(bus_plan.head(30)) # Controleren of wijziging succesvol is verlopen; ja.
+
+# Stap 4: controleren of er geen uitschieters in ritten zitten: zelf beoordeeld dat er geen verdere check hiervoor nodig is.
+
+# Stap 5: df omzetten in Excel-bestand
+bus_plan.to_excel('bus_plan_gecleaned.xlsx', index = False)
