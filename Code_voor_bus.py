@@ -37,8 +37,8 @@ planning_sor        = bp.sort_values(['bus','start time']) #sorteerd per bus, pe
 empty_bus           = []
 total_usage         = []
 
-
-for bus, bus_data in planning_sor.groupby('bus'): # kijkt per bus of het niet meer verbruikt dan mag (geen negatieve energie of lager dan 10 %) & het kijkt hoeveel energie een bus heeft als het klaar is met zijn routes
+# kijkt per bus of het niet meer verbruikt dan mag (geen negatieve energie of lager dan 10 %) & het kijkt hoeveel energie een bus heeft als het klaar is met zijn routes
+for bus, bus_data in planning_sor.groupby('bus'): 
     battery = start_battery
 
     for battery_lose in bus_data['energy consumption']:
@@ -53,10 +53,10 @@ for bus, battery in total_usage:
     print(f'Bus number {bus} has a battery content of {battery:.2f} kWh, when finishes his routes') 
 
 
-
-total_consumption = 0 
-for bus, bus_data in planning_sor.groupby('bus'): #berekend het total verbruik per bus, en het algehele totale verbruik van alle bussen bij elkaar.
-    total_consumption_bus = 0
+#berekend het total verbruik per bus, en het algehele totale verbruik van alle bussen bij elkaar.
+total_consumption       = 0
+total_consumption_bus   = 0
+for bus, bus_data in planning_sor.groupby('bus'): 
     for energy in bus_data['energy consumption']:
         if energy >0:
             total_consumption_bus += energy
@@ -64,9 +64,9 @@ for bus, bus_data in planning_sor.groupby('bus'): #berekend het total verbruik p
     print(f'Bus {bus} used {total_consumption_bus:.2f} kWh')
 print(f'All busses uses a total of {total_consumption:.2f} kWh')
 
-
+# kijkt per bus of het geen overlappende trips heeft
 planning_sor1       = bp.sort_values(['bus','start time']).reset_index(drop =True) #sorteerd per bus, per begintijd op chronologische volgorde
-bus_overlap         = [] # berekend overlappende trips
+bus_overlap         = [] 
 
 for bus, bus_data in planning_sor1.groupby('bus'):
     bus_data = bus_data.reset_index(drop=True)
@@ -79,14 +79,14 @@ for bus, bus_data in planning_sor1.groupby('bus'):
 for busoverlap in bus_overlap:        
     print(f'Overlap gevonden bij bus {busoverlap}')
 
+#kijkt per bus of het eindstation ook wel het begin station is van de volgende iteratie
 for bus, bus_data in planning_sor1.groupby('bus'):
     bus_data = bus_data.reset_index(drop=True)
-
     for i in range(len(bus_data)):
         if i==len(bus_data)-1:
                     break
         if bus_data['end location'][i]!=bus_data['start location'][i+1]:
-            print(f'for bus number{bus} , rit {i} ends at {bus_data['end location'][i]} en rit {i+1} begins at {bus_data['start location'][i+1]} ')
+            print(f'For bus number{bus} begin and end are not the same, rit {i} ends at {bus_data['end location'][i]} en rit {i+1} begins at {bus_data['start location'][i+1]} ')
  
 
 
