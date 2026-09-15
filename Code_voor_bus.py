@@ -176,7 +176,7 @@ for busoverlap in bus_overlap:
 
 # Totale afstand van de bussen
 
-# verplichte dienstregeling selecteren
+# Dienstregeling selecteren (de verplichte dienstregeling)
 line_400 = dm[dm['line']==400]
 line_401 = dm[dm['line']==401]
 d_ar_to_st400 = line_400['distance_m'].iloc[0]
@@ -185,34 +185,33 @@ d_st_to_ar400 = line_400['distance_m'].iloc[1]
 d_ar_to_st401 = line_401['distance_m'].iloc[0]
 d_st_to_ar401 = line_401['distance_m'].iloc[1]
 
-print(f'Distance for airport to station (line 400):{d_ar_to_st400}')
-print(f'Distance from station to airport (line 400):{d_st_to_ar400}')
-print(f'Distance from airport to station (line 401): {d_ar_to_st401}')
-print(f'Distance from station to aiport (line 401): {d_st_to_ar401}')
+print(f'Distance for airport to station (line 400):{d_ar_to_st400:.2f}')
+print(f'Distance from station to airport (line 400):{d_st_to_ar400:.2f}')
+print(f'Distance from airport to station (line 401): {d_ar_to_st401:.2f}')
+print(f'Distance from station to aiport (line 401): {d_st_to_ar401:.2f}')
 
-# Verplichte dienstregeling
-# Lijn 400
+# 2 trajecten van lijn 400
 t_ar_to_st400 = len(tt[(tt['line'] == 400) & (tt['start'] == 'ehvapt') & (tt['end'] == 'ehvbst')])
 t_st_to_ar400 = len(tt[(tt['line'] == 400) & (tt['start'] == 'ehvbst') & (tt['end'] == 'ehvapt')])
 
-# Lijn 401
+# 2 trajecten van lijn 401
 t_ar_to_st401 = len(tt[(tt['line'] == 401) & (tt['start'] == 'ehvapt') & (tt['end'] == 'ehvbst')])
 t_st_to_ar401 = len(tt[(tt['line'] == 401) & (tt['start'] == 'ehvbst') & (tt['end'] == 'ehvapt')])
 
-# totale afstand per lijn en totaal (van de service trips)
+# Totale afstand per lijn en totaal van de 2 lijnen (van de service trips)
 d_400 = (t_ar_to_st400 * d_ar_to_st400) + (t_st_to_ar400 * d_st_to_ar400)
 d_401 = (t_ar_to_st401 * d_ar_to_st401) + (t_st_to_ar401 * d_st_to_ar401)
 
 d_service_total_m = d_400+d_401
 d_service_total_km = d_service_total_m/1000
 
-print(f'Total service trip distance of lines 400 and 401 (meters): {d_service_total_m}')
-print(f'Total service trip distance of lines 400 and 401 (kilometers): {d_service_total_km}')
+print(f'Total service trip distance of lines 400 and 401 (meters): {d_service_total_m:.2f}')
+print(f'Total service trip distance of lines 400 and 401 (kilometers): {d_service_total_km:.2f}')
 # Material trips moeten nog toegevoegd worden!
 
 
 # Nu material trips toevoegen 
-# soorten material trips: Station-Garage en andersom, Airport-Garage en andersom,
+# Soorten material trips: Station-Garage en andersom, Airport-Garage en andersom,
 t_bst_to_gar = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvbst') & (bp['end location'] == 'ehvgar')])
 t_gar_to_bst = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvgar') & (bp['end location'] == 'ehvbst')])
 
@@ -229,32 +228,31 @@ d_gar_to_bst = dm[(dm['start'] == 'ehvgar') & (dm['end'] == 'ehvbst')]['distance
 d_apt_to_gar = dm[(dm['start'] == 'ehvapt') & (dm['end'] == 'ehvgar')]['distance_m'].iloc[0]  # 9000 m
 d_gar_to_apt = dm[(dm['start'] == 'ehvgar') & (dm['end'] == 'ehvapt')]['distance_m'].iloc[0]  # 9000 m
 
-# Totale afstand materials tripps
+# Totale afstand materials tripps berekenen
 d_material_total = (t_bst_to_gar * d_bst_to_gar) + (t_gar_to_bst * d_gar_to_bst) + (t_apt_to_gar * d_apt_to_gar) + (t_gar_to_apt * d_gar_to_apt)
 
-# Toevoegen aan de totale afstand
+# Totale afstand = afstand service trips + afstand material trips
 total_distance_m = d_service_total_m+d_material_total
 total_distance_km = total_distance_m/1000
 
-print(f'Total distance of service trips and material trips (meters): {total_distance_m}')
-print(f'Total distance of service trips and material trips (kilometers): {total_distance_km}')
-print(f'Total distance of material trips:{material_total}')
+print(f'Total distance of service trips and material trips (meters): {total_distance_m:.2f}')
+print(f'Total distance of service trips and material trips (kilometers): {total_distance_km:.2f}')
+print(f'Total distance of material trips:{d_material_total:.2f}')
 
-# KPI's (overig)
-
+# Overige KPI's berekenen
 # Berekening aantal bussen
 aantal_ingezette_bussen = bp['bus'].nunique()
 print(f'The number of busses used:{aantal_ingezette_bussen}.')
 
 # Berekening totale rijafstand: net berekend
-print(f'Total distance: {total_distance}.')
+print(f'Total distance (kilometers): {total_distance_km:.2f}.')
+print(f'Total distance (meters):{total_distance_m:.2f}.')
 
-# Lege/material trips
+# Total aantal lege material trips berekenen
 t_material_total = t_bst_to_gar + t_gar_to_bst + t_apt_to_gar + t_gar_to_apt + t_apt_to_bst + t_bst_to_apt
-print(f'Total of empty material trips: {t_material_trips}')
+print(f'Total of empty material trips: {t_material_total}')
 
-# Berekening wachttijd
-
+# Wachttijd berekenen met behulp van idle
 # Dataframe aanmaken om wachttijd te bepalen
 bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
 bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
@@ -265,10 +263,9 @@ tot_waiting_time_min = (idle['end_dt'] - idle['start_dt']).dt.total_seconds().su
 tot_waiting_time_hours = tot_waiting_time_min/60
 avg_waiting_time_per_bus = tot_waiting_time_min/aantal_ingezette_bussen # minuten
 
-print(f'Total waiting time in minutes: {tot_waiting_time_min}')
-print(f'Total waiting time in hours: {tot_waiting_time_hours}')
-print(f'Average waiting time per bus: {avg_waiting_time_per_bus}')
-
+print(f'Total waiting time in minutes: {tot_waiting_time_min:.2f}')
+print(f'Total waiting time in hours: {tot_waiting_time_hours:.2f}')
+print(f'Average waiting time per bus (minutes): {avg_waiting_time_per_bus:.2f}')
 
 # Bus 85% vol is 300 kwh
 
