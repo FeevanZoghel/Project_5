@@ -159,97 +159,99 @@ print(f'All busses uses a total of {total_consumption:.2f} kWh')
 
 
 
-# # Bas
+# Bas
 
 
-# # Totale afstand van de bussen
+# Totale afstand van de bussen
 
-# # verplichte dienstregeling selecteren
-# line_400 = dm[dm['line']==400]
-# line_401 = dm[dm['line']==401]
-# d_ar_to_st400 = line_400['distance_m'].iloc[0]
-# d_st_to_ar400 = line_400['distance_m'].iloc[1]
+# verplichte dienstregeling selecteren
+line_400 = dm[dm['line']==400]
+line_401 = dm[dm['line']==401]
+d_ar_to_st400 = line_400['distance_m'].iloc[0]
+d_st_to_ar400 = line_400['distance_m'].iloc[1]
 
-# d_ar_to_st401 = line_401['distance_m'].iloc[0]
-# d_st_to_ar401 = line_401['distance_m'].iloc[1]
+d_ar_to_st401 = line_401['distance_m'].iloc[0]
+d_st_to_ar401 = line_401['distance_m'].iloc[1]
 
-# print(d_ar_to_st400,d_st_to_ar400,d_ar_to_st401,d_st_to_ar401)
+print(d_ar_to_st400,d_st_to_ar400,d_ar_to_st401,d_st_to_ar401)
 
-# # Verplichte dienstregeling
-# # Lijn 400
-# t_ar_to_st400 = len(tt[(tt['line'] == 400) & (tt['start'] == 'ehvapt') & (tt['end'] == 'ehvbst')])
-# t_st_to_ar400 = len(tt[(tt['line'] == 400) & (tt['start'] == 'ehvbst') & (tt['end'] == 'ehvapt')])
+# Verplichte dienstregeling
+# Lijn 400
+t_ar_to_st400 = len(tt[(tt['line'] == 400) & (tt['start'] == 'ehvapt') & (tt['end'] == 'ehvbst')])
+t_st_to_ar400 = len(tt[(tt['line'] == 400) & (tt['start'] == 'ehvbst') & (tt['end'] == 'ehvapt')])
 
-# # Lijn 401
-# t_ar_to_st401 = len(tt[(tt['line'] == 401) & (tt['start'] == 'ehvapt') & (tt['end'] == 'ehvbst')])
-# t_st_to_ar401 = len(tt[(tt['line'] == 401) & (tt['start'] == 'ehvbst') & (tt['end'] == 'ehvapt')])
+# Lijn 401
+t_ar_to_st401 = len(tt[(tt['line'] == 401) & (tt['start'] == 'ehvapt') & (tt['end'] == 'ehvbst')])
+t_st_to_ar401 = len(tt[(tt['line'] == 401) & (tt['start'] == 'ehvbst') & (tt['end'] == 'ehvapt')])
 
-# # totale afstand per lijn en totaal (van de service trips)
-# d_400 = (t_ar_to_st400 * d_ar_to_st400) + (t_st_to_ar400 * d_st_to_ar400)
-# d_401 = (t_ar_to_st401 * d_ar_to_st401) + (t_st_to_ar401 * d_st_to_ar401)
+# totale afstand per lijn en totaal (van de service trips)
+d_400 = (t_ar_to_st400 * d_ar_to_st400) + (t_st_to_ar400 * d_st_to_ar400)
+d_401 = (t_ar_to_st401 * d_ar_to_st401) + (t_st_to_ar401 * d_st_to_ar401)
 
-# d_service_total_m = d_400+d_401
-# d_service_total_km = d_service_total_m/1000
+d_service_total_m = d_400+d_401
+d_service_total_km = d_service_total_m/1000
 
-# print(d_service_total_km,d_service_total_m) # Material trips moeten nog toegevoegd worden!
+print(d_service_total_km,d_service_total_m) # Material trips moeten nog toegevoegd worden!
 
-# # Nu material trips toevoegen 
-# # soorten material trips: Station-Garage en andersom, Airport-Garage en andersom,
-# t_bst_to_gar = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvbst') & (bp['end location'] == 'ehvgar')])
-# t_gar_to_bst = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvgar') & (bp['end location'] == 'ehvbst')])
+# Nu material trips toevoegen 
+# soorten material trips: Station-Garage en andersom, Airport-Garage en andersom,
+t_bst_to_gar = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvbst') & (bp['end location'] == 'ehvgar')])
+t_gar_to_bst = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvgar') & (bp['end location'] == 'ehvbst')])
 
-# t_apt_to_gar = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvapt') & (bp['end location'] == 'ehvgar')])
-# t_gar_to_apt = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvgar') & (bp['end location'] == 'ehvapt')])
+t_apt_to_gar = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvapt') & (bp['end location'] == 'ehvgar')])
+t_gar_to_apt = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvgar') & (bp['end location'] == 'ehvapt')])
 
-# # Afstanden van de verschillende soorten material trips
-# d_bst_to_gar = dm[(dm['start'] == 'ehvbst') & (dm['end'] == 'ehvgar')]['distance_m'].iloc[0]  # 1650 m
-# d_gar_to_bst = dm[(dm['start'] == 'ehvgar') & (dm['end'] == 'ehvbst')]['distance_m'].iloc[0]  # 1650 m
+t_apt_to_bst = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvapt') & (bp['end location'] == 'ehvbst')])
+t_bst_to_apt = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvbst') & (bp['end location'] == 'ehvapt')])
 
-# d_apt_to_gar = dm[(dm['start'] == 'ehvapt') & (dm['end'] == 'ehvgar')]['distance_m'].iloc[0]  # 9000 m
-# d_gar_to_apt = dm[(dm['start'] == 'ehvgar') & (dm['end'] == 'ehvapt')]['distance_m'].iloc[0]  # 9000 m
+# Afstanden van de verschillende soorten material trips
+d_bst_to_gar = dm[(dm['start'] == 'ehvbst') & (dm['end'] == 'ehvgar')]['distance_m'].iloc[0]  # 1650 m
+d_gar_to_bst = dm[(dm['start'] == 'ehvgar') & (dm['end'] == 'ehvbst')]['distance_m'].iloc[0]  # 1650 m
 
-# # Totale afstand materials tripps
-# d_material_total = (t_bst_to_gar * d_bst_to_gar) + (t_gar_to_bst * d_gar_to_bst) + (t_apt_to_gar * d_apt_to_gar) + (t_gar_to_apt * d_gar_to_apt)
+d_apt_to_gar = dm[(dm['start'] == 'ehvapt') & (dm['end'] == 'ehvgar')]['distance_m'].iloc[0]  # 9000 m
+d_gar_to_apt = dm[(dm['start'] == 'ehvgar') & (dm['end'] == 'ehvapt')]['distance_m'].iloc[0]  # 9000 m
 
-# # Toevoegen aan de totale afstand
-# total_distance_m = d_service_total_m+d_material_total
-# total_distance_km = total_distance_m/1000
+# Totale afstand materials tripps
+d_material_total = (t_bst_to_gar * d_bst_to_gar) + (t_gar_to_bst * d_gar_to_bst) + (t_apt_to_gar * d_apt_to_gar) + (t_gar_to_apt * d_gar_to_apt)
 
-# print(total_distance_m,total_distance_km,d_material_total)
+# Toevoegen aan de totale afstand
+total_distance_m = d_service_total_m+d_material_total
+total_distance_km = total_distance_m/1000
+
+print(total_distance_m,total_distance_km,d_material_total)
 
 
-# # Bus 85% vol is 300 kwh
+# Bus 85% vol is 300 kwh
 
 
-# # KPI's
+# KPI's (overig)
 
-<<<<<<< HEAD
 # Berekening aantal bussen
 aantal_ingezette_bussen = bp['bus'].nunique()
 print(aantal_ingezette_bussen)
-=======
-# # Berekening aantal bussen
-# aantal_ingezette_bussen = bp['bus'].nunique()
->>>>>>> 2f582de9c6de455e4f8d146b6b7889e4f1896594
 
-# # Berekening totale rijafstand: net berekend
+# Berekening totale rijafstand: net berekend
+print(total_distance)
 
-<<<<<<< HEAD
 # Lege/material trips
 t_material_total = t_bst_to_gar + t_gar_to_bst + t_apt_to_gar + t_gar_to_apt + t_apt_to_bst + t_bst_to_apt
 print(t_material_total)
 
 # Berekening wachttijd
-wachttijden = []
-idle = bp[bp['activity']=='idle']
-len_idle = 
 
-=======
-# # Lege/material trips
-# t_material_total = t_bst_to_gar + t_gar_to_bst + t_apt_to_gar + t_gar_to_apt + t_apt_to_bst + t_bst_to_apt
+# Dataframe aanmaken om wachttijd te bepalen
+bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
+bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
 
-# # Berekening wachttijd
->>>>>>> 2f582de9c6de455e4f8d146b6b7889e4f1896594
+# Berekening wachttijd in minuten en uren
+idle = bp[bp['activity'] == 'idle']
+tot_waiting_time_min = (idle['end_dt'] - idle['start_dt']).dt.total_seconds().sum() / 60
+tot_waiting_time_hours = tot_waiting_time_min/60
+avg_waiting_time_per_bus = tot_waiting_time_min/aantal_ingezette_bussen
+
+print(tot_waiting_time_min,tot_waiting_time_hours,avg_waiting_time_per_bus)
+
+
 
 
 
