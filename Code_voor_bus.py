@@ -159,7 +159,7 @@ print(f'All busses uses a total of {total_consumption:.2f} kWh')
 
 # Totale afstand van de bussen
 
-# verplichte dienstregeling
+# verplichte dienstregeling selecteren
 line_400 = dm[dm['line']==400]
 line_401 = dm[dm['line']==401]
 d_ar_to_st400 = line_400['distance_m'].iloc[0]
@@ -179,7 +179,7 @@ t_st_to_ar400 = len(tt[(tt['line'] == 400) & (tt['start'] == 'ehvbst') & (tt['en
 t_ar_to_st401 = len(tt[(tt['line'] == 401) & (tt['start'] == 'ehvapt') & (tt['end'] == 'ehvbst')])
 t_st_to_ar401 = len(tt[(tt['line'] == 401) & (tt['start'] == 'ehvbst') & (tt['end'] == 'ehvapt')])
 
-# totale afstand per lijn en totaal
+# totale afstand per lijn en totaal (van de service trips)
 d_400 = (t_ar_to_st400 * d_ar_to_st400) + (t_st_to_ar400 * d_st_to_ar400)
 d_401 = (t_ar_to_st401 * d_ar_to_st401) + (t_st_to_ar401 * d_st_to_ar401)
 
@@ -188,15 +188,15 @@ d_service_total_km = d_service_total_m/1000
 
 print(d_service_total_km,d_service_total_m) # Material trips moeten nog toegevoegd worden!
 
-# Nu material trips toevoegen (bussen van/uit de garage)
-# Station-Garage en andersom, Airport-Garage en andersom,
+# Nu material trips toevoegen 
+# soorten material trips: Station-Garage en andersom, Airport-Garage en andersom,
 t_bst_to_gar = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvbst') & (bp['end location'] == 'ehvgar')])
 t_gar_to_bst = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvgar') & (bp['end location'] == 'ehvbst')])
 
 t_apt_to_gar = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvapt') & (bp['end location'] == 'ehvgar')])
 t_gar_to_apt = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvgar') & (bp['end location'] == 'ehvapt')])
 
-# Bijbehorende afstanden
+# Afstanden van de verschillende soorten material trips
 d_bst_to_gar = dm[(dm['start'] == 'ehvbst') & (dm['end'] == 'ehvgar')]['distance_m'].iloc[0]  # 1650 m
 d_gar_to_bst = dm[(dm['start'] == 'ehvgar') & (dm['end'] == 'ehvbst')]['distance_m'].iloc[0]  # 1650 m
 
@@ -228,10 +228,10 @@ t_material_total = t_bst_to_gar + t_gar_to_bst + t_apt_to_gar + t_gar_to_apt + t
 
 # Berekening wachttijd
 
-
 # Berekening energiegebruik (Matthijs)
 
-# Oplaadtijd
+# Oplaadtijd (Matthijs)
+
 
 
 
