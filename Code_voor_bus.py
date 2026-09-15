@@ -104,6 +104,41 @@ print(dm.head())
 
 
 # Bas
+line_400 = dm[dm['line']==400]
+line_401 = dm[dm['line']==401]
+line_400,line_401
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
