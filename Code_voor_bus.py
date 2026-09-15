@@ -62,7 +62,19 @@ for bus, bus_data in planning_sor.groupby('bus'): #berekend het total verbruik p
     total_consumption+=total_consumption_bus
     print(f'Bus {bus} used {total_consumption_bus:.2f} kWh')
 print(f'All busses uses a total of {total_consumption:.2f} kWh')
-    
+
+
+bus_overlap = [] # berekend overlappende trips
+for bus, bus_data in planning_sor1.groupby('bus'):
+    bus_data = bus_data.reset_index(drop=True)
+
+    for i in range(len(bus_data)):
+        if i==len(bus_data)-1:
+                    break
+        if bus_data['end time'][i]>bus_data['start time'][i+1] and bus not in bus_overlap:
+            bus_overlap.append(bus)         
+for busoverlap in bus_overlap:        
+    print(f'Overlap gevonden bij bus {busoverlap}')
 # Berekening energiegebruik (Matthijs)
 
 # Oplaadtijd (Matthijs)
