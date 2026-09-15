@@ -128,16 +128,7 @@ print(min_waarde_battery)
 
 # Totale afstand van de bussen
 
-# afstand per lijn en per traject
-d_ar_to_st400 = dm[(dm['line'] == 400) & (dm['start'] == 'ehvapt') & (dm['end'] == 'ehvbst')]['distance_m'].iloc[0]
-d_st_to_ar400 = dm[(dm['line'] == 400) & (dm['start'] == 'ehvbst') & (dm['end'] == 'ehvapt')]['distance_m'].iloc[0]
-
-d_ar_to_st401 = dm[(dm['line'] == 401) & (dm['start'] == 'ehvapt') & (dm['end'] == 'ehvbst')]['distance_m'].iloc[0]
-d_st_to_ar401 = dm[(dm['line'] == 401) & (dm['start'] == 'ehvbst') & (dm['end'] == 'ehvapt')]['distance_m'].iloc[0]
-
 # verplichte dienstregeling
-
-
 line_400 = dm[dm['line']==400]
 line_401 = dm[dm['line']==401]
 d_ar_to_st400 = line_400['distance_m'].iloc[0]
@@ -160,8 +151,10 @@ t_st_to_ar401 = len(tt[(tt['line'] == 401) & (tt['start'] == 'ehvbst') & (tt['en
 # totale afstand per lijn en totaal
 d_400 = (t_ar_to_st400 * d_ar_to_st400) + (t_st_to_ar400 * d_st_to_ar400)
 d_401 = (t_ar_to_st401 * d_ar_to_st401) + (t_st_to_ar401 * d_st_to_ar401)
-d_total = d_400+d_401
-d_total
+d_total_km = d_400+d_401
+d_total_m = d_total_km/1000
+
+print(d_total_km,d_total_m)
 
 
 # Bus 85% vol is 300 kwh
