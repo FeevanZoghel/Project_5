@@ -6,6 +6,9 @@ import pandas as pd
 df = pd.read_excel('Bus_Planning.xlsx')
 print(df.head())
 
+dm = pd.read_excel('DistanceMatrix.xlsx')
+print(dm.head())
+
 
 
 
