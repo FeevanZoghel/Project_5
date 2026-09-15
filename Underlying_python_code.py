@@ -55,7 +55,7 @@ for bus, bus_data in planning_sor1.groupby('bus'):
         if i==len(bus_data)-1:
                     break
         if bus_data['end location'][i]!=bus_data['start location'][i+1]:
-            print(f'for bus number{bus} , rit {i} eindigt op {bus_data['end location'][i]} en rit {i+1} begint op {bus_data['start location'][i+1]} ')
+            print(f'for bus number{bus} , rit {i} ends at {bus_data['end location'][i]} en rit {i+1} begins at {bus_data['start location'][i+1]} ')
 
 
 
