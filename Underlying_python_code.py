@@ -33,18 +33,19 @@ bus_number          = bp['bus'].unique()
 
 start_battery       = 300 # start waarde van 85% (gaan uit van het minimum)
 min_waarde_battery  = (300/85 *100)*.1 # 10 % van de echte waarde aanwezig zijn
-planning_sor        = bp.sort_values(['bus','start time']).reset_index(drop =True) #sorteerd per bus, per begintijd op chronologische volgorde
+planning_sor1        = bp.sort_values(['bus','start time']).reset_index(drop =True) #sorteerd per bus, per begintijd op chronologische volgorde
 
-for bus, bus_data in planning_sor.groupby('bus'):
+bus_overlap = []
+for bus, bus_data in planning_sor1.groupby('bus'):
     bus_data = bus_data.reset_index(drop=True)
 
     for i in range(len(bus_data)):
         if i==len(bus_data)-1:
                     break
-        if bus_data['end time'][i]>bus_data['start time'][i+1]:
-            print(f'Overlap gevonden bij bus {bus}')
-        
-
+        if bus_data['end time'][i]>bus_data['start time'][i+1] and bus not in bus_overlap:
+            bus_overlap.append(bus)         
+for busoverlap in bus_overlap:        
+    print(f'Overlap gevonden bij bus {busoverlap}')
 
 
 
