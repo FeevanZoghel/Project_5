@@ -37,7 +37,8 @@ planning_sor        = bp.sort_values(['bus','start time']) #sorteerd per bus, pe
 print(planning_sor)
 empty_bus           = []
 total_usage         = []
-for bus, bus_data in planning_sor.groupby('bus'):
+
+for bus, bus_data in planning_sor.groupby('bus'): # kijkt per bus of het niet meer verbruikt dan mag (geen negatieve energie of lager dan 10 %) & het kijkt hoeveel energie een bus heeft als het klaar is met zijn routes
     battery = start_battery
 
     for battery_lose in bus_data['energy consumption']:
@@ -47,20 +48,21 @@ for bus, bus_data in planning_sor.groupby('bus'):
             empty_bus.append(bus)
     total_usage.append((bus,battery))
 
-# for emptybus in empty_bus:
-#     print(f'Er is niet genoeg energy voor bus {emptybus}')
-# for bus, battery in total_usage:
-#     print(f'Bus number {bus} has a battery content of {battery:.2f} kWh, when finishes his routes')
-total_consumption = 0
-for bus, bus_data in planning_sor.groupby('bus'):
-    total_consumption_bus = 0
+for emptybus in empty_bus:
+    print(f'Er is niet genoeg energy voor bus {emptybus}')
+for bus, battery in total_usage:
+    print(f'Bus number {bus} has a battery content of {battery:.2f} kWh, when finishes his routes') 
 
+total_consumption = 0 
+for bus, bus_data in planning_sor.groupby('bus'): #berekend het total verbruik per bus, en het algehele totale verbruik van alle bussen bij elkaar.
+    total_consumption_bus = 0
     for energy in bus_data['energy consumption']:
         if energy >0:
             total_consumption_bus += energy
     total_consumption+=total_consumption_bus
     print(f'Bus {bus} used {total_consumption_bus:.2f} kWh')
 print(f'All busses uses a total of {total_consumption:.2f} kWh')
+    
     
 
 
