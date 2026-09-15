@@ -3,11 +3,15 @@ print('Hello World')
 
 import pandas as pd 
 
-df = pd.read_excel('Bus_Planning.xlsx')
-print(df.head())
+bp = pd.read_excel('Bus_Planning.xlsx')
+print(bp.head())
 
 dm = pd.read_excel('DistanceMatrix.xlsx')
 print(dm.head())
+
+tt = pd.read_excel('Timetable.xlsx')
+print(tt.head())
+
 
 total_distance = 0 
 
