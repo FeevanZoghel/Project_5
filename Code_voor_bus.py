@@ -220,13 +220,19 @@ print(total_distance_m,total_distance_km,d_material_total)
 
 # Berekening aantal bussen
 aantal_ingezette_bussen = bp['bus'].nunique()
+print(aantal_ingezette_bussen)
 
 # Berekening totale rijafstand: net berekend
 
 # Lege/material trips
 t_material_total = t_bst_to_gar + t_gar_to_bst + t_apt_to_gar + t_gar_to_apt + t_apt_to_bst + t_bst_to_apt
+print(t_material_total)
 
 # Berekening wachttijd
+wachttijden = []
+idle = bp[bp['activity']=='idle']
+len_idle = 
+
 
 # Berekening energiegebruik (Matthijs)
 
