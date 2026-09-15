@@ -151,17 +151,19 @@ t_st_to_ar401 = len(tt[(tt['line'] == 401) & (tt['start'] == 'ehvbst') & (tt['en
 # totale afstand per lijn en totaal
 d_400 = (t_ar_to_st400 * d_ar_to_st400) + (t_st_to_ar400 * d_st_to_ar400)
 d_401 = (t_ar_to_st401 * d_ar_to_st401) + (t_st_to_ar401 * d_st_to_ar401)
-d_total_m = d_400+d_401
-d_total_km = d_total_m/1000
 
-print(d_total_km,d_total_m)
+d_service_total_m = d_400+d_401
+d_sertice_total_km = d_total_m/1000
+
+print(d_service_total_km,d_service_total_m) # Material trips moeten nog toegevoegd worden!
+
+# Nu material trips toevoegen
+d_mat_trip1 = 
+d_mat_trip2 = 
+
+
 
 # Bus 85% vol is 300 kwh
-
-
-
-
-
 
 
 
