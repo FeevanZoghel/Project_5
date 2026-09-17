@@ -56,10 +56,7 @@ elif keuze == "Data":
     if bestand is not None:
         df = pd.read_excel(bestand)
 
-        if check_columns(df):
-            st.success("The columns are checked and correct")
-        else:
-            st.error("The columns are incorrect")
+        check_columns(df)
 
         st.subheader("Ingelezen planning")
         st.dataframe(df.head())
