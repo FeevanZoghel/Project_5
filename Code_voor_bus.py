@@ -259,7 +259,7 @@ print(f'Total distance (meters):{total_distance_m:.2f}.')
 
 # Total aantal lege material trips berekenen
 t_material_total = t_bst_to_gar + t_gar_to_bst + t_apt_to_gar + t_gar_to_apt + t_apt_to_bst + t_bst_to_apt
-print(f'Total of empty material trips: {t_material_total}')
+print(f'Total of material trips: {t_material_total}')
 
 # Wachttijd berekenen met behulp van idle
 # Dataframe aanmaken om wachttijd te bepalen
@@ -269,8 +269,8 @@ bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
 # Berekening wachttijd in minuten en uren
 idle = bp[bp['activity'] == 'idle']
 tot_waiting_time_min = (idle['end_dt'] - idle['start_dt']).dt.total_seconds().sum() / 60
-tot_waiting_time_hours = tot_waiting_time_min/60
-avg_waiting_time_per_bus = tot_waiting_time_min/aantal_ingezette_bussen # minuten
+tot_waiiting_time_per_bting_time_hours = tot_waiting_time_min/60
+avg_waus = tot_waiting_time_min/aantal_ingezette_bussen # minuten
 
 print(f'Total waiting time in minutes: {tot_waiting_time_min:.2f}')
 print(f'Total waiting time in hours: {tot_waiting_time_hours:.2f}')
