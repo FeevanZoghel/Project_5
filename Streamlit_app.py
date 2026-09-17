@@ -56,7 +56,7 @@ elif keuze == "Data":
     bestand = st.file_uploader("Upload een busplanning", type=["xlsx"])
 
     if bestand is not None:
-        df = pd.read_xlsx(bestand)
+        df = pd.read_excel(bestand)
 
         st.subheader("Ingelezen planning")
         st.dataframe(df.head())
