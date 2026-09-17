@@ -53,10 +53,10 @@ elif keuze == "Data":
     st.write("Hier komt de data.")
     st.title("Transdev Planning Checker")
 
-    bestand = st.file_uploader("Upload een busplanning", type=["csv"])
+    bestand = st.file_uploader("Upload een busplanning", type=["xlsx"])
 
     if bestand is not None:
-        df = pd.read_csv(bestand)
+        df = pd.read_xlsx(bestand)
 
         st.subheader("Ingelezen planning")
         st.dataframe(df.head())
