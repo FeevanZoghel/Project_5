@@ -25,11 +25,11 @@ def check_columns(df):
 
     for i in good_columns:
         if i not in columns:
-            st.error(f'The columns called "{}" is missing')
+            st.error(f'The columns called "{i}" is missing')
             fout = True
 
     if fout == False:
-        st.succes('all columns are correct')
+        st.success('all columns are correct')
 
 
 
