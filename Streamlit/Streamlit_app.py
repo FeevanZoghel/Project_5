@@ -54,9 +54,10 @@ elif keuze == "Data":
     if bestand is not None:
         df = pd.read_excel(bestand)
 
-        if df.columns is not ['start location', 'end location', 'start time', 'end time', 'activity',
-       'line', 'energy consumption', 'bus']:
-            st.write('verander de kolomnamen')
+        if check_columns(df):
+            st.success("The columns are checked and correct")
+        else:
+            st.error("The columns are incorrect")
 
         st.subheader("Ingelezen planning")
         st.dataframe(df.head())
