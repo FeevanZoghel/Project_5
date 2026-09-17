@@ -13,21 +13,17 @@ keuze = st.sidebar.selectbox(
 if keuze == "Home":
     st.header("Home")
     st.write("Welkom!")
-    # Titel
     st.title("Mijn Streamlit App")
-    # Gewone tekst
     st.write("Welkom bij mijn app!")
-    # Subkopje
     st.subheader("Voer je gegevens in")
-    # Tekst invoeren
     naam = st.text_input("Wat is je naam?")
-    # Getal invoeren
     leeftijd = st.number_input("Wat is je leeftijd?", min_value=0, max_value=120)
-    # Keuze maken
     keuze = st.selectbox(
         "Kies een optie",
         ["Optie 1", "Optie 2", "Optie 3"]
     )
+    if keuze == 'Optie 1':
+        st.write('Kies niet deze')
     # Checkbox
     akkoord = st.checkbox("Ik ga akkoord")
     # Knop
