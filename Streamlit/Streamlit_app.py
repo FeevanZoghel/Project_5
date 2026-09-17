@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-from testuhh import Check_columns
+from testuhh import check_columns
 
 st.title("Mijn app")
 
