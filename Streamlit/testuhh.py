@@ -3,7 +3,7 @@ import pandas as pd
 df = pd.read_excel('Bus_Plan_Cleaned.xlsx')
 
 
-def Check_columns(df):
+def check_columns(df):
     """
     
     Checken of de kolommen uit de gegeven dataset correct zijn
