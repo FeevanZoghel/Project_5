@@ -22,7 +22,7 @@ if keuze == "Home":
         "Kies een optie",
         ["Optie 1", "Optie 2", "Optie 3"]
     )
-    if keuze == 'Optie 1':
+    if keuze == 'Optie 3':
         st.write('Kies niet deze')
     # Checkbox
     akkoord = st.checkbox("Ik ga akkoord")
