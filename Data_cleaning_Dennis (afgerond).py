@@ -1,4 +1,4 @@
-# import pandas as pd
+import pandas as pd
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
 import numpy as np
@@ -78,4 +78,4 @@ print(bus_plan.head(30)) # Controleren of wijziging succesvol is verlopen; ja.
 # Stap 4: controleren of er geen uitschieters in ritten zitten: zelf beoordeeld dat er geen verdere check hiervoor nodig is.
 
 # Stap 5: df omzetten in Excel-bestand
-bus_plan.to_excel('bus_plan_gecleaned.xlsx', index = False)
+bus_plan.to_excel('Bus_Plan_Cleaned.xlsx', index = False)

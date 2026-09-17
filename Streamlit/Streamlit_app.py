@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 
+from testuhh import check_columns
+
 st.title("Mijn app")
 
 st.sidebar.title("Menu")
@@ -22,7 +24,7 @@ if keuze == "Home":
         "Kies een optie",
         ["Optie 1", "Optie 2", "Optie 3"]
     )
-    if keuze == 'Optie 1':
+    if keuze == 'Optie 3':
         st.write('Kies niet deze')
     # Checkbox
     akkoord = st.checkbox("Ik ga akkoord")
@@ -53,6 +55,8 @@ elif keuze == "Data":
 
     if bestand is not None:
         df = pd.read_excel(bestand)
+
+        check_columns(df)
 
         st.subheader("Ingelezen planning")
         st.dataframe(df.head())
