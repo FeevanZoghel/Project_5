@@ -51,6 +51,18 @@ if keuze == "Home":
 elif keuze == "Data":
     st.header("Data")
     st.write("Hier komt de data.")
+    st.title("Transdev Planning Checker")
+
+    bestand = st.file_uploader("Upload een busplanning", type=["csv"])
+
+    if bestand is not None:
+        df = pd.read_csv(bestand)
+
+        st.subheader("Ingelezen planning")
+        st.dataframe(df.head())
+
+        if st.button("Check planning"):
+            st.write("Planning wordt gecontroleerd...")
 
 elif keuze == "Resultaten":
     st.header("Resultaten")
