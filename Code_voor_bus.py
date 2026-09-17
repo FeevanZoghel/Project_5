@@ -1,4 +1,3 @@
-print('Hello World')
 #Matthijs
 
 import pandas as pd 
