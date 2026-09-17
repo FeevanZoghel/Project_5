@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 
+from testuhh import check_columns
+
 st.title("Mijn app")
 
 st.sidebar.title("Menu")
