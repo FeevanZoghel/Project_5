@@ -1,1 +1,46 @@
-print('hello world')
+import streamlit as st
+import pandas as pd
+
+# Titel
+st.title("Mijn Streamlit App")
+
+# Gewone tekst
+st.write("Welkom bij mijn app!")
+
+# Subkopje
+st.subheader("Voer je gegevens in")
+
+# Tekst invoeren
+naam = st.text_input("Wat is je naam?")
+
+# Getal invoeren
+leeftijd = st.number_input("Wat is je leeftijd?", min_value=0, max_value=120)
+
+# Keuze maken
+keuze = st.selectbox(
+    "Kies een optie",
+    ["Optie 1", "Optie 2", "Optie 3"]
+)
+
+# Checkbox
+akkoord = st.checkbox("Ik ga akkoord")
+
+# Knop
+if st.button("Versturen"):
+    st.write("Hallo", naam)
+    st.write("Je bent", leeftijd, "jaar oud.")
+    st.write("Je koos:", keuze)
+
+# DataFrame maken
+df = pd.DataFrame({
+    "Naam": ["Jan", "Piet", "Sophie"],
+    "Leeftijd": [21, 24, 19]
+})
+
+# DataFrame laten zien
+st.subheader("Data")
+st.dataframe(df)
+
+# Alleen eerste rijen
+st.write("Eerste twee rijen:")
+st.dataframe(df.head(2))
