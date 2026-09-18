@@ -10,8 +10,7 @@ from DataFrame_check import energy_check
 from DataFrame_check import only_check_columns
 from DataFrame_check import only_times_check
 from DataFrame_check import only_energy_check
-from DataFrame_check import only_start_end_check
-from DataFrame_check import start_end_check
+
 
 st.sidebar.title("Menu")
 
@@ -67,9 +66,8 @@ elif keuze == "Data":
         kolommen_correct = only_check_columns(df)
         energy_correct = only_energy_check(df)
         tijden_correct = only_times_check(df)
-        start_end_correct = only_start_end_check(df)
 
-        if kolommen_correct == True and energy_correct == True and tijden_correct == True and only_start_end_check == True:
+        if kolommen_correct == True and energy_correct == True and tijden_correct == True:
             st.success('De data is compleet')
         else:
             st.error('Data is incorrect')
@@ -77,7 +75,6 @@ elif keuze == "Data":
                 check_columns(df)
                 times_check(df)
                 energy_check(df)
-                start_end_check(df)
 
         st.subheader("Ingelezen planning")
         st.dataframe(df.head(10))
