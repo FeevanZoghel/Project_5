@@ -84,7 +84,7 @@ elif keuze == "Gegevens (KPI)":
         check_all(df)
     st.write('hier komen de berekeningen')
 
-    st.subheader('Energy consumption from busses')
+    st.subheader('Energy consumption from busses:')
     bus_energy_check(df)
 
 
