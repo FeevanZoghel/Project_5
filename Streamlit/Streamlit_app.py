@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
 
-from testuhh import check_columns
-from testuhh import only_check_columns
-from testuhh import tijden_check
+from DataFrame_check import check_columns
+from DataFrame_check import only_check_columns
+from DataFrame_check import tijden_check
 
 st.title("Mijn app")
 
