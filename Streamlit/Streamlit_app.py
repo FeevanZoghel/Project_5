@@ -81,8 +81,12 @@ elif keuze == "Gegevens (KPI)":
         df = pd.read_excel(bestand)
 
         check_all(df)
+        keuze2 = st.sidebar.selectbox("What do you want to see?",
+        ["Energy Consumption", "Een andere die ik nog niet heb bedacht"]
+        )
 
-        st.subheader('Energy consumption from busses:')
-        bus_energy_check(df)
+        if keuze2 == "Energy Consumption":
+            st.subheader('Energy consumption from busses:')
+            bus_energy_check(df)
 
 
