@@ -60,7 +60,7 @@ def only_check_columns(df):
 
 
 
-def tijden_check(df):
+def tijden_check(df):    
     '''
 
     Checkt per rij of er een foutieve tijd zit
@@ -121,3 +121,36 @@ def tijden_check(df):
             st.error(f'One or more times in "{kolom}" contain inconsistencies')
         else:
             st.success(f'All times in "{kolom}" are correct')
+
+
+
+def energy_check(df):
+    '''
+    Checkt rij voor rij:
+        Als de bus aan het opladen is moet/mag de energy consumption negatief zijn.
+        Als de bus niet aan het opladen is moet de energy consumption positief zijn.
+        
+    Rij, row df.iterrows()
+        Hij gaat rij voor rij door de DataFrame heen
+    '''
+
+    fout = False
+
+    for rij, row in df.iterrows():
+
+        if row['activity'] == 'charging':
+            if row['energy consumption'] >= 0:
+                st.error(
+                    f'Row {rij + 2}: charging has an incorrect energy consumption'
+                )
+                fout = True
+
+        else:
+            if row['energy consumption'] <= 0:
+                st.error(
+                    f'Row {rij + 2}: {row["activity"]} has an incorrect energy consumption'
+                )
+                fout = True
+
+    if fout == False:
+        st.success('All energy consumption values are correct')
