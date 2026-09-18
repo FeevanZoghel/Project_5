@@ -32,5 +32,26 @@ def check_columns(df):
         st.success('all columns are correct')
 
 
+def only_check_columns(df):
+    '''
+    
+    alleen kolommen checken
+    returned alleen of kolommen fout zijn? of correct.
+    
+    '''
+
+    fout = False
+    
+    columns = df.columns.tolist()
+    good_columns = ['start location', 'end location', 'start time', 'end time', 'activity', 'line', 'energy consumption', 'bus']
+
+    for i in columns:
+        if i not in good_columns:
+            st.error(f'The column {i} is misspelled or missing')
+            fout = True
+
+    if fout == False:
+        st.succes('all columns are correct')
+
 
 
