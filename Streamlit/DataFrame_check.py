@@ -142,8 +142,7 @@ def times_check(df):
 
             except:
                 fout = True
-                st.error(f'Row {rij + 2} in column "{kolom}" ')
-                st.error(f'has an invalid time: "{i}"')
+                st.error(f'Row {rij + 2} in column "{kolom}" has an invalid time: "{i}"')
 
         for uur in uren:
             if uur < 0 or uur > 23:
