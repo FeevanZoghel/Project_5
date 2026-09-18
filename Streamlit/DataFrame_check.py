@@ -3,37 +3,6 @@ import streamlit as st
 
 df = pd.read_excel('Bus_Plan_Cleaned.xlsx')
 
-
-def check_columns(df):
-    """
-    
-    Checken of de kolommen uit de gegeven dataset correct zijn
-
-    Hij checkt per kolom of die data mist / of er spelfouten in de kolomnamen zitten.
-
-    En print dan ook waar de fout zit
-
-
-    """
-    fout = False
-
-    columns = df.columns.tolist()
-    good_columns = ['start location', 'end location', 'start time', 'end time', 'activity', 'line', 'energy consumption', 'bus']
-
-    if len(columns) != len(good_columns):
-        st.error("The number of columns is incorrect")
-        fout = True
-
-    else:
-        for i in range(len(columns)):
-            if columns[i] != good_columns[i]:
-                st.error(f'Column "{columns[i]}" is wrong. It should be "{good_columns[i]}".')
-                fout = True
-
-    if fout == False:
-        return True
-
-
 def only_check_columns(df):
     '''
     
@@ -56,9 +25,7 @@ def only_check_columns(df):
     if fout == False:
         return True
 
-
-
-def only_times_check(df):    
+def only_times_check(df):
     '''
 
     Checkt per rij of er een foutieve tijd zit
@@ -123,8 +90,6 @@ def only_times_check(df):
             return False
         else:
             return True
-
-
 
 def only_energy_check(df):
     '''
@@ -205,7 +170,6 @@ def times_check(df):
         else:
             return True
 
-
 def energy_check(df):
     fout = False
 
@@ -226,6 +190,35 @@ def energy_check(df):
                 )
                 fout = True
                 return False
+
+    if fout == False:
+        return True
+
+def check_columns(df):
+    """
+    
+    Checken of de kolommen uit de gegeven dataset correct zijn
+
+    Hij checkt per kolom of die data mist / of er spelfouten in de kolomnamen zitten.
+
+    En print dan ook waar de fout zit
+
+
+    """
+    fout = False
+
+    columns = df.columns.tolist()
+    good_columns = ['start location', 'end location', 'start time', 'end time', 'activity', 'line', 'energy consumption', 'bus']
+
+    if len(columns) != len(good_columns):
+        st.error("The number of columns is incorrect")
+        fout = True
+
+    else:
+        for i in range(len(columns)):
+            if columns[i] != good_columns[i]:
+                st.error(f'Column "{columns[i]}" is wrong. It should be "{good_columns[i]}".')
+                fout = True
 
     if fout == False:
         return True
