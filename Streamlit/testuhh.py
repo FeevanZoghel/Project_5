@@ -20,15 +20,16 @@ def check_columns(df):
     columns = df.columns.tolist()
     good_columns = ['start location', 'end location', 'start time', 'end time', 'activity', 'line', 'energy consumption', 'bus']
 
-    for i in columns:
-        if i not in good_columns:
-            st.error(f'The name of column "{i}" is wrong')
-            fout = True
+    if len(columns) != len(good_columns):
+        st.error("The number of columns is incorrect")
+        fout = True
 
-    for i in good_columns:
-        if i not in columns:
-            st.error(f'The columns called "{i}" is missing')
-            fout = True
+    else:
+        for i in range(len(columns)):
+            if columns[i] != good_columns[i]:
+                st.error(f'Column "{columns[i]}" is wrong. ')
+                st.error(f'It should be "{good_columns[i]}".')
+                fout = True
 
     if fout == False:
         st.success('all columns are correct')
@@ -99,7 +100,8 @@ def tijden_check(df):
 
             except:
                 fout = True
-                st.error(f'Row {rij + 2} in column "{kolom}" 'f'has an invalid time: "{i}"')
+                st.error(f'Row {rij + 2} in column "{kolom}" ')
+                st.error(f'has an invalid time: "{i}"')
 
         for uur in uren:
             if uur < 0 or uur > 23:
