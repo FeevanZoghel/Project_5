@@ -6,5 +6,6 @@ showWidgetBorder=true
 
 [theme.sidebar]
 backgroundColor="#8BBB92"
-secondaryBackgroundColor="#ffffff"
+secondaryBackgroundColor="#12544F"
+textColor="#fbfbfb"
 showWidgetBorder=true
