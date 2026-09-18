@@ -3,6 +3,7 @@ import pandas as pd
 
 from testuhh import check_columns
 from testuhh import only_check_columns
+from testuhh import tijden_check
 
 st.title("Mijn app")
 
@@ -61,11 +62,14 @@ elif keuze == "Data":
         if st.button('Click here for details'):
             check_columns(df)
 
+        tijden_check(df)
+        
         st.subheader("Ingelezen planning")
-        st.dataframe(df.head())
+        st.dataframe(df.head(10))
 
         if st.button("Check planning"):
             st.write("Planning wordt gecontroleerd...")
+
 
 elif keuze == "Resultaten":
     st.header("Resultaten")
