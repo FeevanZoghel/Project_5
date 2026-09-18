@@ -116,6 +116,18 @@ def only_energy_check(df):
     if fout == False:
         return True
 
+def only_start_end_check(df):
+
+    for rij, row in df.iterrows():
+
+        start = str(row['start time'])
+        einde = str(row['end time'])
+
+        if einde < start:
+            return False
+
+    return True
+
 def times_check(df):
     kolommen = ['start time', 'end time']
     fout = False
@@ -213,3 +225,24 @@ def check_columns(df):
 
     if fout == False:
         return True
+
+def start_end_check(df):
+
+    fout = False
+
+    for rij, row in df.iterrows():
+
+        start = str(row['start time'])
+        einde = str(row['end time'])
+
+        if einde < start:
+            st.error(
+                f'Row {rij + 2}: end time "{einde}" '
+                f'is before start time "{start}"'
+            )
+            fout = True
+
+    if fout == False:
+        return True
+    else:
+        return False
