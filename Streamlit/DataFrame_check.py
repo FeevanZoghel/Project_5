@@ -217,4 +217,3 @@ def check_columns(df):
 
     if fout == False:
         return True
-
