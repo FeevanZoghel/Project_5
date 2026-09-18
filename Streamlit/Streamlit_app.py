@@ -69,6 +69,7 @@ elif keuze == "Data":
         if kolommen_correct == True and energy_correct == True and tijden_correct == True:
             st.success('De data is compleet')
         else:
+            st.error('Data is incorrect')
             if st.button('Click here for details'):
                 check_columns(df)
                 times_check(df)
