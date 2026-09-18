@@ -6,7 +6,7 @@ import math as m
 import scipy.stats as sp
 from datetime import datetime as dt
 
-bus_plan = pd.read_excel('Bus Planning.xlsx')
+bus_plan = pd.read_excel('Bus_Planning.xlsx')
 
 # Stap 1: opsporen van onnauwkeurigheden in data, behalve voor kolommen 'start time', 'end time' en 'energy consumption'
 
@@ -71,11 +71,33 @@ filtered123 = bus_plan[
     (bus_plan['start location'] == 'ehvbst') & 
     (bus_plan['end location'] == 'ehvgar')] # Alles samenvoegen tot een gehele filterwijziging
 
-print(filtered123) # Resultaten filter overzichtelijk maken
-bus_plan.loc[28, 'energy consumption'] = 1.98 # Waarde van -157.5 energieconsumptie-eenheden aangepast tot + 1.98, uitgaande van gebruikt filter 'filter123'
-print(bus_plan.head(30)) # Controleren of wijziging succesvol is verlopen; ja.
+(filtered123) # Resultaten filter overzichtelijk maken
+bus_plan.loc[28, 'energy consumption'] = 1.98 # Waarde van -157.5 energieconsumptie-eenheden aangepast tot + 1.98, uitgaande van gebruikt filter 'filter123'.
+(bus_plan.head(30)) # Controleren of wijziging succesvol is verlopen; ja.
 
 # Stap 4: controleren of er geen uitschieters in ritten zitten: zelf beoordeeld dat er geen verdere check hiervoor nodig is.
 
-# Stap 5: df omzetten in Excel-bestand
+# Stap 5: controleren of er geen negatieve getallen staan bij 'material trips', 'service trips' of 'idle trips'
+filtered45 = bus_plan[
+    (bus_plan['activity'] == 'charging') &
+    (bus_plan['start location'] == 'ehvgar') & 
+    (bus_plan['end location'] == 'ehvgar')] # Alles samenvoegen tot een gehele filterwijziging
+print(filtered45)
+
+# Berekening:
+# Regel 29: 15:16 - 14:55 = 0:21 uur.
+# Regel 49: 21:32 - 21:04 = 0:28 uur 
+# Laadsnelheid = 210 / 28 min. = 7.5 energie-eenheden per uur. Deze r.c. geldt voor alle rijen.
+# Regel 29: 21 min. * 7.5 = -157.5 energie-eenheden komt er als SOC bij.
+
+# Stap 6: controleren of er geen positieve getallen staan bij 'charging'
+bus_plan.loc[29, 'energy consumption'] = -157.5 # Waarde van +1.98 energieconsumptie-eenheden aangepast tot -157.5, uitgaande van gebruikt filter 'filter45'.
+(bus_plan.head(30)) # Controleren of wijziging succesvol is verlopen; ja.
+
+filtered6 = bus_plan[
+    (bus_plan['activity'] != 'charging') &
+    (bus_plan['energy consumption'] <= 0)] # Alles samenvoegen tot een gehele filterwijziging
+(filtered6) # Er zijn geen trips (zonder opladen) waarbij volgens het dataframe de batterij wordt opgeladen. Hiermee is alles gecheckt.
+
+# Stap 7: df omzetten in Excel-bestand
 bus_plan.to_excel('Bus_Plan_Cleaned.xlsx', index = False)
