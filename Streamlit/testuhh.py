@@ -72,15 +72,23 @@ def tijden_check(df):
         dubbele_tekens = []
         fout = False
 
-        for i in df[kolom]:
+        for rij, i in enumerate(df[kolom]):
             i = str(i)
 
-            uren.append(int(i[0:2]))
-            minuten.append(int(i[3:5]))
-            seconden.append(int(i[6:len(i)]))
+            try:
+                uren.append(int(i[0:2]))
+                minuten.append(int(i[3:5]))
+                seconden.append(int(i[6:8]))
 
-            if i[2] == ':' and i[5] == ':':
-                dubbele_tekens.append(':')
+                if i[2] == ':' and i[5] == ':':
+                    dubbele_tekens.append(':')
+
+            except:
+                fout = True
+                st.error(
+                    f'Row {rij + 2} in column "{kolom}" '
+                    f'has an invalid time: "{i}"'
+                )
 
         for uur in uren:
             if uur < 0 or uur > 23:
@@ -96,7 +104,6 @@ def tijden_check(df):
 
         if len(dubbele_tekens) != len(df[kolom]):
             fout = True
-
 
         if fout:
             st.error(f'One or more times in "{kolom}" contain inconsistencies')
