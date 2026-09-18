@@ -2,8 +2,9 @@
 backgroundColor="#90CAF9"
 secondaryBackgroundColor="#0D47A1"
 textColor="#fbfbfb"
+showWidgetBorder=true
 
 [theme.sidebar]
 backgroundColor="#8BBB92"
 secondaryBackgroundColor="#12544F"
-textColor="#fbfbfb"
+showWidgetBorder=true
