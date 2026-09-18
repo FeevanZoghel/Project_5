@@ -217,3 +217,17 @@ def check_columns(df):
 
     if fout == False:
         return True
+
+def check_all(df):
+        kolommen_correct = only_check_columns(df)
+        energy_correct = only_energy_check(df)
+        tijden_correct = only_times_check(df)
+
+        if kolommen_correct == True and energy_correct == True and tijden_correct == True:
+            st.success('De data is compleet')
+        else:
+            st.error('Data is incorrect')
+            if st.button('Click here for details'):
+                check_columns(df)
+                times_check(df)
+                energy_check(df)
