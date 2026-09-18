@@ -83,22 +83,19 @@ def tijden_check(df):
         for uur in uren:
             if uur < 0 or uur > 23:
                 fout = True
-                st.write(f'Row {i+1} in column {kolom} has a wrong time')
 
         for minuut in minuten:
             if minuut < 0 or minuut > 59:
                 fout = True
-                st.write(f'Row {i+1} in column {kolom} has a wrong time')
 
         for seconde in seconden:
             if seconde < 0 or seconde > 59:
                 fout = True
-                st.write(f'Row {i+1} in column {kolom} has a wrong time')
 
         if len(dubbele_tekens) != len(df[kolom]):
             fout = True
-            st.write(f'Row {i+1} in column {kolom} has a wrong time')
-            
+
+
         if fout:
             st.error(f'One or more times in "{kolom}" contain inconsistencies')
         else:
