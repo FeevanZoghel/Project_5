@@ -59,11 +59,12 @@ elif keuze == "Data":
         df = pd.read_excel(bestand)
 
         only_check_columns(df)
-        if st.button('Click here for details'):
-            check_columns(df)
+        if fout == True:
+            if st.button('Click here for details'):
+                check_columns(df)
 
         tijden_check(df)
-        
+
         st.subheader("Ingelezen planning")
         st.dataframe(df.head(10))
 
