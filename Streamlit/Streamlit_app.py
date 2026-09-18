@@ -82,9 +82,9 @@ elif keuze == "Gegevens (KPI)":
         df = pd.read_excel(bestand)
 
         check_all(df)
-    st.write('hier komen de berekeningen')
+        st.write('hier komen de berekeningen')
 
-    st.subheader('Energy consumption from busses:')
-    bus_energy_check(df)
+        st.subheader('Energy consumption from busses:')
+        bus_energy_check(df)
 
 
