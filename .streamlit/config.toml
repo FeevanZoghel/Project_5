@@ -1,11 +1,11 @@
 [theme]
-backgroundColor="#90CAF9"
-secondaryBackgroundColor="#0D47A1"
+backgroundColor="#8a8e95"
+secondaryBackgroundColor="#4a4d52"
 textColor="#fbfbfb"
 showWidgetBorder=false
 
 [theme.sidebar]
-backgroundColor="#8BBB92"
-secondaryBackgroundColor="#12544F"
+backgroundColor="#3e403e"
+secondaryBackgroundColor="#000000"
 textColor="#fbfbfb"
 showWidgetBorder=false
