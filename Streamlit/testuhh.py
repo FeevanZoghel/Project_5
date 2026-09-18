@@ -51,7 +51,7 @@ def only_check_columns(df):
             fout = True
 
     if fout == False:
-        st.succes('all columns are correct')
+        st.success('all columns are correct')
 
 
 
