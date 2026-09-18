@@ -62,7 +62,7 @@ elif keuze == "Data":
 
     if bestand is not None:
         df = pd.read_excel(bestand)
-
+    
         kolommen_correct = only_check_columns(df)
         energy_correct = only_energy_check(df)
         tijden_correct = only_times_check(df)
