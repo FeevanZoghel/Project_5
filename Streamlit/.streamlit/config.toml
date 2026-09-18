@@ -1,9 +1,9 @@
 [theme]
-base="light"
-backgroundColor="white"
-secondaryBackgroundColor="lavender"
-codeBackgroundColor="powderBlue"
+base="#ff00cc"
+backgroundColor="#90CAF9"
+secondaryBackgroundColor="#0D47A1"
+codeBackgroundColor="#ff0bd2"
 
 [theme.sidebar]
-backgroundColor="ghostWhite"
-secondaryBackgroundColor="lavender"
+backgroundColor="#8BBB92"
+secondaryBackgroundColor="#12544F"
