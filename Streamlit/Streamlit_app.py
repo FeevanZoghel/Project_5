@@ -5,6 +5,8 @@ from DataFrame_check import check_columns
 from DataFrame_check import only_check_columns
 from DataFrame_check import tijden_check
 
+st.sidebar.primaryColor('blue')
+
 st.title("Mijn app")
 
 st.sidebar.title("Menu")
