@@ -147,21 +147,21 @@ def times_check(df):
         for uur in uren:
             if uur < 0 or uur > 23:
                 fout = True
-                return False
+   
 
         for minuut in minuten:
             if minuut < 0 or minuut > 59:
                 fout = True
-                return False
+  
 
         for seconde in seconden:
             if seconde < 0 or seconde > 59:
                 fout = True
-                return False
+  
 
         if len(dubbele_tekens) != len(df[kolom]):
             fout = True
-            return False
+
 
         if fout:
             st.error(f'One or more times in "{kolom}" contain inconsistencies')
