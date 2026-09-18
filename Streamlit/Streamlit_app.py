@@ -5,17 +5,6 @@ from DataFrame_check import check_columns
 from DataFrame_check import only_check_columns
 from DataFrame_check import tijden_check
 
-st.markdown(
-    """
-    <style>
-    .stApp {
-        background-color: #00FF00;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 st.title("Mijn app")
 
 st.sidebar.title("Menu")
