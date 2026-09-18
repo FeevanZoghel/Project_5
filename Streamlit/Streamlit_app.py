@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 
 from testuhh import check_columns
+from testuhh import only_check_columns
 
 st.title("Mijn app")
 
@@ -56,7 +57,9 @@ elif keuze == "Data":
     if bestand is not None:
         df = pd.read_excel(bestand)
 
-        check_columns(df)
+        only_check_columns(df)
+        if st.button('Welke kolommen zijn fout?'):
+            check_columns(df)
 
         st.subheader("Ingelezen planning")
         st.dataframe(df.head())
