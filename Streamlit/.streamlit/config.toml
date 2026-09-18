@@ -1,6 +1,9 @@
 [theme]
-base = "dark"
-primaryColor = "#00cc03"
-backgroundColor = "#0E1117"
-secondaryBackgroundColor = "#ca7805"
-textColor = "#FFFFFF"
+base="light"
+backgroundColor="white"
+secondaryBackgroundColor="lavender"
+codeBackgroundColor="powderBlue"
+
+[theme.sidebar]
+backgroundColor="ghostWhite"
+secondaryBackgroundColor="lavender"
