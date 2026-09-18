@@ -58,7 +58,7 @@ def bus_energy_check(df):
         total_usage.append((bus,battery))
 
     st.error(f"Bus {empty_bus} doesn't have enough energy")
-    for bus in total_usage:
+    for bus, battery in total_usage:
         st.write(f'Bus number {bus} has a battery content of {battery:.2f} kWh, when finishes his routes') 
 
 
