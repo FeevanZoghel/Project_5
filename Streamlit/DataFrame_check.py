@@ -85,9 +85,9 @@ def only_times_check(df):
 
 
         if fout == False:
-            return False
-        else:
             return True
+        else:
+            return False
 
 def only_energy_check(df):
     '''
@@ -157,9 +157,9 @@ def times_check(df):
             fout = True
 
     if fout == False:
-        return False
-    else:
         return True
+    else:
+        return False
 
 def energy_check(df):
     fout = False
