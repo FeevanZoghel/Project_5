@@ -81,7 +81,7 @@ elif keuze == "Gegevens (KPI)":
         df = pd.read_excel(bestand)
 
         check_all(df)
-        keuze2 = st.sidebar.selectbox("What do you want to see?",
+        keuze2 = st.selectbox("What do you want to see?",
         ["Energy Consumption", "Een andere die ik nog niet heb bedacht"]
         )
 
