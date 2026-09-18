@@ -58,7 +58,7 @@ elif keuze == "Data":
         df = pd.read_excel(bestand)
 
         only_check_columns(df)
-        if st.button('Welke kolommen zijn fout?'):
+        if st.button('Click here for details'):
             check_columns(df)
 
         st.subheader("Ingelezen planning")
