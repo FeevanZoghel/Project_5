@@ -59,35 +59,47 @@ def only_check_columns(df):
 
 
 def tijden_check(df):
+
     kolommen = ['start time', 'end time']
 
     for kolom in kolommen:
+
+        uren = []
+        minuten = []
+        seconden = []
+        dubbele_tekens = []
         fout = False
 
-        for tijd in df[kolom]:
-            tijd = str(tijd)
+        for i in df[kolom]:
+            i = str(i)
 
-            try:
-                uren = int(tijd[0:2])
-                minuten = int(tijd[3:5])
-                seconden = int(tijd[6:8])
+            uren.append(int(i[0:2]))
+            minuten.append(int(i[3:5]))
+            seconden.append(int(i[6:len(i)]))
 
-                if uren < 0 or uren > 23:
-                    fout = True
+            if i[2] == ':' and i[5] == ':':
+                dubbele_tekens.append(':')
 
-                if minuten < 0 or minuten > 59:
-                    fout = True
-
-                if seconden < 0 or seconden > 59:
-                    fout = True
-
-                if tijd[2] != ':' or tijd[5] != ':':
-                    fout = True
-
-            except:
+        for uur in uren:
+            if uur < 0 or uur > 23:
                 fout = True
+                st.write(f'Row {i+1} in column {kolom} has a wrong time')
 
+        for minuut in minuten:
+            if minuut < 0 or minuut > 59:
+                fout = True
+                st.write(f'Row {i+1} in column {kolom} has a wrong time')
+
+        for seconde in seconden:
+            if seconde < 0 or seconde > 59:
+                fout = True
+                st.write(f'Row {i+1} in column {kolom} has a wrong time')
+
+        if len(dubbele_tekens) != len(df[kolom]):
+            fout = True
+            st.write(f'Row {i+1} in column {kolom} has a wrong time')
+            
         if fout:
-            st.error(f'Invalid values found in "{kolom}"')
+            st.error(f'One or more times in "{kolom}" contain inconsistencies')
         else:
-            st.success(f'All values in "{kolom}" are valid')
+            st.success(f'All times in "{kolom}" are correct')
