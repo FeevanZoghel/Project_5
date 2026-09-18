@@ -60,14 +60,13 @@ elif keuze == "Data":
     if bestand is not None:
         df = pd.read_excel(bestand)
 
+        tijden_check(df)
+        energy_check(df)
         kolommen_correct = only_check_columns(df)
 
         if kolommen_correct == False:
             if st.button('Click here for details'):
                 check_columns(df)
-
-            tijden_check(df)
-            energy_check(df)
 
             st.subheader("Ingelezen planning")
             st.dataframe(df.head(10))
