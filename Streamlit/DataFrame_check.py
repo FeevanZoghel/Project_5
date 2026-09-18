@@ -140,18 +140,22 @@ def times_check(df):
 
             except:
                 fout = True
+                st.error(f'Row {rij + 2} in column "{kolom}" has an invalid time: "{i}"')                
 
         for uur in uren:
             if uur < 0 or uur > 23:
                 fout = True
+                st.error(f'Column "{kolom}" contains an invalid minute: "{minuut}"')
 
         for minuut in minuten:
             if minuut < 0 or minuut > 59:
                 fout = True
+                st.error(f'Column "{kolom}" contains an invalid minute: "{minuut}"')
 
         for seconde in seconden:
             if seconde < 0 or seconde > 59:
                 fout = True
+                st.error(f'Column "{kolom}" contains an invalid minute: "{minuut}"')
 
         if len(dubbele_tekens) != len(df[kolom]):
             fout = True
