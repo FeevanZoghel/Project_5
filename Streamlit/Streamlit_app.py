@@ -12,12 +12,14 @@ from DataFrame_check import only_times_check
 from DataFrame_check import only_energy_check
 from DataFrame_check import check_all
 
+from Berekeningen import bus_energy_check
+
 
 st.sidebar.title("Menu")
 
 keuze = st.sidebar.selectbox(
     "Kies een pagina",
-    ["Home", "Data", "Resultaten"]
+    ["Home", "Data_check", "Gegevens (KPI)"]
 )
 
 if keuze == "Home":
@@ -73,6 +75,16 @@ elif keuze == "Data":
             st.write("Planning wordt gecontroleerd...")
 
 
-elif keuze == "Resultaten":
-    st.header("Resultaten")
-    st.write("Hier komen de resultaten.")
+elif keuze == "Gegevens (KPI)":
+    bestand = st.file_uploader("Upload een busplanning", type=["xlsx"])
+
+    if bestand is not None:
+        df = pd.read_excel(bestand)
+
+        check_all(df)
+    st.write('hier komen de berekeningen')
+
+    st.subheader('Energy consumption from busses')
+    bus_energy_check(df)
+
+
