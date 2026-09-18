@@ -50,7 +50,6 @@ def only_check_columns(df):
 
     for i in columns:
         if i not in good_columns:
-            st.error('There is an error found in column names')
             fout = True
             return False
 
@@ -59,7 +58,7 @@ def only_check_columns(df):
 
 
 
-def times_check(df):    
+def only_times_check(df):    
     '''
 
     Checkt per rij of er een foutieve tijd zit
@@ -121,14 +120,13 @@ def times_check(df):
             return False
 
         if fout:
-            st.error(f'One or more times in "{kolom}" contain inconsistencies')
             return False
         else:
             return True
 
 
 
-def energy_check(df):
+def only_energy_check(df):
     '''
     Checkt rij voor rij:
         Als de bus aan het opladen is moet/mag de energy consumption negatief zijn.
@@ -138,6 +136,77 @@ def energy_check(df):
         Hij gaat rij voor rij door de DataFrame heen
     '''
 
+    fout = False
+
+    for rij, row in df.iterrows():
+
+        if row['activity'] == 'charging':
+            if row['energy consumption'] >= 0:
+                fout = True
+                return False
+
+        else:
+            if row['energy consumption'] <= 0:
+                fout = True
+                return False
+
+    if fout == False:
+        return True
+
+def times_check(df):
+    kolommen = ['start time', 'end time']
+    
+    for kolom in kolommen:
+
+        uren = []
+        minuten = []
+        seconden = []
+        dubbele_tekens = []
+        fout = False
+
+        for rij, i in enumerate(df[kolom]):
+            i = str(i)
+
+            try:
+                uren.append(int(i[0:2]))
+                minuten.append(int(i[3:5]))
+                seconden.append(int(i[6:8]))
+
+                if i[2] == ':' and i[5] == ':':
+                    dubbele_tekens.append(':')
+
+            except:
+                fout = True
+                st.error(f'Row {rij + 2} in column "{kolom}" ')
+                st.error(f'has an invalid time: "{i}"')
+
+        for uur in uren:
+            if uur < 0 or uur > 23:
+                fout = True
+                return False
+
+        for minuut in minuten:
+            if minuut < 0 or minuut > 59:
+                fout = True
+                return False
+
+        for seconde in seconden:
+            if seconde < 0 or seconde > 59:
+                fout = True
+                return False
+
+        if len(dubbele_tekens) != len(df[kolom]):
+            fout = True
+            return False
+
+        if fout:
+            st.error(f'One or more times in "{kolom}" contain inconsistencies')
+            return False
+        else:
+            return True
+
+
+def energy_check(df):
     fout = False
 
     for rij, row in df.iterrows():
