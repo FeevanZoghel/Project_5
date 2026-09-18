@@ -32,6 +32,7 @@ line                = bp['line']
 
 bus_number          = bp['bus'].unique()
 total_usage         = []
+planning_sor        = bp.sort_values(['bus','start time']) #sorteerd per bus, per begintijd op chronologische volgorde
 
 
 
@@ -44,7 +45,7 @@ def bus_energy_check(df):
     start_battery       = 300 # start waarde van 85% (gaan uit van het minimum)
     empty_bus           = []
     planning_sor        = df.sort_values(['bus','start time']) #sorteerd per bus, per begintijd op chronologische volgorde
-    
+
     # kijkt per bus of het niet meer verbruikt dan mag (geen negatieve energie of lager dan 10 %) & het kijkt hoeveel energie een bus heeft als het klaar is met zijn routes
     for bus, bus_data in planning_sor.groupby('bus'): 
         battery = start_battery
@@ -190,6 +191,6 @@ avg_waus = tot_waiting_time_min/aantal_ingezette_bussen # minuten
 
 print(f'Total waiting time in minutes: {tot_waiting_time_min:.2f}')
 print(f'Total waiting time in hours: {tot_waiting_time_hours:.2f}')
-print(f'Average waiting time per bus (minutes): {avg_waiting_time_per_bus:.2f}')
+#print(f'Average waiting time per bus (minutes): {avg_waiting_time_per_bus:.2f}')
 
 # Bus 85% vol is 300 kwh
