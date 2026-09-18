@@ -61,6 +61,20 @@ def only_check_columns(df):
 
 
 def tijden_check(df):
+    '''
+
+    Checkt per rij of er een foutieve tijd zit
+    Tijden moeten format HH:MM:SS hebben
+
+    Gebruik gemaakt van try, except.    
+        Dat is eigenlijk een beetje if-statements, maar ipv dat die een foutmelding geeft werkt dit wel
+        python probeert de code uit te voeren, en als ie een foutmelding geeft doet die de 'except'
+
+    Enumerate geeft zowel de waarde als de rij.
+
+    De definitie print uit in welke rij en kolom de foutieve tijd zit.
+
+    '''
 
     kolommen = ['start time', 'end time']
 
@@ -85,10 +99,7 @@ def tijden_check(df):
 
             except:
                 fout = True
-                st.error(
-                    f'Row {rij + 2} in column "{kolom}" '
-                    f'has an invalid time: "{i}"'
-                )
+                st.error(f'Row {rij + 2} in column "{kolom}" 'f'has an invalid time: "{i}"')
 
         for uur in uren:
             if uur < 0 or uur > 23:
