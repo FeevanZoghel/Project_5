@@ -5,9 +5,12 @@ import streamlit as st
 import pandas as pd
 
 from DataFrame_check import check_columns
-from DataFrame_check import only_check_columns
 from DataFrame_check import times_check
 from DataFrame_check import energy_check
+from DataFrame_check import only_check_columns
+from DataFrame_check import only_times_check
+from DataFrame_check import only_energy_check
+
 
 st.sidebar.title("Menu")
 
@@ -63,8 +66,8 @@ elif keuze == "Data":
         times_check(df)
         energy_check(df)
         kolommen_correct = only_check_columns(df)
-        energy_correct = energy_check(df)
-        tijden_correct = times_check(df)
+        energy_correct = only_energy_check(df)
+        tijden_correct = only_times_check(df)
 
         if kolommen_correct == True and energy_correct == True and tijden_correct == True:
             st.success('De data is compleet')
