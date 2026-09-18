@@ -5,7 +5,7 @@ from DataFrame_check import check_columns
 from DataFrame_check import only_check_columns
 from DataFrame_check import tijden_check
 
-st.theme.sidebar.primaryColor('blue')
+theme.sidebar.primaryColor('blue')
 
 st.title("Mijn app")
 
