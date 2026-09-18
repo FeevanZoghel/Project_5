@@ -58,19 +58,19 @@ elif keuze == "Data":
     if bestand is not None:
         df = pd.read_excel(bestand)
 
-    kolommen_correct = only_check_columns(df)
+        kolommen_correct = only_check_columns(df)
 
-    if kolommen_correct == False:
-        if st.button('Click here for details'):
-            check_columns(df)
+        if kolommen_correct == False:
+            if st.button('Click here for details'):
+                check_columns(df)
 
-        tijden_check(df)
+            tijden_check(df)
 
-        st.subheader("Ingelezen planning")
-        st.dataframe(df.head(10))
+            st.subheader("Ingelezen planning")
+            st.dataframe(df.head(10))
 
-        if st.button("Check planning"):
-            st.write("Planning wordt gecontroleerd...")
+            if st.button("Check planning"):
+                st.write("Planning wordt gecontroleerd...")
 
 
 elif keuze == "Resultaten":
