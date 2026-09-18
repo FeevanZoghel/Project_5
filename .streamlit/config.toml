@@ -1,5 +1,7 @@
 [theme]
 base = "dark"
+borderColor="mediumSlateBlue"
+showWidgetBorder = true
 
 [theme.sidebar]
 showWidgetBorder = true
