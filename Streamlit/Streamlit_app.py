@@ -1,9 +1,6 @@
 #URL:
 #https://project5-jmfoec4ruxwpczdw5mf76w.streamlit.app/
 
-import streamlit as st
-import pandas as pd
-
 from DataFrame_check import check_columns
 from DataFrame_check import times_check
 from DataFrame_check import energy_check
@@ -14,6 +11,8 @@ from DataFrame_check import check_all
 
 from Berekeningen import bus_energy_check
 
+import streamlit as st
+import pandas as pd
 
 st.sidebar.title("Menu")
 
