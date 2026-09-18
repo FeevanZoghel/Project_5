@@ -58,10 +58,11 @@ elif keuze == "Data":
     if bestand is not None:
         df = pd.read_excel(bestand)
 
-        only_check_columns(df)
-        if only_check_columns(df) == False:
-            if st.button('Click here for details'):
-                check_columns(df)
+    kolommen_correct = only_check_columns(df)
+
+    if kolommen_correct == False:
+        if st.button('Click here for details'):
+            check_columns(df)
 
         tijden_check(df)
 
