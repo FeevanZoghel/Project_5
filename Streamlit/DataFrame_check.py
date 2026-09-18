@@ -31,7 +31,7 @@ def check_columns(df):
                 fout = True
 
     if fout == False:
-        st.success('all columns are correct')
+        return True
 
 
 def only_check_columns(df):
@@ -55,12 +55,11 @@ def only_check_columns(df):
             return False
 
     if fout == False:
-        st.success('all columns are correct')
         return True
 
 
 
-def tijden_check(df):    
+def times_check(df):    
     '''
 
     Checkt per rij of er een foutieve tijd zit
@@ -105,22 +104,27 @@ def tijden_check(df):
         for uur in uren:
             if uur < 0 or uur > 23:
                 fout = True
+                return False
 
         for minuut in minuten:
             if minuut < 0 or minuut > 59:
                 fout = True
+                return False
 
         for seconde in seconden:
             if seconde < 0 or seconde > 59:
                 fout = True
+                return False
 
         if len(dubbele_tekens) != len(df[kolom]):
             fout = True
+            return False
 
         if fout:
             st.error(f'One or more times in "{kolom}" contain inconsistencies')
+            return False
         else:
-            st.success(f'All times in "{kolom}" are correct')
+            return True
 
 
 
@@ -129,7 +133,7 @@ def energy_check(df):
     Checkt rij voor rij:
         Als de bus aan het opladen is moet/mag de energy consumption negatief zijn.
         Als de bus niet aan het opladen is moet de energy consumption positief zijn.
-        
+
     Rij, row df.iterrows()
         Hij gaat rij voor rij door de DataFrame heen
     '''
@@ -144,6 +148,7 @@ def energy_check(df):
                     f'Row {rij + 2}: charging has an incorrect energy consumption'
                 )
                 fout = True
+                return False
 
         else:
             if row['energy consumption'] <= 0:
@@ -151,6 +156,7 @@ def energy_check(df):
                     f'Row {rij + 2}: {row["activity"]} has an incorrect energy consumption'
                 )
                 fout = True
+                return False
 
     if fout == False:
-        st.success('All energy consumption values are correct')
+        return True
