@@ -50,7 +50,7 @@ def only_check_columns(df):
 
     for i in columns:
         if i not in good_columns:
-            st.write('There is an error found in column names')
+            st.error('There is an error found in column names')
             fout = True
             return False
 
