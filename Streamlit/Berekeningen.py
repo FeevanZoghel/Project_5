@@ -47,6 +47,7 @@ def bus_energy_check(df):
     start_battery       = 300 # start waarde van 85% (gaan uit van het minimum)
     empty_bus           = []
     bus_1               = []
+    empty               = []
     planning_sor        = df.sort_values(['bus','start time']) #sorteerd per bus, per begintijd op chronologische volgorde
 
     # kijkt per bus of het niet meer verbruikt dan mag (geen negatieve energie of lager dan 10 %) & het kijkt hoeveel energie een bus heeft als het klaar is met zijn routes
@@ -61,12 +62,19 @@ def bus_energy_check(df):
                 empty_bus.append(bus)
         total_usage.append((bus,battery))
 
+        if bus in empty_bus:
+            empty.append(True)
+        else:
+            empty.append(False)
+
+
+
 #    st.error(f"Bus {empty_bus} doesn't have enough energy")
 #    for bus, battery in total_usage:
 #        st.write(f'Bus number {bus} has a battery content of {battery:.2f} kWh, when finishes his routes')
 
     df1 = list_to_data(bus_1, ['Bus_number'])
-    df2 = list_to_data(empty_bus, ['empty_bus'])
+    df2 = list_to_data(empty, ['Empty_busses'])
 
     df = pd.concat([df1, df2], axis = 1)
     st.dataframe(df)
