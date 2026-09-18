@@ -11,6 +11,8 @@ def check_columns(df):
 
     Hij checkt per kolom of die data mist / of er spelfouten in de kolomnamen zitten.
 
+    En print dan ook waar de fout zit
+
 
     """
     fout = False
@@ -36,7 +38,8 @@ def only_check_columns(df):
     '''
     
     alleen kolommen checken
-    returned alleen of kolommen fout zijn? of correct.
+    return:
+         alleen of kolommen fout zijn? of correct.
     
     '''
 
@@ -51,7 +54,40 @@ def only_check_columns(df):
             fout = True
 
     if fout == False:
-        st.success('all columns are correct')
+        st.successs('all columns are correct')
 
 
 
+def tijden_check(df):
+    kolommen = ['start time', 'end time']
+
+    for kolom in kolommen:
+        fout = False
+
+        for tijd in df[kolom]:
+            tijd = str(tijd)
+
+            try:
+                uren = int(tijd[0:2])
+                minuten = int(tijd[3:5])
+                seconden = int(tijd[6:8])
+
+                if uren < 0 or uren > 23:
+                    fout = True
+
+                if minuten < 0 or minuten > 59:
+                    fout = True
+
+                if seconden < 0 or seconden > 59:
+                    fout = True
+
+                if tijd[2] != ':' or tijd[5] != ':':
+                    fout = True
+
+            except:
+                fout = True
+
+        if fout:
+            st.error(f'Invalid values found in "{kolom}"')
+        else:
+            st.success(f'All values in "{kolom}" are valid')
