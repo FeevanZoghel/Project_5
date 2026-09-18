@@ -7,8 +7,7 @@ import pandas as pd
 from DataFrame_check import check_columns
 from DataFrame_check import only_check_columns
 from DataFrame_check import tijden_check
-
-st.title("Mijn app")
+from DataFrame_check import energy_check
 
 st.sidebar.title("Menu")
 
@@ -68,6 +67,7 @@ elif keuze == "Data":
                 check_columns(df)
 
             tijden_check(df)
+            energy_check(df)
 
             st.subheader("Ingelezen planning")
             st.dataframe(df.head(10))
