@@ -52,9 +52,11 @@ def only_check_columns(df):
         if i not in good_columns:
             st.error(f'The column {i} is misspelled or missing')
             fout = True
+            return False
 
     if fout == False:
         st.success('all columns are correct')
+        return True
 
 
 
