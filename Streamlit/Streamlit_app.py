@@ -5,7 +5,16 @@ from DataFrame_check import check_columns
 from DataFrame_check import only_check_columns
 from DataFrame_check import tijden_check
 
-theme.sidebar.primaryColor('blue')
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #1E1E1E;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 st.title("Mijn app")
 
