@@ -72,14 +72,19 @@ def bus_energy_check(df):
         else:
             empty.append(False)
 
-    total_consumption       = 0
-    total_consumption_bus   = []
-    
+    total_consumption = 0
+    total_consumption_bus = []
+
     for bus, bus_data in planning_sor.groupby('bus'):
+
+        consumption_bus = 0
+
         for energy in bus_data['energy consumption']:
-            if energy >0:
-                total_consumption_bus += energy
-        total_consumption_bus.append(total_consumption)
+            if energy > 0:
+                consumption_bus += energy
+                total_consumption += energy
+
+        total_consumption_bus.append(consumption_bus)
 
 
 #    st.error(f"Bus {empty_bus} doesn't have enough energy")
