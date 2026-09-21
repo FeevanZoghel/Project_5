@@ -55,7 +55,7 @@ if keuze == "Home":
     st.dataframe(df.head(2))
 
 
-elif keuze == "Data":
+elif keuze == "Data_check":
     st.header("Data")
     st.write("Hier komt de data.")
     st.title("Transdev Planning Checker")
@@ -70,8 +70,7 @@ elif keuze == "Data":
         st.subheader("Ingelezen planning")
         st.dataframe(df.head(10))
 
-        if st.button("Check planning"):
-            st.write("Planning wordt gecontroleerd...")
+
 
 
 elif keuze == "Gegevens (KPI)":
