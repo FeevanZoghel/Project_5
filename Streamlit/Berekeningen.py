@@ -79,7 +79,7 @@ def bus_energy_check(df):
 #        st.write(f'Bus number {bus} has a battery content of {battery:.2f} kWh, when finishes his routes')
 
     df1 = list_to_data(bus_1, ['Bus_number'])
-    df2 = list_to_data(empty, ['Empty_busses'])
+    df2 = list_to_data(empty, ['If bus is empty'])
     df3 = list_to_data(battery_end, ['Final_battery'])
 
     df = pd.concat([df1, df2, df3], axis=1)
