@@ -4,7 +4,7 @@
 from DataFrame_check import check_all
 
 from Berekeningen import bus_energy_check
-from Berekeningen import total_energy_usage
+
 
 import streamlit as st
 import pandas as pd
@@ -83,6 +83,5 @@ elif keuze == "Gegevens (KPI)":
             st.subheader('Energy consumption from busses:')
             bus_energy_check(df)
 
-            total_energy_usage(df)
 
 
