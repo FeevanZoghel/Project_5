@@ -72,6 +72,14 @@ def bus_energy_check(df):
         else:
             empty.append(False)
 
+    total_consumption       = 0
+    total_consumption_bus   = 0
+    
+    for bus, bus_data in planning_sor.groupby('bus'): 
+        for energy in bus_data['energy consumption']:
+            if energy >0:
+                total_consumption_bus += energy
+        total_consumption+=total_consumption_bus
 
 
 #    st.error(f"Bus {empty_bus} doesn't have enough energy")
@@ -81,25 +89,16 @@ def bus_energy_check(df):
     df1 = list_to_data(bus_1, ['Bus_number'])
     df2 = list_to_data(empty, ['If bus is empty'])
     df3 = list_to_data(battery_end, ['Final_battery'])
+    df4 = list_to_data(total_consumption_bus, ['Total battery usage'])
 
-    df = pd.concat([df1, df2, df3], axis=1)
+    df = pd.concat([df1, df2, df3, df4], axis=1)
 
     st.dataframe(df)
 
+    st.write(f'All busses used a total of {total_consumption:.2f} kWh')
 
-def total_energy_usage(df):
-    #berekend het total verbruik per bus, en het algehele totale verbruik van alle bussen bij elkaar.
-    total_consumption       = 0
-    total_consumption_bus   = 0
-    planning_sor        = df.sort_values(['bus','start time']) #sorteerd per bus, per begintijd op chronologische volgorde
-    
-    for bus, bus_data in planning_sor.groupby('bus'): 
-        for energy in bus_data['energy consumption']:
-            if energy >0:
-                total_consumption_bus += energy
-        total_consumption+=total_consumption_bus
-        st.write(f'Bus {bus} used {total_consumption_bus:.2f} kWh')
-    st.write(f'All busses uses a total of {total_consumption:.2f} kWh')
+
+
 
 # kijkt per bus of het geen overlappende trips heeft
 planning_sor1       = bp.sort_values(['bus','start time']).reset_index(drop =True) #sorteerd per bus, per begintijd op chronologische volgorde
