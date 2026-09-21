@@ -82,6 +82,3 @@ elif keuze == "Gegevens (KPI)":
         if keuze2 == "Energy Consumption":
             st.subheader('Energy consumption from busses:')
             bus_energy_check(df)
-
-
-
