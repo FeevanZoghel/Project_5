@@ -1,12 +1,6 @@
 #URL:
 #https://project5-jmfoec4ruxwpczdw5mf76w.streamlit.app/
 
-from DataFrame_check import check_columns
-from DataFrame_check import times_check
-from DataFrame_check import energy_check
-from DataFrame_check import only_check_columns
-from DataFrame_check import only_times_check
-from DataFrame_check import only_energy_check
 from DataFrame_check import check_all
 
 from Berekeningen import bus_energy_check
