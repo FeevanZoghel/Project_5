@@ -75,7 +75,7 @@ def bus_energy_check(df):
     total_consumption       = 0
     total_consumption_bus   = []
     
-    for bus, bus_data in planning_sor.groupby('bus'): 
+    for bus, bus_data in planning_sor.groupby('bus'):
         for energy in bus_data['energy consumption']:
             if energy >0:
                 total_consumption_bus += energy
