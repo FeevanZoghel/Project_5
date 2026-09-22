@@ -297,6 +297,8 @@ bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
 bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
 bp['idle_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
 
+planning_sor = bp.sort_values(['bus', 'start time'])
+
 quick_recharge_speed = 450 / 60  # oplaadsnelheid tot 90% van battery capacity
 slow_recharge_speed = 60 / 60    # oplaadsnelheid van de laatste 10% van de battery capacity
 
@@ -346,3 +348,8 @@ else:
 
 for bus_id, final_batt in total_usage:
     print(f'Bus {bus_id} has final battery level: {final_batt:.2f} kWh')
+    if final_batt>300:
+        print(f'Bus {bus_id} has a final battery level that is not possible (above 300 kWh). \nThe battery level is: {final_batt:.2f} kWh')
+    else:
+        pass
+
