@@ -356,3 +356,15 @@ for bus_id, final_batt in total_usage:
     else:
         pass
 
+# Checken of alle verplichte ritten in de code staan
+number_of_required_trips = len(tt)
+
+service_trips_in_planning = bp[bp['activity'] == 'service trip']
+num_planned_trips = len(service_trips_in_planning)
+
+if number_of_required_trips == num_planned_trips:
+    print('All required trips are included in the schedule.')
+else:
+    numb_missing_trips = number_of_required_trips - num_planned_trips
+    print(f'There are {numb_missing_trips} trips missing in the schedule.')
+
