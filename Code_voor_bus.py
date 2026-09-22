@@ -275,11 +275,10 @@ print(f'Total waiting time in minutes: {tot_waiting_time_min:.2f}')
 print(f'Total waiting time in hours: {tot_waiting_time_hours:.2f}')
 print(f'Average waiting time per bus (minutes): {avg_waiting_time_per_bus:.2f}')
 
-# Bus 85% vol is 300 kwh
-
 
 # Minimale oplaadtijd van 15 minuten
-# Oplaadtijd (oplaadduur) eerst berekenen
+# Oplaadtijd (oplaadduur) eerst berekenen 
+# Dan checken of de not_valid_charging_trips 0 is. Dit moet namelijk 0 zijn.
 
 bp['idle_duration_min'] = (bp['end_dt']-bp['start_dt']).dt.total_seconds()/60
 valid_charging_trips = bp[(bp['activity']=='idle')&(bp['idle_duration_min']>=15)]
@@ -290,61 +289,55 @@ print(f'Aantal keer opladen met een oplaadduur van 15 minuten of langer: {len(va
 print(f'Aantal keer opladen met een oplaadduur van maximaal 15 minuten: {len(not_valid_charging_trips)}')
 print(f'Totale geldige oplaadttijd: {valid_charging_time:.0f} minuten')
 
-# Laatste 10% opladen kost meer energie
-# Laadsnelheden per minuut
+# Charging constraint: checken oplaadsnelheden
+
+# Relevante variabelen, namelijk begin opladen, eind opladen en oplaadduur
+bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
+bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
+bp['idle_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
+
 quick_recharge_speed = 450 / 60  # oplaadsnelheid tot 90% van battery capacity
 slow_recharge_speed = 60 / 60    # oplaadsnelheid van de laatste 10% van de battery capacity
 
-kwh_list = []
+# Energie opladen en energieverbruik voor de bussen
+for bus, bus_data in planning_sor.groupby('bus'): 
+    battery = start_battery
 
-# Alle idles van minstens van 15 minuten selecteren
-for index, row in bp.iterrows():
-    if row['activity'] == 'idle' and row['idle_duration_min'] >= 15:
-        minutes = row['idle_duration_min']
-        
-        # Maximale opladen tot 90%
-        quick_capacity = 270  
-        time_needed_quick = quick_capacity / quick_recharge_speed  
-        
-        # 3 situaties: volledig in sneloplaadfase, deels in sneloplaadfase en alleen in langzaamoplaadfase
-        if minutes <= time_needed_quick:
-            # Volledig in sneloplaadfase oplaadfase
-            charged = minutes * quick_recharge_speed
-        else:
-            # Deels in sneloplaadfase en deels in langzaamoplaadfase
-            remaining_minutes = minutes - time_needed_quick
-            charged = quick_capacity + (remaining_minutes * slow_recharge_speed)
+    for idx, row in bus_data.iterrows():
+        # Opladen als de bus oplaad (bij 'idle') en bij een minimale oplaadduur van 15 min
+        if row['activity'] == 'idle' and row['idle_duration_min'] >= 15:
+            time = row['idle_duration_min']
             
-            # Maximale batterijcapaciteit is 300 kWh dus hier stoppen met opladen
-            if charged > 300:
-                charged = 300
-                
-        kwh_list.append(charged)
-    else:
-        kwh_list.append(0)
+            # Snel opladen tot 270 kWh (90% van de batery capacity)
+            if battery < 270:
+                needed_energy = 270 - battery
+                time_needed = needed_energy/ quick_recharge_speed
+                if time <= time_needed:
+                    battery += time * quick_recharge_speed
+                    time = 0
+                else:
+                    battery = 270
+                    time -= time_needed
+            
+            # Langzaam opladen boven de 270 kWh (tot de 300 kWh)
+            if time > 0 and battery < 300:
+                battery += min(time * slow_recharge_speed, 300 - battery)
 
-# Totale energieverbruik bij het opladen berekenen
-print(f'Total energy loaded by charging buses (kWh): {total_kwh_charged:.2f}')
+        # Energie verbruiken tijdens het rijden
+        else:
+            battery -= row['energy consumption']
 
+        # Veiligheidsmarge van 10% checken voor de bus
+        if battery < min_waarde_battery and bus not in empty_bus:
+            empty_bus.append(bus)
 
+    total_usage.append((bus, battery))
 
+# Resultaten tonen
+if empty_bus:
+    print(f'Busses that come under 10% battery capacity: {empty_bus}')
+else:
+    print('All busses were above at least 10% battery capacity.')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print(f'Total energy useage of the busses: {total_usage:.2f}')
 
