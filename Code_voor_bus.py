@@ -286,20 +286,45 @@ valid_charging_trips = bp[(bp['activity']=='idle')&(bp['idle_duration_min']>=15)
 not_valid_charging_trips = bp[(bp['activity']=='idle')&(bp['idle_duration_min']<15)]
 valid_charging_time = valid_charging_trips['idle_duration_min'].sum()
 
-print(f'Aantal trips met een oplaadduur van 15 minuten of langer: {len(valid_charging_trips)}')
-print(f'Aantal trips met een oplaadduur van maximaal 15 minuten: {len(not_valid_charging_trips)}')
+print(f'Aantal keer opladen met een oplaadduur van 15 minuten of langer: {len(valid_charging_trips)}')
+print(f'Aantal keer opladen met een oplaadduur van maximaal 15 minuten: {len(not_valid_charging_trips)}')
 print(f'Totale geldige oplaadttijd: {valid_charging_time:.0f} minuten')
 
+# Laatste 10% opladen kost meer energie
+# Laadsnelheden per minuut
+quick_recharge_speed = 450 / 60  # oplaadsnelheid tot 90% van battery capacity
+slow_recharge_speed = 60 / 60    # oplaadsnelheid van de laatste 10% van de battery capacity
 
+kwh_list = []
 
+# Alle idles van minstens van 15 minuten selecteren
+for index, row in bp.iterrows():
+    if row['activity'] == 'idle' and row['idle_duration_min'] >= 15:
+        minutes = row['idle_duration_min']
+        
+        # Maximale opladen tot 90%
+        quick_capacity = 270  
+        time_needed_quick = quick_capacity / quick_recharge_speed  
+        
+        # 3 situaties: volledig in sneloplaadfase, deels in sneloplaadfase en alleen in langzaamoplaadfase
+        if minutes <= time_needed_quick:
+            # Volledig in sneloplaadfase oplaadfase
+            charged = minutes * quick_recharge_speed
+        else:
+            # Deels in sneloplaadfase en deels in langzaamoplaadfase
+            remaining_minutes = minutes - time_needed_quick
+            charged = quick_capacity + (remaining_minutes * slow_recharge_speed)
+            
+            # Maximale batterijcapaciteit is 300 kWh dus hier stoppen met opladen
+            if charged > 300:
+                charged = 300
+                
+        kwh_list.append(charged)
+    else:
+        kwh_list.append(0)
 
-
-
-
-
-
-
-
+# Totale energieverbruik bij het opladen berekenen
+print(f'Total energy loaded by charging buses (kWh): {total_kwh_charged:.2f}')
 
 
 
