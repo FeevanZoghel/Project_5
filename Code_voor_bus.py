@@ -318,17 +318,17 @@ for bus, bus_data in planning_sor.groupby('bus'):
                 needed_energy = 270 - battery
                 time_needed = needed_energy/ quick_recharge_speed
                 if time <= time_needed:
-                    battery += time * quick_recharge_speed
-                    time = 0
+                    battery += time * quick_recharge_speed # bus zoveel mogelijk snel opladen
+                    time = 0 # beschikbare idle-tijd is gebruikt
                 else:
                     battery = 270
                     time -= time_needed
             
-            # Langzaam opladen boven de 270 kWh (tot de 300 kWh)
+            # Langzaam opladen boven de 270 kWh (tot de 300 kWh want dit is het maximum)
             if time > 0 and battery < 300:
                 battery += min(time * slow_recharge_speed, 300 - battery)
 
-        # Energieverbruik tijdens het rijden aftrekken van de battery
+        # Energieverbruik tijdens het rijden aftrekken van de battery (als de bus rijdt)
         else:
             if row['activity'] != 'idle':
                 battery -= row['energy consumption']
@@ -342,7 +342,8 @@ for bus, bus_data in planning_sor.groupby('bus'):
 # Resultaten tonen
 # Aantal bussen tonen die minder dan 10% batterijcapaciteit hebben
 if empty_bus:
-    print(f'Busses that come under 10% battery capacity: len({empty_bus})')
+    print(f'Number of busses that came below 10% battery capacity: {len(empty_bus)}')
+    print(f'Busses that were below 10% battery capacity: {empty_bus}')
 else:
     print('All busses were above at least 10% battery capacity.')
 
