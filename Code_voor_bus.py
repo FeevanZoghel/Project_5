@@ -314,7 +314,7 @@ for bus, bus_data in planning_sor.groupby('bus'):
             time = row['idle_duration_min']
             
             # Snel opladen tot 270 kWh (90% van de batery capacity)
-            if battery < 270:
+            if battery < 270: # 90%*300=270
                 needed_energy = 270 - battery
                 time_needed = needed_energy/ quick_recharge_speed
                 if time <= time_needed:
