@@ -269,7 +269,7 @@ bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
 idle = bp[bp['activity'] == 'idle']
 tot_waiting_time_min = (idle['end_dt'] - idle['start_dt']).dt.total_seconds().sum() / 60
 tot_waiting_time_hours = tot_waiting_time_min/60
-avg_waus = tot_waiting_time_min/aantal_ingezette_bussen # minuten
+avg_waiting_time_per_bus= tot_waiting_time_min/aantal_ingezette_bussen # minuten
 
 print(f'Total waiting time in minutes: {tot_waiting_time_min:.2f}')
 print(f'Total waiting time in hours: {tot_waiting_time_hours:.2f}')
@@ -278,8 +278,16 @@ print(f'Average waiting time per bus (minutes): {avg_waiting_time_per_bus:.2f}')
 # Bus 85% vol is 300 kwh
 
 
+# Minimale oplaadtijd van 15 minuten
+# Oplaadtijd (oplaadduur) eerst berekenen
 
+bp['idle_duration_min'] = (bp['end_dt']-bp['start_dt']).dt.total_seconds()/60
+valid_charging_trips = bp[(bp['activity']=='idle')&(idle_duration_min>=15)]
+not_valid_charging_trips = bp[(bp['activity']=='idle')&(idle_duration_min<15)]
+valid_charging_time = valid_charging_trips.sum()
 
+print(f'Aantal trips met een oplaadduur van 15 minuten of langer: {len(valid_charging_trips)})')
+print(f'Aantal trips met een oplaadduur van maximaal 15 minuten: {len(not_valid_charging_trips)}'))
 
 
 
