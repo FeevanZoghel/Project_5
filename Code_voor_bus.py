@@ -282,16 +282,13 @@ print(f'Average waiting time per bus (minutes): {avg_waiting_time_per_bus:.2f}')
 # Oplaadtijd (oplaadduur) eerst berekenen
 
 bp['idle_duration_min'] = (bp['end_dt']-bp['start_dt']).dt.total_seconds()/60
-valid_charging_trips = bp[(bp['activity']=='idle')&(idle_duration_min>=15)]
-not_valid_charging_trips = bp[(bp['activity']=='idle')&(idle_duration_min<15)]
-valid_charging_time = valid_charging_trips.sum()
+valid_charging_trips = bp[(bp['activity']=='idle')&(bp['idle_duration_min']>=15)]
+not_valid_charging_trips = bp[(bp['activity']=='idle')&(bp['idle_duration_min']<15)]
+valid_charging_time = valid_charging_trips['idle_duration_min'].sum()
 
-print(f'Aantal trips met een oplaadduur van 15 minuten of langer: {len(valid_charging_trips)})')
-print(f'Aantal trips met een oplaadduur van maximaal 15 minuten: {len(not_valid_charging_trips)}'))
-
-
-
-
+print(f'Aantal trips met een oplaadduur van 15 minuten of langer: {len(valid_charging_trips)}')
+print(f'Aantal trips met een oplaadduur van maximaal 15 minuten: {len(not_valid_charging_trips)}')
+print(f'Totale geldige oplaadttijd: {valid_charging_time:.0f} minuten')
 
 
 
