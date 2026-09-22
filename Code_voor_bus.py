@@ -300,7 +300,7 @@ bp['idle_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 6
 quick_recharge_speed = 450 / 60  # oplaadsnelheid tot 90% van battery capacity
 slow_recharge_speed = 60 / 60    # oplaadsnelheid van de laatste 10% van de battery capacity
 
-empty_buss = []
+empty_bus = []
 total_usage = []
 
 # Energie opladen en energieverbruik voor de bussen
@@ -327,10 +327,10 @@ for bus, bus_data in planning_sor.groupby('bus'):
             if time > 0 and battery < 300:
                 battery += min(time * slow_recharge_speed, 300 - battery)
 
-        # Energie verbruiken tijdens het rijden
+        # Energieverbruik tijdens het rijden aftrekken van de battery
         else:
             if row['activity'] != 'idle':
-                    battery -= row['energy consumption']
+                battery -= row['energy consumption']
 
         # Veiligheidsmarge van 10% checken voor de bus
         if battery < min_waarde_battery and bus not in empty_bus:
