@@ -275,7 +275,6 @@ print(f'Total waiting time in minutes: {tot_waiting_time_min:.2f}')
 print(f'Total waiting time in hours: {tot_waiting_time_hours:.2f}')
 print(f'Average waiting time per bus (minutes): {avg_waiting_time_per_bus:.2f}')
 
-
 # Minimale oplaadtijd van 15 minuten
 # Oplaadtijd (oplaadduur) eerst berekenen 
 # Dan checken of de not_valid_charging_trips 0 is. Dit moet namelijk 0 zijn.
@@ -341,15 +340,18 @@ for bus, bus_data in planning_sor.groupby('bus'):
     total_usage.append((bus, battery))
 
 # Resultaten tonen
+# Aantal bussen tonen die minder dan 10% batterijcapaciteit hebben
 if empty_bus:
-    print(f'Busses that come under 10% battery capacity: {empty_bus}')
+    print(f'Busses that come under 10% battery capacity: len({empty_bus})')
 else:
     print('All busses were above at least 10% battery capacity.')
 
+# Batterijniveau van de bussen aan het einde van het rittenschema tonen
 for bus_id, final_batt in total_usage:
     print(f'Bus {bus_id} has final battery level: {final_batt:.2f} kWh')
-    if final_batt>300:
-        print(f'Bus {bus_id} has a final battery level that is not possible (above 300 kWh). \nThe battery level is: {final_batt:.2f} kWh')
+    # checken of er onmogelijke batterijniveau's zijn
+    if (final_batt>300) or (final_batt < 0):
+        print(f'Bus {bus_id} has a final battery level that is not possible (above 300 kWh or under 0 kWh). \nThe battery level is: {final_batt:.2f} kWh')
     else:
         pass
 
