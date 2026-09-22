@@ -289,15 +289,19 @@ print(f'Aantal keer opladen met een oplaadduur van 15 minuten of langer: {len(va
 print(f'Aantal keer opladen met een oplaadduur van maximaal 15 minuten: {len(not_valid_charging_trips)}')
 print(f'Totale geldige oplaadttijd: {valid_charging_time:.0f} minuten')
 
-# Charging constraint: checken oplaadsnelheden
+# Charging constraint: checken oplaadsnelheden 
+# Hierin is 10% accu verwerkt en de laadsnelheden
 
-# Relevante variabelen, namelijk begin opladen, eind opladen en oplaadduur
+# Relevante variabelen, oplaadsnelheden en lege lijsten
 bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
 bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
 bp['idle_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
 
 quick_recharge_speed = 450 / 60  # oplaadsnelheid tot 90% van battery capacity
 slow_recharge_speed = 60 / 60    # oplaadsnelheid van de laatste 10% van de battery capacity
+
+empty_buss = []
+total_usage = []
 
 # Energie opladen en energieverbruik voor de bussen
 for bus, bus_data in planning_sor.groupby('bus'): 
@@ -325,7 +329,8 @@ for bus, bus_data in planning_sor.groupby('bus'):
 
         # Energie verbruiken tijdens het rijden
         else:
-            battery -= row['energy consumption']
+            if row['activity'] != 'idle':
+                    battery -= row['energy consumption']
 
         # Veiligheidsmarge van 10% checken voor de bus
         if battery < min_waarde_battery and bus not in empty_bus:
@@ -339,5 +344,5 @@ if empty_bus:
 else:
     print('All busses were above at least 10% battery capacity.')
 
-print(f'Total energy useage of the busses: {total_usage:.2f}')
-
+for bus_id, final_batt in total_usage:
+    print(f'Bus {bus_id} has final battery level: {final_batt:.2f} kWh')
