@@ -357,6 +357,7 @@ for bus_id, final_batt in total_usage:
         pass
 
 # Checken of alle verplichte ritten in de code staan
+# Het is logisch dat alle verplichte ritten in het gegeven plan erinzitten.
 number_of_required_trips = len(tt)
 
 service_trips_in_planning = bp[bp['activity'] == 'service trip']
