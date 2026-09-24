@@ -61,7 +61,6 @@ elif keuze == "Data_check":
         df = pd.read_excel(bestand)
 
         check_all(df)
-        tijden_check(df)
 
         st.subheader("Ingelezen planning")
         st.dataframe(df.head(10))
