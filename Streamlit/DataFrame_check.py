@@ -224,8 +224,12 @@ def tijden_check(df):
 
     for i in range(len(df)):
         verschil = end_time[i] - start_time[i]
-
-        st.write(verschil)
+        if verschil <= 0:
+            st.error(f'Row {i} has a wrong start or end time')
+            return False
+        else:
+            return True
+        
 
 def check_all(df):
     '''
