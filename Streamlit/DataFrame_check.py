@@ -116,6 +116,21 @@ def only_energy_check(df):
     if fout == False:
         return True
 
+def only_start_end_times(df):
+    start_time = pd.to_timedelta(df['start time'].astype(str))
+    end_time = pd.to_timedelta(df['end time'].astype(str))
+
+    end = False
+
+    for i in range(len(df)):
+        verschil = end_time[i] - start_time[i]
+        if verschil <= pd.Timedelta(0):
+            end = False
+        else:
+            end = True
+
+    return end 
+
 def times_check(df):
     kolommen = ['start time', 'end time']
     fout = False
@@ -218,7 +233,7 @@ def check_columns(df):
     if fout == False:
         return True
 
-def tijden_check(df):
+def start_end_times(df):
     start_time = pd.to_timedelta(df['start time'].astype(str))
     end_time = pd.to_timedelta(df['end time'].astype(str))
 
@@ -243,9 +258,10 @@ def check_all(df):
     kolommen_correct = only_check_columns(df)
     energy_correct = only_energy_check(df)
     tijden_correct = only_times_check(df)
+    eind_tijden_correct = only_start_end_times(df)
 
 
-    if kolommen_correct is True and energy_correct is True and tijden_correct is True :
+    if kolommen_correct is True and energy_correct is True and tijden_correct is True and eind_tijden_correct is True:
         st.success('De data is compleet')
     else:
         st.error('Data is incorrect')
@@ -253,3 +269,4 @@ def check_all(df):
             check_columns(df)
             times_check(df)
             energy_check(df)
+            start_end_times(df)
