@@ -121,13 +121,17 @@ def only_start_end_times(df):
     end_time = pd.to_timedelta(df['end time'].astype(str))
 
     end = False
+    lijst = []
 
     for i in range(len(df)):
         verschil = end_time[i] - start_time[i]
         if verschil <= pd.Timedelta(0):
-            end = False
-        else:
-            end = True
+            lijst.append(verschil)
+
+    if len(lijst) != 0:
+        end = False
+    else:
+        end = True
 
     return end 
 
