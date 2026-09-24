@@ -269,52 +269,103 @@ bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
 idle = bp[bp['activity'] == 'idle']
 tot_waiting_time_min = (idle['end_dt'] - idle['start_dt']).dt.total_seconds().sum() / 60
 tot_waiting_time_hours = tot_waiting_time_min/60
-avg_waus = tot_waiting_time_min/aantal_ingezette_bussen # minuten
+avg_waiting_time_per_bus= tot_waiting_time_min/aantal_ingezette_bussen # minuten
 
 print(f'Total waiting time in minutes: {tot_waiting_time_min:.2f}')
 print(f'Total waiting time in hours: {tot_waiting_time_hours:.2f}')
 print(f'Average waiting time per bus (minutes): {avg_waiting_time_per_bus:.2f}')
 
-# Bus 85% vol is 300 kwh
+# Minimale oplaadtijd van 15 minuten
+# Oplaadtijd (oplaadduur) eerst berekenen 
+# Dan checken of de not_valid_charging_trips 0 is. Dit moet namelijk 0 zijn.
 
+bp['idle_duration_min'] = (bp['end_dt']-bp['start_dt']).dt.total_seconds()/60
+valid_charging_trips = bp[(bp['activity']=='idle')&(bp['idle_duration_min']>=15)]
+not_valid_charging_trips = bp[(bp['activity']=='idle')&(bp['idle_duration_min']<15)]
+valid_charging_time = valid_charging_trips['idle_duration_min'].sum()
 
+print(f'Aantal keer opladen met een oplaadduur van 15 minuten of langer: {len(valid_charging_trips)}')
+print(f'Aantal keer opladen met een oplaadduur van maximaal 15 minuten: {len(not_valid_charging_trips)}')
+print(f'Totale geldige oplaadttijd: {valid_charging_time:.0f} minuten')
 
+# Charging constraint: checken oplaadsnelheden 
+# Hierin is 10% accu verwerkt en de laadsnelheden
 
+# Relevante variabelen, oplaadsnelheden en lege lijsten
+bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
+bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
+bp['idle_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
 
+planning_sor = bp.sort_values(['bus', 'start time'])
 
+quick_recharge_speed = 450 / 60  # oplaadsnelheid tot 90% van battery capacity
+slow_recharge_speed = 60 / 60    # oplaadsnelheid van de laatste 10% van de battery capacity
 
+empty_bus = []
+total_usage = []
 
+# Energie opladen en energieverbruik voor de bussen
+for bus, bus_data in planning_sor.groupby('bus'): 
+    battery = start_battery
 
+    for idx, row in bus_data.iterrows():
+        # Opladen als de bus oplaad (bij 'idle') en bij een minimale oplaadduur van 15 min
+        if row['activity'] == 'idle' and row['idle_duration_min'] >= 15:
+            time = row['idle_duration_min']
+            
+            # Snel opladen tot 270 kWh (90% van de batery capacity)
+            if battery < 270: # 90%*300=270
+                needed_energy = 270 - battery
+                time_needed = needed_energy/ quick_recharge_speed
+                if time <= time_needed:
+                    battery += time * quick_recharge_speed # bus zoveel mogelijk snel opladen
+                    time = 0 # beschikbare idle-tijd is gebruikt
+                else:
+                    battery = 270
+                    time -= time_needed
+            
+            # Langzaam opladen boven de 270 kWh (tot de 300 kWh want dit is het maximum)
+            if time > 0 and battery < 300:
+                battery += min(time * slow_recharge_speed, 300 - battery)
 
+        # Energieverbruik tijdens het rijden aftrekken van de battery (als de bus rijdt)
+        else:
+            if row['activity'] != 'idle':
+                battery -= row['energy consumption']
 
+        # Veiligheidsmarge van 10% checken voor de bus
+        if battery < min_waarde_battery and bus not in empty_bus:
+            empty_bus.append(bus)
 
+    total_usage.append((bus, battery))
 
+# Resultaten tonen
+# Aantal bussen tonen die minder dan 10% batterijcapaciteit hebben
+if empty_bus:
+    print(f'Number of busses that came below 10% battery capacity: {len(empty_bus)}')
+    print(f'Busses that were below 10% battery capacity: {empty_bus}')
+else:
+    print('All busses were above at least 10% battery capacity.')
 
+# Batterijniveau van de bussen aan het einde van het rittenschema tonen
+for bus_id, final_batt in total_usage:
+    print(f'Bus {bus_id} has final battery level: {final_batt:.2f} kWh')
+    # checken of er onmogelijke batterijniveau's zijn
+    if (final_batt>300) or (final_batt < 0):
+        print(f'Bus {bus_id} has a final battery level that is not possible (above 300 kWh or under 0 kWh). \nThe battery level is: {final_batt:.2f} kWh')
+    else:
+        pass
 
+# Checken of alle verplichte ritten in de code staan
+# Het is logisch dat alle verplichte ritten in het gegeven plan erinzitten.
+number_of_required_trips = len(tt)
 
+service_trips_in_planning = bp[bp['activity'] == 'service trip']
+num_planned_trips = len(service_trips_in_planning)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+if number_of_required_trips == num_planned_trips:
+    print('All required trips are included in the schedule.')
+else:
+    numb_missing_trips = number_of_required_trips - num_planned_trips
+    print(f'There are {numb_missing_trips} trips missing in the schedule.')
 
