@@ -246,7 +246,7 @@ def start_end_times(df):
     for i in range(len(df)):
         verschil = end_time[i] - start_time[i]
         if verschil <= pd.Timedelta(0):
-            st.error(f'Row {i+2} has a wrong start or end time')
+            st.error(f'Row {i+2} has an infeasible start and end time')
             end = False
         else:
             end = True
