@@ -226,15 +226,13 @@ def tijden_check(df):
 
     for i in range(len(df)):
         verschil = end_time[i] - start_time[i]
-        if verschil <= 0:
-            st.error(f'Row {i} has a wrong start or end time')
+        if verschil <= pd.Timedelta(0):
+            st.error(f'Row {i+2} has a wrong start or end time')
+            end = False
         else:
             end = True
 
-    if end == False:
-        return False
-    else:
-        return True
+    return end
         
 
 def check_all(df):
