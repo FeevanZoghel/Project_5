@@ -2,7 +2,6 @@
 #https://project5-jmfoec4ruxwpczdw5mf76w.streamlit.app/
 
 from DataFrame_check import check_all
-from DataFrame_check import tijden_check
 
 from Berekeningen import bus_energy_check
 
