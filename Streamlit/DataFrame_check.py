@@ -218,6 +218,15 @@ def check_columns(df):
     if fout == False:
         return True
 
+def tijden_check(df):
+    columns = ['start time', 'end time']
+
+    columns['start time'] = start_time
+    columns['end time'] = end_time
+
+    for i in columns:
+        st.write(end_time[i] - start_time[i])
+
 def check_all(df):
     '''
     De check van alles
@@ -226,6 +235,7 @@ def check_all(df):
     kolommen_correct = only_check_columns(df)
     energy_correct = only_energy_check(df)
     tijden_correct = only_times_check(df)
+    times = tijden_check(df)
 
     if kolommen_correct is True and energy_correct is True and tijden_correct is True:
         st.success('De data is compleet')
@@ -235,3 +245,4 @@ def check_all(df):
             check_columns(df)
             times_check(df)
             energy_check(df)
+            tijden_check(df)
