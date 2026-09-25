@@ -13,7 +13,7 @@ import time
 t_start = time.perf_counter()
 
 # Data importing
-bp = pd.read_excel('Bus_Planning.xlsx')
+bp = pd.read_excel('Bus_Plan_Cleaned.xlsx')
 dm = pd.read_excel('DistanceMatrix.xlsx')
 tt = pd.read_excel('Timetable.xlsx')
 
@@ -27,7 +27,7 @@ def check_battery_feasibility(bp, start_battery=300):
     
     empty_bus = []
     total_usage = []
-
+    # Sort by busses
     for bus, bus_data in planning_sor.groupby('bus'):
         battery = start_battery
 
@@ -313,7 +313,6 @@ def run_all_feasibility_checks(bp, tt):
         results["charging_duration"] == 0 and
         len(results["battery_feasibility"]) == 0
     )
-    
     print("\nOVERALL FEASIBILITY RESULT:", "PASSED" if all_passed else "FAILED")
     return results
 
@@ -333,7 +332,6 @@ def run_all_kpi_calculations(bp, dm, tt):
         "total_waiting_time_hours": wait_hours,
         "avg_waiting_time_per_bus_min": avg_wait_per_bus
     }
-    
     print("\nKPI CALCULATIONS COMPLETED")
     return kpis
 
@@ -355,10 +353,9 @@ def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibil
     ]
 
     with pd.ExcelWriter(filename) as writer:
-        pd.DataFrame(feasibility_summary).to_excel(writer, sheet_name='Feasibility',index=False)
-        pd.DataFrame(list(kpi_results.items()), columns=['KPI', 'Value']).to_excel(writer, sheet_name='KPIs', index=False)
-    
-    print(f"Results saved a file named{filename}")
+        pd.DataFrame(feasibility_summary).to_excel(writer, sheet_name='Feasibility_checks',index=False)
+        pd.DataFrame(list(kpi_results.items()), columns=['KPI', 'KPI-value']).to_excel(writer, sheet_name='KPI_values', index=False)  
+    print(f"Results saved a file named{filename}, which is on the same folder as this .py-file.")
 
 # Using above functions in practice 
 feasibility_results = run_all_feasibility_checks(bp, tt)
