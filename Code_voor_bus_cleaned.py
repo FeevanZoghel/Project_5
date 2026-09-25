@@ -30,14 +30,14 @@ def check_battery_feasibility(bp, start_battery=300):
     # Sort by busses
     for bus, bus_data in planning_sor.groupby('bus'):
         battery = start_battery
-
+        
         for battery_lose in bus_data['energy consumption']:
             battery -= battery_lose
-
+            # Add a bus to empty_buss if battery < 10% of SOH-value and it hasn't already been placed there
             if battery < min_battery_value and bus not in empty_bus:
                 empty_bus.append(bus)
         total_usage.append((bus, battery))
-
+    # Feasibility-outcome
     if empty_bus:
         print("\nFEASIBILITY ERROR")
         for emptybus in empty_bus:
@@ -55,16 +55,17 @@ def check_bus_overlap(bp):
     """Verify that no bus is scheduled for overlapping trips."""
     planning_sor1 = bp.sort_values(['bus', 'start time']).reset_index(drop=True)
     bus_overlap = []
-
+    # check consecutive bus trips
     for bus, bus_data in planning_sor1.groupby('bus'):
         bus_data = bus_data.reset_index(drop=True)
 
         for i in range(len(bus_data)):
             if i == len(bus_data) - 1:
                 break
+            # overlap occurs if current trip end time > next trip start time
             if bus_data['end time'][i] > bus_data['start time'][i + 1] and bus not in bus_overlap:
                 bus_overlap.append(bus)
-
+    # Feasibility-outcome
     if bus_overlap:
         print("\nFEASIBILITY ERROR")
         for busoverlap in bus_overlap:
@@ -79,15 +80,16 @@ def check_location_continuity(bp):
     """Verify that trip arrival locations match the next trip departure locations."""
     planning_sor1 = bp.sort_values(['bus', 'start time']).reset_index(drop=True)
     discontinuities = []
-
+    # Check for every bus
     for bus, bus_data in planning_sor1.groupby('bus'):
         bus_data = bus_data.reset_index(drop=True)
         for i in range(len(bus_data)):
             if i == len(bus_data) - 1:
                 break
+            # If end location of trip i is not equal to start location of trip i+1->discontinunitie
             if bus_data['end location'][i] != bus_data['start location'][i + 1]:
                 discontinuities.append((bus, i, bus_data['end location'][i], bus_data['start location'][i + 1]))
-
+    # Feasibility-outcome
     if discontinuities:
         print("\nFEASIBILITY ERROR")
         for bus, i, end_loc, start_loc in discontinuities:
@@ -104,10 +106,11 @@ def check_valid_charging_duration(bp):
     bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
     bp['idle_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
 
+    # categorize idle trips/periods into valid charging sessions and not valid charging sessions 
     valid_charging_trips = bp[(bp['activity'] == 'idle') & (bp['idle_duration_min'] >= 15)]
     not_valid_charging_trips = bp[(bp['activity'] == 'idle') & (bp['idle_duration_min'] < 15)]
     valid_charging_time = valid_charging_trips['idle_duration_min'].sum()
-
+    # feasibility-outcome
     if len(not_valid_charging_trips) > 0:
         print("\nFEASIBILITY ERROR")
     else:
@@ -127,21 +130,21 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
     bp['idle_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
 
     planning_sor = bp.sort_values(['bus', 'start time'])
-    min_battery_value = (300 / 85 * 100) * 0.1
-
+    min_battery_value = (300 / 85 * 100) * 0.1 #same formula used
+    # 2 Charging rates in kWh: quick one and slow one
     quick_recharge_speed = 450 / 60
     slow_recharge_speed = 60 / 60
 
     empty_bus = []
     total_usage = []
-
+    # for every bus
     for bus, bus_data in planning_sor.groupby('bus'):
         battery = start_battery
-
+        
         for idx, row in bus_data.iterrows():
             if row['activity'] == 'idle' and row['idle_duration_min'] >= 15:
                 time_avail = row['idle_duration_min']
-
+                # use quick_recharge_speed if energy of a bus < 270 kWh
                 if battery < 270:
                     needed_energy = 270 - battery
                     time_needed = needed_energy / quick_recharge_speed
@@ -151,7 +154,7 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
                     else:
                         battery = 270
                         time_avail -= time_needed
-
+                # use slow_recharge_speed if 270 kWh < energy of a bus < 300 kWh
                 if time_avail > 0 and battery < 300:
                     battery += min(time_avail * slow_recharge_speed, 300 - battery)
 
@@ -163,7 +166,7 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
                 empty_bus.append(bus)
 
         total_usage.append((bus, battery))
-
+# Feasibility outcome
     if empty_bus:
         print("\nFEASIBILITY ERROR")
         print(f'Number of busses that came below 10% battery capacity: {len(empty_bus)}')
@@ -182,10 +185,11 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
 # checks whether the required trips are all included in the schedule
 def check_required_trips(bp, tt):
     """Check if all required timetable trips are included in the schedule."""
+    # compare number of service trips in planning with number of required service trips in planning
     number_of_required_trips = len(tt)
     service_trips_in_planning = bp[bp['activity'] == 'service trip']
     num_planned_trips = len(service_trips_in_planning)
-
+    # feasibility-outcome
     if number_of_required_trips == num_planned_trips:
         print("\nFEASIBILITY CHECK PASSED")
         print('All required trips are included in the schedule.')
@@ -204,7 +208,7 @@ def calculate_energy_consumption_kpis(bp):
     """Calculate individual and fleet-wide total energy consumption in kWh."""
     planning_sor = bp.sort_values(['bus', 'start time'])
     total_consumption = 0
-
+    # for every bus
     for bus, bus_data in planning_sor.groupby('bus'):
         total_consumption_bus = 0
         for energy in bus_data['energy consumption']:
@@ -214,11 +218,13 @@ def calculate_energy_consumption_kpis(bp):
         print(f'Bus {bus} used {total_consumption_bus:.2f} kWh')
 
     print(f'All busses uses a total of {total_consumption:.2f} kWh')
+    # return KPI-value
     return total_consumption
 
 # defines all distances from service trips and material trips, calculates the number of busses used, calculates total driven distance of all busses and calculates the number of trips
 def calculate_distances_and_kpis(bp, dm, tt):
     """Calculate total service/deadhead distances, trip counts, and active buses."""
+    # select the distance from the distance matrix, for each line
     line_400 = dm[dm['line'] == 400]
     line_401 = dm[dm['line'] == 401]
     d_ar_to_st400 = line_400['distance_m'].iloc[0]
@@ -235,7 +241,7 @@ def calculate_distances_and_kpis(bp, dm, tt):
     t_st_to_ar400 = len(tt[(tt['line'] == 400) & (tt['start'] == 'ehvbst') & (tt['end'] == 'ehvapt')])
     t_ar_to_st401 = len(tt[(tt['line'] == 401) & (tt['start'] == 'ehvapt') & (tt['end'] == 'ehvbst')])
     t_st_to_ar401 = len(tt[(tt['line'] == 401) & (tt['start'] == 'ehvbst') & (tt['end'] == 'ehvapt')])
-
+    # calculate total service trip distance seperatly for line 400 and for line 401
     d_400 = (t_ar_to_st400 * d_ar_to_st400) + (t_st_to_ar400 * d_st_to_ar400)
     d_401 = (t_ar_to_st401 * d_ar_to_st401) + (t_st_to_ar401 * d_st_to_ar401)
 
@@ -245,6 +251,7 @@ def calculate_distances_and_kpis(bp, dm, tt):
     print(f'Total service trip distance of lines 400 and 401 (meters): {d_service_total_m:.2f}')
     print(f'Total service trip distance of lines 400 and 401 (kilometers): {d_service_total_km:.2f}')
 
+    # find the material trips and corresponding distances
     t_bst_to_gar = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvbst') & (bp['end location'] == 'ehvgar')])
     t_gar_to_bst = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvgar') & (bp['end location'] == 'ehvbst')])
     t_apt_to_gar = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvapt') & (bp['end location'] == 'ehvgar')])
@@ -256,24 +263,24 @@ def calculate_distances_and_kpis(bp, dm, tt):
     d_gar_to_bst = dm[(dm['start'] == 'ehvgar') & (dm['end'] == 'ehvbst')]['distance_m'].iloc[0]
     d_apt_to_gar = dm[(dm['start'] == 'ehvapt') & (dm['end'] == 'ehvgar')]['distance_m'].iloc[0]
     d_gar_to_apt = dm[(dm['start'] == 'ehvgar') & (dm['end'] == 'ehvapt')]['distance_m'].iloc[0]
-
+    # calculate total material trips distance
     d_material_total = (t_bst_to_gar * d_bst_to_gar) + (t_gar_to_bst * d_gar_to_bst) + (t_apt_to_gar * d_apt_to_gar) + (t_gar_to_apt * d_gar_to_apt)
-
+    # calculate total distance
     total_distance_m = d_service_total_m + d_material_total
     total_distance_km = total_distance_m / 1000
 
     print(f'Total distance of service trips and material trips (meters): {total_distance_m:.2f}')
     print(f'Total distance of service trips and material trips (kilometers): {total_distance_km:.2f}')
     print(f'Total distance of material trips:{d_material_total:.2f}')
-
+    # number of busses used
     deployed_buses_count = bp['bus'].nunique()
     print(f'The number of busses used:{deployed_buses_count}.')
     print(f'Total distance (kilometers): {total_distance_km:.2f}.')
     print(f'Total distance (meters):{total_distance_m:.2f}.')
-
+    
     t_material_total = t_bst_to_gar + t_gar_to_bst + t_apt_to_gar + t_gar_to_apt + t_apt_to_bst + t_bst_to_apt
     print(f'Total of material trips: {t_material_total}')
-
+    # return KPI-values
     return total_distance_m, total_distance_km, deployed_buses_count
 
 # calculate total waiting time and the average waiting time per bus
@@ -281,7 +288,7 @@ def calculate_waiting_time_kpis(bp, deployed_buses_count):
     """Calculate total fleet idle time and average waiting time per deployed bus."""
     bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
     bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
-
+    # select idle and calculate waiting time
     idle = bp[bp['activity'] == 'idle']
     tot_waiting_time_min = (idle['end_dt'] - idle['start_dt']).dt.total_seconds().sum() / 60
     tot_waiting_time_hours = tot_waiting_time_min / 60
@@ -290,13 +297,14 @@ def calculate_waiting_time_kpis(bp, deployed_buses_count):
     print(f'Total waiting time in minutes: {tot_waiting_time_min:.2f}')
     print(f'Total waiting time in hours: {tot_waiting_time_hours:.2f}')
     print(f'Average waiting time per bus (minutes): {avg_waiting_time_per_bus:.2f}')
-
+    # return KPI-values
     return tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus
 
 
 # Functions for all feasibility checks and kpi calculations
 def run_all_feasibility_checks(bp, tt):
     """Run all feasibility checks and return a summary dictionary."""
+    # all functions of feasibility checks
     results = {
         "location_continuity": check_location_continuity(bp),
         "bus_overlap": check_bus_overlap(bp),
@@ -323,6 +331,7 @@ def run_all_kpi_calculations(bp, dm, tt):
     total_dist_m, total_dist_km, deployed_buses = calculate_distances_and_kpis(bp, dm, tt)
     wait_min, wait_hours, avg_wait_per_bus = calculate_waiting_time_kpis(bp, deployed_buses)
     
+    # All functions used for kpi's
     kpis = {
         "total_energy_kwh": total_energy,
         "total_distance_m": total_dist_m,
@@ -343,7 +352,7 @@ def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibil
     missing_trips = 0 if feasibility_results["required_trips"] else 1
     invalid_charges = feasibility_results["charging_duration"]
     battery_errors = len(feasibility_results["battery_feasibility"])
-
+    # Get a feasibility summary
     feasibility_summary = [
         {"Check": "Location of end of trip and new trip match", "Errors": loc_errors, "Status": "Passed" if loc_errors == 0 else "Failed"},
         {"Check": "Bus Overlap", "Errors": overlap_errors, "Status": "Passed" if overlap_errors == 0 else "Failed"},
@@ -351,7 +360,7 @@ def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibil
         {"Check": "Charging Duration is at least 15 min", "Errors": invalid_charges, "Status": "Passed" if invalid_charges == 0 else "Failed"},
         {"Check": "Battery Capacity at least 10%", "Errors": battery_errors, "Status": "Passed" if battery_errors == 0 else "Failed"}
     ]
-
+    # export into an Excel file
     with pd.ExcelWriter(filename) as writer:
         pd.DataFrame(feasibility_summary).to_excel(writer, sheet_name='Feasibility_checks',index=False)
         pd.DataFrame(list(kpi_results.items()), columns=['KPI', 'KPI-value']).to_excel(writer, sheet_name='KPI_values', index=False)  
