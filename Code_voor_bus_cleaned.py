@@ -295,8 +295,6 @@ def calculate_waiting_time_kpis(bp, deployed_buses_count):
 
 
 # Functions for all feasibility checks and kpi calculations
-
-# Running all feasibility checks
 def run_all_feasibility_checks(bp, tt):
     """Run all feasibility checks and return a summary dictionary."""
     results = {
@@ -307,11 +305,18 @@ def run_all_feasibility_checks(bp, tt):
         "battery_feasibility": check_charging_constraint_and_speeds(bp)[0]
     }
     
-    # Controleer of alle checks zijn geslaagd
-    all_passed = all(len(v) == 0 if isinstance(v, list) else v for v in results.values())
+    # Correct evaluation of all pass conditions
+    all_passed = (
+        len(results["location_continuity"]) == 0 and
+        len(results["bus_overlap"]) == 0 and
+        results["required_trips"] is True and
+        results["charging_duration"] == 0 and
+        len(results["battery_feasibility"]) == 0
+    )
     
     print("\nOVERALL FEASIBILITY RESULT:", "PASSED" if all_passed else "FAILED")
     return results
+
 
 def run_all_kpi_calculations(bp, dm, tt):
     """Run all KPI calculations and return a summary dictionary."""
@@ -332,9 +337,33 @@ def run_all_kpi_calculations(bp, dm, tt):
     print("\nKPI CALCULATIONS COMPLETED")
     return kpis
 
-# Using the functions
+# Exporting the results to excel file
+def export_results_to_excel(feasibility_results, kpi_results, filename='Bus_Planning_Results.xlsx'):
+    """Export feasibility checks summary and KPIs to Excel."""
+    loc_errors = len(feasibility_results["location_continuity"])
+    overlap_errors = len(feasibility_results["bus_overlap"])
+    missing_trips = 0 if feasibility_results["required_trips"] else 1
+    invalid_charges = feasibility_results["charging_duration"]
+    battery_errors = len(feasibility_results["battery_feasibility"])
+
+    feasibility_summary = [
+        {"Check": "Location Continuity", "Errors": loc_errors, "Status": "Passed" if loc_errors == 0 else "Failed"},
+        {"Check": "Bus Overlap", "Errors": overlap_errors, "Status": "Passed" if overlap_errors == 0 else "Failed"},
+        {"Check": "Required Trips", "Errors": missing_trips, "Status": "Passed" if missing_trips == 0 else "Failed"},
+        {"Check": "Charging Duration (>=15 min)", "Errors": invalid_charges, "Status": "Passed" if invalid_charges == 0 else "Failed"},
+        {"Check": "Battery Capacity (>=10%)", "Errors": battery_errors, "Status": "Passed" if battery_errors == 0 else "Failed"}
+    ]
+
+    with pd.ExcelWriter(filename) as writer:
+        pd.DataFrame(feasibility_summary).to_excel(writer, sheet_name='Feasibility', index=False)
+        pd.DataFrame(list(kpi_results.items()), columns=['KPI', 'Value']).to_excel(writer, sheet_name='KPIs', index=False)
+    
+    print(f"Results saved to {filename}")
+
+# Using above functions in practice 
 feasibility_results = run_all_feasibility_checks(bp, tt)
 kpi_results = run_all_kpi_calculations(bp, dm, tt)
+export_results_to_excel(feasibility_results, kpi_results)
 
 # Calculating computation time of this code
 t_end = time.perf_counter()
