@@ -14,36 +14,8 @@ t_start = time.perf_counter()
 
 # Data importing
 bp = pd.read_excel('Bus_Planning.xlsx')
-# print(bp.head()) outcomment this to check whether file is read in well
 dm = pd.read_excel('DistanceMatrix.xlsx')
-# print(dm.head()) outcomment this to check whether file is read in well
 tt = pd.read_excel('Timetable.xlsx')
-# print(tt.head()) outcomment this to check whether file is read in well
-
-# Relevant variables for the code 
-total_distance = 0 
-
-start_dis           = dm['start']
-end_dis             = dm['end']
-min_travel_time     = dm['min_travel_time']
-max_travel_time     = dm['max_travel_time']
-distance_m          = dm['distance_m']
-distance_km         = distance_m/1000
-
-start_plan          = bp['start location']
-end_plan            = bp['end location']
-start_time          = bp['start time']
-end_time            = bp['end time']
-activity            = bp['activity']
-line                = bp['line']
-energy_consumption  = bp['energy consumption']
-bus_number          = bp['bus'].unique()
-
-start_battery       = 300 # starting value of 85% (assuming minimum)
-min_battery_value   = (300/85 *100)*.1 # 10 % of true capacity must be present
-planning_sor        = bp.sort_values(['bus','start time']) # sorts per bus, per start time in chronological order
-empty_bus           = []
-total_usage         = []
 
 # Feasibility checks
 
@@ -320,19 +292,6 @@ def calculate_waiting_time_kpis(bp, deployed_buses_count):
     print(f'Average waiting time per bus (minutes): {avg_waiting_time_per_bus:.2f}')
 
     return tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus
-    bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
-    bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
-
-    idle = bp[bp['activity'] == 'idle']
-    tot_waiting_time_min = (idle['end_dt'] - idle['start_dt']).dt.total_seconds().sum() / 60
-    tot_waiting_time_hours = tot_waiting_time_min / 60
-    avg_waiting_time_per_bus = tot_waiting_time_min / deployed_buses_count
-
-    print(f'Total waiting time in minutes: {tot_waiting_time_min:.2f}')
-    print(f'Total waiting time in hours: {tot_waiting_time_hours:.2f}')
-    print(f'Average waiting time per bus (minutes): {avg_waiting_time_per_bus:.2f}')
-
-    return tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus
 
 
 # Functions for all feasibility checks and kpi calculations
@@ -374,11 +333,10 @@ def run_all_kpi_calculations(bp, dm, tt):
     return kpis
 
 # Using the functions
-# Uitvoeren van alle controles en KPI's
 feasibility_results = run_all_feasibility_checks(bp, tt)
 kpi_results = run_all_kpi_calculations(bp, dm, tt)
 
 # Calculating computation time of this code
 t_end = time.perf_counter()
-computation_time = t_end-t_start
+computation_time = t_end - t_start
 print(f'Computation time: {computation_time:.2f} seconds.')
