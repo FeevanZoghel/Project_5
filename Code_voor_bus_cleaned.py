@@ -20,7 +20,7 @@ dm = pd.read_excel('DistanceMatrix.xlsx')
 tt = pd.read_excel('Timetable.xlsx')
 # print(tt.head()) outcomment this to check whether file is read in well
 
-# Relevant variables for the code
+# Relevant variables for the code 
 total_distance = 0 
 
 start_dis           = dm['start']
@@ -47,8 +47,10 @@ total_usage         = []
 
 # Feasibility checks
 
+# checks minimum battery value per bus (min 10%)
 def check_battery_feasibility(bp, start_battery=300):
-    min_battery_value = (300 / 85 * 100) * 0.1  # 10% van de echte capaciteit
+    """Check if any bus falls below the minimum required battery capacity threshold."""
+    min_battery_value = (300 / 85 * 100) * 0.1  # 10% of real capacity
     planning_sor = bp.sort_values(['bus', 'start time'])
     
     empty_bus = []
@@ -76,8 +78,9 @@ def check_battery_feasibility(bp, start_battery=300):
 
     return empty_bus, total_usage
 
-
+# checks whether no bus starts a trip before finishing the previous
 def check_bus_overlap(bp):
+    """Verify that no bus is scheduled for overlapping trips."""
     planning_sor1 = bp.sort_values(['bus', 'start time']).reset_index(drop=True)
     bus_overlap = []
 
@@ -99,8 +102,9 @@ def check_bus_overlap(bp):
 
     return bus_overlap
 
-
+# checks whether trip arrival matches next trip departure
 def check_location_continuity(bp):
+    """Verify that trip arrival locations match the next trip departure locations."""
     planning_sor1 = bp.sort_values(['bus', 'start time']).reset_index(drop=True)
     discontinuities = []
 
@@ -121,8 +125,9 @@ def check_location_continuity(bp):
 
     return discontinuities
 
-
+# calculates charging session count and duration (>=15 min)
 def check_valid_charging_duration(bp):
+    """Check and summarize charging sessions that meet the 15-minute threshold."""
     bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
     bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
     bp['idle_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
@@ -142,8 +147,9 @@ def check_valid_charging_duration(bp):
 
     return len(not_valid_charging_trips)
 
-
+# calculate the energy usage of busses (takes the quick recharge speed and slow recharge speed into account)
 def check_charging_constraint_and_speeds(bp, start_battery=300):
+    """Simulate battery levels throughout the day considering quick and slow charging speeds."""
     bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
     bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
     bp['idle_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
@@ -201,8 +207,9 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
 
     return empty_bus, total_usage
 
-
+# checks whether the required trips are all included in the schedule
 def check_required_trips(bp, tt):
+    """Check if all required timetable trips are included in the schedule."""
     number_of_required_trips = len(tt)
     service_trips_in_planning = bp[bp['activity'] == 'service trip']
     num_planned_trips = len(service_trips_in_planning)
@@ -220,7 +227,9 @@ def check_required_trips(bp, tt):
 
 # Calculating KPI values
 
+# calculates energy consumption per bus and total energy consumption of all busses
 def calculate_energy_consumption_kpis(bp):
+    """Calculate individual and fleet-wide total energy consumption in kWh."""
     planning_sor = bp.sort_values(['bus', 'start time'])
     total_consumption = 0
 
@@ -235,8 +244,9 @@ def calculate_energy_consumption_kpis(bp):
     print(f'All busses uses a total of {total_consumption:.2f} kWh')
     return total_consumption
 
-
+# defines all distances from service trips and material trips, calculates the number of busses used, calculates total driven distance of all busses and calculates the number of trips
 def calculate_distances_and_kpis(bp, dm, tt):
+    """Calculate total service/deadhead distances, trip counts, and active buses."""
     line_400 = dm[dm['line'] == 400]
     line_401 = dm[dm['line'] == 401]
     d_ar_to_st400 = line_400['distance_m'].iloc[0]
@@ -294,8 +304,9 @@ def calculate_distances_and_kpis(bp, dm, tt):
 
     return total_distance_m, total_distance_km, deployed_buses_count
 
-
+# calculate total waiting time and the average waiting time per bus
 def calculate_waiting_time_kpis(bp, deployed_buses_count):
+    """Calculate total fleet idle time and average waiting time per deployed bus."""
     bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
     bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
 
@@ -309,6 +320,35 @@ def calculate_waiting_time_kpis(bp, deployed_buses_count):
     print(f'Average waiting time per bus (minutes): {avg_waiting_time_per_bus:.2f}')
 
     return tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus
+    bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
+    bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
+
+    idle = bp[bp['activity'] == 'idle']
+    tot_waiting_time_min = (idle['end_dt'] - idle['start_dt']).dt.total_seconds().sum() / 60
+    tot_waiting_time_hours = tot_waiting_time_min / 60
+    avg_waiting_time_per_bus = tot_waiting_time_min / deployed_buses_count
+
+    print(f'Total waiting time in minutes: {tot_waiting_time_min:.2f}')
+    print(f'Total waiting time in hours: {tot_waiting_time_hours:.2f}')
+    print(f'Average waiting time per bus (minutes): {avg_waiting_time_per_bus:.2f}')
+
+    return tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus
+
+
+# Examples of using the functions
+# feasibility checks
+check_battery_feasibility(bp)
+calculate_energy_consumption_kpis(bp)
+check_bus_overlap(bp)
+check_location_continuity(bp)
+
+# KPI calculations and distance checks
+total_m, total_km, bus_count = calculate_distances_and_kpis(bp, dm, tt)
+calculate_waiting_time_kpis(bp, bus_count)
+
+check_valid_charging_duration(bp)
+check_charging_constraint_and_speeds(bp)
+check_required_trips(bp, tt)
 
 
 # Calculating computation time of this code
