@@ -10,7 +10,7 @@ import math
 import time
 
 # Start calculating calculation time of this code
-start_time = time.perf_counter()
+t_start = time.perf_counter()
 
 # Data importing
 bp = pd.read_excel('Bus_Planning.xlsx')
@@ -335,24 +335,50 @@ def calculate_waiting_time_kpis(bp, deployed_buses_count):
     return tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus
 
 
-# Examples of using the functions
-# feasibility checks
-check_battery_feasibility(bp)
-calculate_energy_consumption_kpis(bp)
-check_bus_overlap(bp)
-check_location_continuity(bp)
+# Functions for all feasibility checks and kpi calculations
 
-# KPI calculations and distance checks
-total_m, total_km, bus_count = calculate_distances_and_kpis(bp, dm, tt)
-calculate_waiting_time_kpis(bp, bus_count)
+# Running all feasibility checks
+def run_all_feasibility_checks(bp, tt):
+    """Run all feasibility checks and return a summary dictionary."""
+    results = {
+        "location_continuity": check_location_continuity(bp),
+        "bus_overlap": check_bus_overlap(bp),
+        "required_trips": check_required_trips(bp, tt),
+        "charging_duration": check_valid_charging_duration(bp),
+        "battery_feasibility": check_charging_constraint_and_speeds(bp)[0]
+    }
+    
+    # Controleer of alle checks zijn geslaagd
+    all_passed = all(len(v) == 0 if isinstance(v, list) else v for v in results.values())
+    
+    print("\nOVERALL FEASIBILITY RESULT:", "PASSED" if all_passed else "FAILED")
+    return results
 
-check_valid_charging_duration(bp)
-check_charging_constraint_and_speeds(bp)
-check_required_trips(bp, tt)
+def run_all_kpi_calculations(bp, dm, tt):
+    """Run all KPI calculations and return a summary dictionary."""
+    total_energy = calculate_energy_consumption_kpis(bp)
+    total_dist_m, total_dist_km, deployed_buses = calculate_distances_and_kpis(bp, dm, tt)
+    wait_min, wait_hours, avg_wait_per_bus = calculate_waiting_time_kpis(bp, deployed_buses)
+    
+    kpis = {
+        "total_energy_kwh": total_energy,
+        "total_distance_m": total_dist_m,
+        "total_distance_km": total_dist_km,
+        "deployed_buses_count": deployed_buses,
+        "total_waiting_time_min": wait_min,
+        "total_waiting_time_hours": wait_hours,
+        "avg_waiting_time_per_bus_min": avg_wait_per_bus
+    }
+    
+    print("\nKPI CALCULATIONS COMPLETED")
+    return kpis
 
+# Using the functions
+# Uitvoeren van alle controles en KPI's
+feasibility_results = run_all_feasibility_checks(bp, tt)
+kpi_results = run_all_kpi_calculations(bp, dm, tt)
 
 # Calculating computation time of this code
-end_time = time.perf_counter()
-computation_time = end_time-start_time
-
+t_end = time.perf_counter()
+computation_time = t_end-t_start
 print(f'Computation time: {computation_time:.2f} seconds.')
