@@ -1,17 +1,26 @@
-#Matthijs
+# Code_for_bus_cleaned
 
+# Importing relevant Python libraries
 import pandas as pd 
+import streamlit as st
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.stats as st
+import math
+import time
 
+# Start calculating calculation time of this code
+start_time = time.perf_counter()
+
+# Data importing
 bp = pd.read_excel('Bus_Planning.xlsx')
-# print(bp.head())
-
+# print(bp.head()) outcomment this to check whether file is read in well
 dm = pd.read_excel('DistanceMatrix.xlsx')
-# print(dm.head())
-
+# print(dm.head()) outcomment this to check whether file is read in well
 tt = pd.read_excel('Timetable.xlsx')
-# print(tt.head())
+# print(tt.head()) outcomment this to check whether file is read in well
 
-
+# Relevant variables for the code
 total_distance = 0 
 
 start_dis           = dm['start']
@@ -51,7 +60,6 @@ for emptybus in empty_bus:
 for bus, battery in total_usage:
     print(f'Bus number {bus} has a battery content of {battery:.2f} kWh, when finishes his routes') 
 
-
 #berekend het total verbruik per bus, en het algehele totale verbruik van alle bussen bij elkaar.
 total_consumption       = 0
 total_consumption_bus   = 0
@@ -87,100 +95,6 @@ for bus, bus_data in planning_sor1.groupby('bus'):
         if bus_data['end location'][i]!=bus_data['start location'][i+1]:
             print(f'For bus number{bus} begin and end are not the same, rit {i} ends at {bus_data['end location'][i]} en rit {i+1} begins at {bus_data['start location'][i+1]} ')
  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Bas
-
 
 # Totale afstand van de bussen
 
@@ -368,4 +282,11 @@ if number_of_required_trips == num_planned_trips:
 else:
     numb_missing_trips = number_of_required_trips - num_planned_trips
     print(f'There are {numb_missing_trips} trips missing in the schedule.')
+
+
+# Calculating computation time of this code
+end_time = time.perf_counter()
+computation_time = end_time-start_time
+
+print(f'Computation time: {computation_time:.2f} seconds.')
 
