@@ -134,7 +134,13 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
     # 2 Charging rates in kWh: quick one and slow one
     quick_recharge_speed = 450 / 60
     slow_recharge_speed = 60 / 60
+    charging_speeds = [quick_recharge_speed, slow_recharge_speed]
+    number_charging_speeds = len(charging_speeds)
 
+    # Feasibility check for number of charging speeds
+    if number_charging_speeds != 2:
+        print("\nFEASIBILITY ERROR")
+        print(f"Expected 2 charging speeds (quick & slow), but found {number_charging_speeds}.")
     empty_bus = []
     total_usage = []
     # for every bus
@@ -180,7 +186,7 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
         if (final_batt > 300) or (final_batt < 0):
             print(f'Bus {bus_id} has a final battery level that is not possible (above 300 kWh or under 0 kWh). \nThe battery level is: {final_batt:.2f} kWh')
 
-    return empty_bus, total_usage
+    return empty_bus, total_usage,number_charging_speeds
 
 # checks whether the required trips are all included in the schedule
 def check_required_trips(bp, tt):
@@ -304,13 +310,17 @@ def calculate_waiting_time_kpis(bp, deployed_buses_count):
 # Functions for all feasibility checks and kpi calculations
 def run_all_feasibility_checks(bp, tt):
     """Run all feasibility checks and return a summary dictionary."""
+    # Call charging constraint function once to extract battery errors and number of charging speeds
+    empty_buses, total_usage, number_charging_speeds = check_charging_constraint_and_speeds(bp)
+
     # all functions of feasibility checks
     results = {
         "location_continuity": check_location_continuity(bp),
         "bus_overlap": check_bus_overlap(bp),
         "required_trips": check_required_trips(bp, tt),
         "charging_duration": check_valid_charging_duration(bp),
-        "battery_feasibility": check_charging_constraint_and_speeds(bp)[0]
+        "battery_feasibility": empty_buses,
+        "number_charging_speeds": number_charging_speeds
     }
     
     # Correct evaluation of all pass conditions
@@ -319,7 +329,8 @@ def run_all_feasibility_checks(bp, tt):
         len(results["bus_overlap"]) == 0 and
         results["required_trips"] is True and
         results["charging_duration"] == 0 and
-        len(results["battery_feasibility"]) == 0
+        len(results["battery_feasibility"]) == 0 and
+        results["number_charging_speeds"] == 2
     )
     print("\nOVERALL FEASIBILITY RESULT:", "PASSED" if all_passed else "FAILED")
     return results
@@ -328,7 +339,7 @@ def run_all_feasibility_checks(bp, tt):
 def run_all_kpi_calculations(bp, dm, tt):
     """Run all KPI calculations and return a summary dictionary."""
     total_energy = calculate_energy_consumption_kpis(bp)
-    total_dist_m, total_dist_km, deployed_buses,tot_material_trips = calculate_distances_and_kpis(bp, dm, tt)
+    total_dist_m, total_dist_km, deployed_buses, tot_material_trips = calculate_distances_and_kpis(bp, dm, tt)
     wait_min, wait_hours, avg_wait_per_bus = calculate_waiting_time_kpis(bp, deployed_buses)
     
     # All functions used for kpi's
@@ -353,19 +364,29 @@ def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibil
     missing_trips = 0 if feasibility_results["required_trips"] else 1
     invalid_charges = feasibility_results["charging_duration"]
     battery_errors = len(feasibility_results["battery_feasibility"])
+    num_speeds = feasibility_results["number_charging_speeds"]
+    speed_errors = 0 if num_speeds == 2 else 1
+
+    # Check overall pass status (zonder num_speeds op te tellen)
+    total_errors = loc_errors + overlap_errors + missing_trips + invalid_charges + battery_errors + speed_errors
+    overall_status = "PASSED" if total_errors == 0 else "FAILED"
+
     # Get a feasibility summary
     feasibility_summary = [
         {"Check": "Location of end of trip and new trip match", "Errors": loc_errors, "Status": "Passed" if loc_errors == 0 else "Failed"},
         {"Check": "No Bus Overlap", "Errors": overlap_errors, "Status": "Passed" if overlap_errors == 0 else "Failed"},
         {"Check": "Required Trips of lines 400 and 401 included in bus plan", "Errors": missing_trips, "Status": "Passed" if missing_trips == 0 else "Failed"},
         {"Check": "Charging Duration is at least 15 min", "Errors": invalid_charges, "Status": "Passed" if invalid_charges == 0 else "Failed"},
-        {"Check": "Battery Capacity at least 10%", "Errors": battery_errors, "Status": "Passed" if battery_errors == 0 else "Failed"}
+        {"Check": "Number of Charging Speeds is equal to 2", "Errors": speed_errors, "Status": "Passed" if speed_errors == 0 else "Failed"},
+        {"Check": "Battery Capacity at least 10%", "Errors": battery_errors, "Status": "Passed" if battery_errors == 0 else "Failed"},
+        {"Check": "Overall status bus plan", "Errors": total_errors, "Status": overall_status}
     ]
+        
     # export into an Excel file
     with pd.ExcelWriter(filename) as writer:
-        pd.DataFrame(feasibility_summary).to_excel(writer, sheet_name='Feasibility_checks',index=False)
+        pd.DataFrame(feasibility_summary).to_excel(writer, sheet_name='Feasibility_checks', index=False)
         pd.DataFrame(list(kpi_results.items()), columns=['KPI', 'KPI-value']).to_excel(writer, sheet_name='KPI_values', index=False)  
-    print(f"Results saved a file named{filename}, which is on the same folder as this .py-file.")
+    print(f"Results saved a file named {filename}, which is on the same folder as this .py-file.")
 
 # Using above functions in practice 
 feasibility_results = run_all_feasibility_checks(bp, tt)
