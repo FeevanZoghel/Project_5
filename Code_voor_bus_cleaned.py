@@ -189,7 +189,7 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
         if (final_batt > 300) or (final_batt < 0):
             print(f'Bus {bus_id} has a final battery level that is not possible (above 300 kWh or under 0 kWh). \nThe battery level is: {final_batt:.2f} kWh')
 
-    return empty_bus, total_usage, number_charging_speeds, assumed_soh_percentage
+    return empty_bus, total_usage, number_charging_speeds, assumed_soh_percentage, quick_recharge_speed, slow_recharge_speed
 
 # checks whether the required trips are all included in the schedule
 def check_required_trips(bp, tt):
@@ -313,7 +313,7 @@ def calculate_waiting_time_kpis(bp, deployed_buses_count):
 def run_all_feasibility_checks(bp, tt):
     """Run all feasibility checks and return a summary dictionary."""
     # Call charging constraint function once to extract battery errors, speeds and soh
-    empty_buses, total_usage, number_charging_speeds, assumed_soh_percentage = check_charging_constraint_and_speeds(bp)
+    empty_buses, total_usage, number_charging_speeds, assumed_soh_percentage, quick_speed, slow_speed = check_charging_constraint_and_speeds(bp)
 
     # all functions of feasibility checks
     results = {
@@ -323,7 +323,9 @@ def run_all_feasibility_checks(bp, tt):
         "charging_duration": check_valid_charging_duration(bp),
         "battery_feasibility": empty_buses,
         "number_charging_speeds": number_charging_speeds,
-        "assumed_soh_percentage": assumed_soh_percentage
+        "assumed_soh_percentage": assumed_soh_percentage,
+        "quick_recharge_speed": quick_speed,
+        "slow_recharge_speed": slow_speed
     }
     
     # Correct evaluation of all pass conditions
@@ -374,6 +376,9 @@ def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibil
     soh_val = feasibility_results["assumed_soh_percentage"]
     soh_errors = 0 if (85 <= soh_val <= 95) else 1
 
+    quick_speed = feasibility_results["quick_recharge_speed"]
+    slow_speed = feasibility_results["slow_recharge_speed"]
+
     # Check overall pass status
     total_errors = loc_errors + overlap_errors + missing_trips + invalid_charges + battery_errors + soh_errors + speed_errors
     overall_status = "PASSED" if total_errors == 0 else "FAILED"
@@ -385,6 +390,7 @@ def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibil
         {"Check": "Required Trips of lines 400 and 401 included in bus plan", "Errors": missing_trips, "Status": "Passed" if missing_trips == 0 else "Failed"},
         {"Check": "Charging Duration is at least 15 min", "Errors": invalid_charges, "Status": "Passed" if invalid_charges == 0 else "Failed"},
         {"Check": "Number of Charging Speeds is equal to 2", "Errors": speed_errors, "Status": "Passed" if speed_errors == 0 else "Failed"},
+        {"Check": f"Charging speeds configured (Quick (untill 90% battery capacity): {quick_speed:.2f} kWh/min, Slow (90-100% battery capacity): {slow_speed:.2f} kWh/min)", "Errors": 0, "Status": "Passed"},
         {"Check": "Assumed SOH percentage between 85% and 95%", "Errors": soh_errors, "Status": "Passed" if soh_errors == 0 else "Failed"},
         {"Check": "Battery Capacity at least 10%", "Errors": battery_errors, "Status": "Passed" if battery_errors == 0 else "Failed"},
         {"Check": "Overall status bus plan", "Errors": total_errors, "Status": overall_status}
