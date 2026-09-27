@@ -281,7 +281,7 @@ def calculate_distances_and_kpis(bp, dm, tt):
     t_material_total = t_bst_to_gar + t_gar_to_bst + t_apt_to_gar + t_gar_to_apt + t_apt_to_bst + t_bst_to_apt
     print(f'Total of material trips: {t_material_total}')
     # return KPI-values
-    return total_distance_m, total_distance_km, deployed_buses_count
+    return total_distance_m, total_distance_km, deployed_buses_count,t_material_total
 
 # calculate total waiting time and the average waiting time per bus
 def calculate_waiting_time_kpis(bp, deployed_buses_count):
@@ -328,7 +328,7 @@ def run_all_feasibility_checks(bp, tt):
 def run_all_kpi_calculations(bp, dm, tt):
     """Run all KPI calculations and return a summary dictionary."""
     total_energy = calculate_energy_consumption_kpis(bp)
-    total_dist_m, total_dist_km, deployed_buses = calculate_distances_and_kpis(bp, dm, tt)
+    total_dist_m, total_dist_km, deployed_buses,tot_material_trips = calculate_distances_and_kpis(bp, dm, tt)
     wait_min, wait_hours, avg_wait_per_bus = calculate_waiting_time_kpis(bp, deployed_buses)
     
     # All functions used for kpi's
@@ -337,6 +337,7 @@ def run_all_kpi_calculations(bp, dm, tt):
         "total_distance_m": total_dist_m,
         "total_distance_km": total_dist_km,
         "deployed_buses_count": deployed_buses,
+        "total_material_trips": tot_material_trips,
         "total_waiting_time_min": wait_min,
         "total_waiting_time_hours": wait_hours,
         "avg_waiting_time_per_bus_min": avg_wait_per_bus
@@ -355,7 +356,7 @@ def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibil
     # Get a feasibility summary
     feasibility_summary = [
         {"Check": "Location of end of trip and new trip match", "Errors": loc_errors, "Status": "Passed" if loc_errors == 0 else "Failed"},
-        {"Check": "Bus Overlap", "Errors": overlap_errors, "Status": "Passed" if overlap_errors == 0 else "Failed"},
+        {"Check": "No Bus Overlap", "Errors": overlap_errors, "Status": "Passed" if overlap_errors == 0 else "Failed"},
         {"Check": "Required Trips included in plan", "Errors": missing_trips, "Status": "Passed" if missing_trips == 0 else "Failed"},
         {"Check": "Charging Duration is at least 15 min", "Errors": invalid_charges, "Status": "Passed" if invalid_charges == 0 else "Failed"},
         {"Check": "Battery Capacity at least 10%", "Errors": battery_errors, "Status": "Passed" if battery_errors == 0 else "Failed"}
