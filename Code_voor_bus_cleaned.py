@@ -22,7 +22,8 @@ tt = pd.read_excel('Timetable.xlsx')
 # checks minimum battery value per bus (min 10%)
 def check_battery_feasibility(bp, start_battery=300):
     """Check if any bus falls below the minimum required battery capacity threshold."""
-    min_battery_value = (300 / 85 * 100) * 0.1  # 10% of real capacity
+    assumed_soh_percentage = 85
+    min_battery_value = (300 / assumed_soh_percentage * 100) * 0.1  # 10% of real capacity
     planning_sor = bp.sort_values(['bus', 'start time'])
     
     empty_bus = []
@@ -33,7 +34,7 @@ def check_battery_feasibility(bp, start_battery=300):
         
         for battery_lose in bus_data['energy consumption']:
             battery -= battery_lose
-            # Add a bus to empty_buss if battery < 10% of SOH-value and it hasn't already been placed there
+            # Add a bus to empty_bus if battery < 10% of SOH-value and it hasn't already been placed there
             if battery < min_battery_value and bus not in empty_bus:
                 empty_bus.append(bus)
         total_usage.append((bus, battery))
@@ -48,7 +49,7 @@ def check_battery_feasibility(bp, start_battery=300):
     for bus, battery in total_usage:
         print(f'Bus number {bus} has a battery content of {battery:.2f} kWh, when finishes his routes')
 
-    return empty_bus, total_usage
+    return empty_bus, total_usage, assumed_soh_percentage
 
 # checks whether no bus starts a trip before finishing the previous
 def check_bus_overlap(bp):
@@ -86,7 +87,7 @@ def check_location_continuity(bp):
         for i in range(len(bus_data)):
             if i == len(bus_data) - 1:
                 break
-            # If end location of trip i is not equal to start location of trip i+1->discontinunitie
+            # If end location of trip i is not equal to start location of trip i+1 -> discontinuity
             if bus_data['end location'][i] != bus_data['start location'][i + 1]:
                 discontinuities.append((bus, i, bus_data['end location'][i], bus_data['start location'][i + 1]))
     # Feasibility-outcome
@@ -130,7 +131,8 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
     bp['idle_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
 
     planning_sor = bp.sort_values(['bus', 'start time'])
-    min_battery_value = (300 / 85 * 100) * 0.1 #same formula used
+    assumed_soh_percentage = 85
+    min_battery_value = (300 / assumed_soh_percentage * 100) * 0.1 # same formula used
     # 2 Charging rates in kWh: quick one and slow one
     quick_recharge_speed = 450 / 60
     slow_recharge_speed = 60 / 60
@@ -172,7 +174,8 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
                 empty_bus.append(bus)
 
         total_usage.append((bus, battery))
-# Feasibility outcome
+
+    # Feasibility outcome
     if empty_bus:
         print("\nFEASIBILITY ERROR")
         print(f'Number of busses that came below 10% battery capacity: {len(empty_bus)}')
@@ -186,7 +189,7 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
         if (final_batt > 300) or (final_batt < 0):
             print(f'Bus {bus_id} has a final battery level that is not possible (above 300 kWh or under 0 kWh). \nThe battery level is: {final_batt:.2f} kWh')
 
-    return empty_bus, total_usage,number_charging_speeds
+    return empty_bus, total_usage, number_charging_speeds, assumed_soh_percentage
 
 # checks whether the required trips are all included in the schedule
 def check_required_trips(bp, tt):
@@ -287,7 +290,7 @@ def calculate_distances_and_kpis(bp, dm, tt):
     t_material_total = t_bst_to_gar + t_gar_to_bst + t_apt_to_gar + t_gar_to_apt + t_apt_to_bst + t_bst_to_apt
     print(f'Total of material trips: {t_material_total}')
     # return KPI-values
-    return total_distance_m, total_distance_km, deployed_buses_count,t_material_total
+    return total_distance_m, total_distance_km, deployed_buses_count, t_material_total
 
 # calculate total waiting time and the average waiting time per bus
 def calculate_waiting_time_kpis(bp, deployed_buses_count):
@@ -306,12 +309,11 @@ def calculate_waiting_time_kpis(bp, deployed_buses_count):
     # return KPI-values
     return tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus
 
-
 # Functions for all feasibility checks and kpi calculations
 def run_all_feasibility_checks(bp, tt):
     """Run all feasibility checks and return a summary dictionary."""
-    # Call charging constraint function once to extract battery errors and number of charging speeds
-    empty_buses, total_usage, number_charging_speeds = check_charging_constraint_and_speeds(bp)
+    # Call charging constraint function once to extract battery errors, speeds and soh
+    empty_buses, total_usage, number_charging_speeds, assumed_soh_percentage = check_charging_constraint_and_speeds(bp)
 
     # all functions of feasibility checks
     results = {
@@ -320,7 +322,8 @@ def run_all_feasibility_checks(bp, tt):
         "required_trips": check_required_trips(bp, tt),
         "charging_duration": check_valid_charging_duration(bp),
         "battery_feasibility": empty_buses,
-        "number_charging_speeds": number_charging_speeds
+        "number_charging_speeds": number_charging_speeds,
+        "assumed_soh_percentage": assumed_soh_percentage
     }
     
     # Correct evaluation of all pass conditions
@@ -330,7 +333,8 @@ def run_all_feasibility_checks(bp, tt):
         results["required_trips"] is True and
         results["charging_duration"] == 0 and
         len(results["battery_feasibility"]) == 0 and
-        results["number_charging_speeds"] == 2
+        results["number_charging_speeds"] == 2 and
+        (85 <= results["assumed_soh_percentage"] <= 95)
     )
     print("\nOVERALL FEASIBILITY RESULT:", "PASSED" if all_passed else "FAILED")
     return results
@@ -366,9 +370,12 @@ def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibil
     battery_errors = len(feasibility_results["battery_feasibility"])
     num_speeds = feasibility_results["number_charging_speeds"]
     speed_errors = 0 if num_speeds == 2 else 1
+    
+    soh_val = feasibility_results["assumed_soh_percentage"]
+    soh_errors = 0 if (85 <= soh_val <= 95) else 1
 
-    # Check overall pass status (zonder num_speeds op te tellen)
-    total_errors = loc_errors + overlap_errors + missing_trips + invalid_charges + battery_errors + speed_errors
+    # Check overall pass status
+    total_errors = loc_errors + overlap_errors + missing_trips + invalid_charges + battery_errors + soh_errors + speed_errors
     overall_status = "PASSED" if total_errors == 0 else "FAILED"
 
     # Get a feasibility summary
@@ -378,6 +385,7 @@ def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibil
         {"Check": "Required Trips of lines 400 and 401 included in bus plan", "Errors": missing_trips, "Status": "Passed" if missing_trips == 0 else "Failed"},
         {"Check": "Charging Duration is at least 15 min", "Errors": invalid_charges, "Status": "Passed" if invalid_charges == 0 else "Failed"},
         {"Check": "Number of Charging Speeds is equal to 2", "Errors": speed_errors, "Status": "Passed" if speed_errors == 0 else "Failed"},
+        {"Check": "Assumed SOH percentage between 85% and 95%", "Errors": soh_errors, "Status": "Passed" if soh_errors == 0 else "Failed"},
         {"Check": "Battery Capacity at least 10%", "Errors": battery_errors, "Status": "Passed" if battery_errors == 0 else "Failed"},
         {"Check": "Overall status bus plan", "Errors": total_errors, "Status": overall_status}
     ]
