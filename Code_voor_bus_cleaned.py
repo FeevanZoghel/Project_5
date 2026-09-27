@@ -357,7 +357,7 @@ def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibil
     feasibility_summary = [
         {"Check": "Location of end of trip and new trip match", "Errors": loc_errors, "Status": "Passed" if loc_errors == 0 else "Failed"},
         {"Check": "No Bus Overlap", "Errors": overlap_errors, "Status": "Passed" if overlap_errors == 0 else "Failed"},
-        {"Check": "Required Trips included in plan", "Errors": missing_trips, "Status": "Passed" if missing_trips == 0 else "Failed"},
+        {"Check": "Required Trips of lines 400 and 401 included in bus plan", "Errors": missing_trips, "Status": "Passed" if missing_trips == 0 else "Failed"},
         {"Check": "Charging Duration is at least 15 min", "Errors": invalid_charges, "Status": "Passed" if invalid_charges == 0 else "Failed"},
         {"Check": "Battery Capacity at least 10%", "Errors": battery_errors, "Status": "Passed" if battery_errors == 0 else "Failed"}
     ]
