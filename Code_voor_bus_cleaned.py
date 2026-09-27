@@ -390,7 +390,7 @@ def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibil
         {"Check": "Required Trips of lines 400 and 401 included in bus plan", "Errors": missing_trips, "Status": "Passed" if missing_trips == 0 else "Failed"},
         {"Check": "Charging Duration is at least 15 min", "Errors": invalid_charges, "Status": "Passed" if invalid_charges == 0 else "Failed"},
         {"Check": "Number of Charging Speeds is equal to 2", "Errors": speed_errors, "Status": "Passed" if speed_errors == 0 else "Failed"},
-        {"Check": f"Charging speeds configured (Quick (untill 90% battery capacity): {quick_speed:.2f} kWh/min, Slow (90-100% battery capacity): {slow_speed:.2f} kWh/min)", "Errors": 0, "Status": "Passed"},
+        {"Check": f"Charging speeds configured (Quick (0-90% battery capacity): {quick_speed:.2f} kWh/min, Slow (90-100% battery capacity): {slow_speed:.2f} kWh/min)", "Errors": 0, "Status": "Passed"},
         {"Check": "Assumed SOH percentage between 85% and 95%", "Errors": soh_errors, "Status": "Passed" if soh_errors == 0 else "Failed"},
         {"Check": "Battery Capacity at least 10%", "Errors": battery_errors, "Status": "Passed" if battery_errors == 0 else "Failed"},
         {"Check": "Overall status bus plan", "Errors": total_errors, "Status": overall_status}
