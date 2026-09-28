@@ -6,7 +6,7 @@ import pandas as pd
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.stats as st
+import scipy.stats as stats
 import math
 import time
 
@@ -26,7 +26,7 @@ w_busses = 0.5
 w_idle = 0.3
 w_material = 0.2 
 
-sum_of_weights = w_busses+w_idle+w_materiak
+sum_of_weights = w_busses+w_idle+w_material
 if round(sum_of_weights,3)!=1.0:
     raise ValueError(f"De gewichten moeten samen exact 1.0 zijn! De gewichten zijn nu samen: {sum_of_weights}")
 
@@ -53,13 +53,17 @@ min_busses, max_busses = 10, 20
 
 if 'idle_duration_min' in ibp.columns and not ibp['idle_duration_min'].empty:
     min_idle, max_idle = ibp['idle_duration_min'].min(), ibp['idle_duration_min'].max()
-    idle_trip_score = ibp['idle_duration_min'].sum()
+    idle_trip_score = ibp['idle_duration_min'].mean()
 else:
     min_idle, max_idle = 0, 100
     idle_trip_score = 0
 
 min_material, max_material = 0,material_connections['distance_m'].max()
-material_trip_score = total_distance_m
+material_trips = ibp[ibp['activity'] == 'material trip'] if 'activity' in ibp.columns else pd.DataFrame()
+if not material_trips.empty and 'distance_m' in material_trips.columns:
+    material_trip_score = material_trips['distance_m'].max()
+else:
+    material_trip_score = 0
 
 numb_busses = deployed_buses_count
 
