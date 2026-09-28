@@ -341,7 +341,6 @@ def run_all_feasibility_checks(bp, tt):
     print("\nOVERALL FEASIBILITY RESULT:", "PASSED" if all_passed else "FAILED")
     return results
 
-
 def run_all_kpi_calculations(bp, dm, tt):
     """Run all KPI calculations and return a summary dictionary."""
     total_energy = calculate_energy_consumption_kpis(bp)
@@ -411,3 +410,4 @@ export_results_to_excel(feasibility_results, kpi_results)
 t_end = time.perf_counter()
 computation_time = t_end - t_start
 print(f'Computation time: {computation_time:.2f} seconds.')
+

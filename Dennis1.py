@@ -1,105 +1,10 @@
 # Code_improved_bus_plan
-# Bas
-
-from Code_for_bus_cleaned import calculate_distances_and_kpis, 
-# Importing relevant Python libraries
-import pandas as pd 
-import streamlit as st
-import numpy as np
-import matplotlib.pyplot as plt
-import scipy.stats as stats
-import math
-import time
-
-# Start calculating calculation time of this code
-t_start = time.perf_counter()
-
-# Importing relevant data files
-dm = pd.read_excel('DistanceMatrix.xlsx')
-tt = pd.read_excel('Timetable.xlsx')
-
-# Dataframe for improved bus plan
-ibp = pd.DataFrame(columns=['start location', 'end location','start time','end time','activity','line','energy consumption','bus'])
-print(ibp)
-
-# Weights and weight error
-w_busses = 0.5
-w_idle = 0.3
-w_material = 0.2 
-
-sum_of_weights = w_busses+w_idle+w_material
-if round(sum_of_weights,3)!=1.0:
-    raise ValueError(f"De gewichten moeten samen exact 1.0 zijn! De gewichten zijn nu samen: {sum_of_weights}")
-
-# Most important variables
-start_location = ibp['start location']
-end_location = ibp['end location']
-start_time = ibp['start time']
-end_time = ibp['end time']
-activity = ibp['activity']
-line = ibp['line']
-energy_consumption = ibp['energy consumption']
-bus = ibp['bus']
-
-# Objective function (using normalized scores)
-total_distance_m, total_distance_km, deployed_buses_count, t_material_total = calculate_distances_and_kpis(ibp, dm, tt)
-material_connections = dm[
-    ((dm['start'] == 'ehvbst') & (dm['end'] == 'ehvgar')) |
-    ((dm['start'] == 'ehvgar') & (dm['end'] == 'ehvbst')) |
-    ((dm['start'] == 'ehvapt') & (dm['end'] == 'ehvgar')) |
-    ((dm['start'] == 'ehvgar') & (dm['end'] == 'ehvapt'))
-]
-
-min_busses, max_busses = 10, 20
-
-if 'idle_duration_min' in ibp.columns and not ibp['idle_duration_min'].empty:
-    min_idle, max_idle = ibp['idle_duration_min'].min(), ibp['idle_duration_min'].max()
-    idle_trip_score = ibp['idle_duration_min'].mean()
-else:
-    min_idle, max_idle = 0, 100
-    idle_trip_score = 0
-
-min_material, max_material = 0,material_connections['distance_m'].max()
-material_trips = ibp[ibp['activity'] == 'material trip'] if 'activity' in ibp.columns else pd.DataFrame()
-if not material_trips.empty and 'distance_m' in material_trips.columns:
-    material_trip_score = material_trips['distance_m'].max()
-else:
-    material_trip_score = 0
-
-numb_busses = deployed_buses_count
-
-norm_busses = (numb_busses - min_busses) / (max_busses - min_busses) if max_busses != min_busses else 0
-norm_idle = (idle_trip_score - min_idle) / (max_idle - min_idle) if max_idle != min_idle else 0
-norm_material = (material_trip_score - min_material) / (max_material - min_material) if max_material != min_material else 0
-
-total_score = (w_busses * norm_busses) + (w_idle * norm_idle) + (w_material * norm_material)
-
-
-# Number of trips per bus
-trips_per_bus = ibp.groupby('bus').size()
-
-
-# Checking whether the solution is feasible
-feasibility_results = run_all_feasibility_checks(ibp, tt)
-
-is_feasible = (
-    len(feasibility_results["location_continuity"]) == 0 and
-    len(feasibility_results["bus_overlap"]) == 0 and
-    feasibility_results["required_trips"] is True and
-    feasibility_results["charging_duration"] == 0 and
-    len(feasibility_results["battery_feasibility"]) == 0 and
-    feasibility_results["number_charging_speeds"] == 2 and
-    (85 <= feasibility_results["assumed_soh_percentage"] <= 95)
-)
-
-if is_feasible:
-    print("The busplan is feasible. You can calculate the objective value now.")
-else:
-    print("The busplan is not feasible. The objective value can now not be calculated.")
+import contextlib
+import sys
+from Code_for_bus_cleaned import check_charging_constraint_and_speeds, check_location_continuity, check_bus_overlap, check_required_trips, check_valid_charging_duration 
 
 # Code_improved_bus_plan
 # Dennis
-
 # Importing relevant Python libraries
 import pandas as pd 
 import streamlit as st
@@ -108,6 +13,8 @@ import matplotlib.pyplot as plt
 import scipy.stats as st
 import math
 import time
+import warnings
+warnings.filterwarnings("ignore")
 
 # Start calculating calculation time of this code
 t_start = time.perf_counter()
@@ -125,39 +32,77 @@ print(ibp)
 print(bus_plan_org)
 
 # 2. Maximaal aantal buscombinaties bepalen
-n = 1
+n = 5
 
-# 3. Dataframe aanmaken voor alle buscombinaties
-bus_comb = pd.DataFrame({})
+# 3. Dataframe aanmaken voor alle toegelaten buscombinaties
+bus_comb = pd.DataFrame({'Bus Combination': [],
+                         'Pass / Fail': [],
+                         'Total Score': []})
 
 # 4. Lijst aanmaken voor alle bustypen
 num_buses = len(bus_plan_org['bus'].unique())
 
-bussen = []
+
+
+def run_all_feasibility_checks(bp, tt):
+    """Run all feasibility checks and return a summary dictionary."""
+    # Call charging constraint function once to extract battery errors, speeds and soh
+    empty_buses, total_usage, number_charging_speeds, assumed_soh_percentage, quick_speed, slow_speed = check_charging_constraint_and_speeds(bp)
+
+    # all functions of feasibility checks
+    results = {
+        "location_continuity": check_location_continuity(bp),
+        "bus_overlap": check_bus_overlap(bp),
+        "required_trips": check_required_trips(bp, tt),
+        "charging_duration": check_valid_charging_duration(bp),
+        "battery_feasibility": empty_buses,
+        "number_charging_speeds": number_charging_speeds,
+        "assumed_soh_percentage": assumed_soh_percentage,
+        "quick_recharge_speed": quick_speed,
+        "slow_recharge_speed": slow_speed
+    }
+    
+    # Correct evaluation of all pass conditions
+    all_passed = (
+        len(results["location_continuity"]) == 0 and
+        len(results["bus_overlap"]) == 0 and
+        results["required_trips"] is True and
+        results["charging_duration"] == 0 and
+        len(results["battery_feasibility"]) == 0 and
+        results["number_charging_speeds"] == 2 and
+        (85 <= results["assumed_soh_percentage"] <= 95)
+    )
+    
+    feasiblity_result = ("PASS" if all_passed else "FAIL")
+    bus_comb.loc[x, 'Bus Combination'] = bus_sequence
+    bus_comb.loc[x, 'Pass / Fail'] = feasiblity_result
+    print(feasiblity_result)
+
 # 5. Buscombinaties bepalen in dataframe; met binaire getallen voor variabelen
 # Beslisvariabele: 	B_b = Bus b rijdt wél (a=1)  of niet (a=0)  in rooster, voorbeeld uitkomst: (1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1)
 x = 0
 for i in range(n):
-    bus_sequence = [] # 6. Te bepalen sequence voor bussen aanmaken
-    for j in range(num_buses):
-        bin_waarde = np.random.choice([0,1], p = [0.50, 0.50]) # Binaire waarde genereren voor busnummer i
-        bus_sequence.append(int(bin_waarde)) # Binaire waarde toevoegen aan 'bus_sequence'
+    bussen = []
+    bus_sequence = str() # Te bepalen sequence voor bussen aanmaken
+    bus_numbers_list = []
+    for j in range(num_buses): # Sequentie genereren van binaire variabelen voor bussen
+        bin_waarde = np.random.choice([0,1], p = [0.90, 0.10]) # Binaire waarde genereren voor busnummer i
+        bus_numbers_list.append(bin_waarde)
+        bus_sequence = bus_sequence + str(int(bin_waarde)) # Binaire waarde toevoegen aan 'bus_sequence'
     print(bus_sequence, '\n')
 
     # 6. Voor iedere buscombinatie nagaan of die voldoet aan gestelde eisen
-    index = 0
+    index1 = 0 # Index aanmaken die de index van de beslisvariabele bijhoudt
     for i in bus_sequence:
-        getal = bus_sequence[index]*(index+1) # Getal bepalen
-        bussen.append(getal) # Getal toevoegen aan 'bussen'
-        index += 1
+        getal = bus_numbers_list[index1]*(index1+1) # Getal bepalen
+        bussen.append(int(getal)) # Getal toevoegen aan 'bussen'
+        index1 += 1
     Bus_Planning_New = bus_plan_org[bus_plan_org['bus'].isin(bussen)] # Dataframe filtreren op random geselecteerde kolommen van 'bussen'
+    run_all_feasibility_checks(Bus_Planning_New, tt) # Feasiblity-check uitvoeren op vernieuwde busplanning met andere buscombinatie
+    x += 1
 
-print(Bus_Planning_New)
-
-# Nieuw gegenereerd busplan exporteren naar Excel
-Bus_Planning_New.to_excel('Bus_Planning_New.xlsx', index = False)
-
-feasibility_results = run_all_feasibility_checks(Bus_Planning_New, tt)
+print(bus_comb)
+print(bus_comb[bus_comb['Pass / Fail'] == 'PASS'])
 
 # Calculating computation time of this code
 t_end = time.perf_counter()
