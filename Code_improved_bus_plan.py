@@ -24,13 +24,14 @@ print(ibp)
 # Most important variables
 weight_number_busses = 0.5
 weight_idle_trips = 0.3
-weight_dist_material_trip = 0.2 
+weight_dist_material_trips = 0.2 
 
 # Checking sum of weights
 sum_of_weights = weight_number_busses+weight_idle_trips+weight_dist_material_trips
-if round(weight_number_busses,weight_idle_trips,weight_dist_material_trips,3)!=1.0:
-    raise ValueError(f"De gewichten moeten samen exact 1.0 zijn! De gewichten zijn nu samen: {deadline_weight+penalty_costs_weight}")
+if round(sum_of_weights,3)!=1.0:
+    raise ValueError(f"De gewichten moeten samen exact 1.0 zijn! De gewichten zijn nu samen: {sum_of_weights}")
 
+# Objective function
 
 
 
