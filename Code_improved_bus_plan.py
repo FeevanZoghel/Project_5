@@ -193,6 +193,8 @@ total_score = (w_busses * norm_busses) + (w_idle * norm_idle) + (w_material * no
 
 # Dennis
 
+# 1. Dataframes uitprinten
+print(ibo)
 
 
 
