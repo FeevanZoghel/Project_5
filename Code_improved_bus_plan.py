@@ -152,6 +152,8 @@ if round(weight_number_busses,weight_idle_trips,weight_dist_material_trips,3)!=1
 
 # Dennis
 
+# 1. Dataframes uitprinten
+print(ibo)
 
 
 
