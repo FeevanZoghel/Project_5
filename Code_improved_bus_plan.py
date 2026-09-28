@@ -21,17 +21,56 @@ tt = pd.read_excel('Timetable.xlsx')
 ibp = pd.DataFrame(columns=['start location', 'end location','start time','end time','activity','line','energy consumption','bus'])
 print(ibp)
 
-# Most important variables
-weight_number_busses = 0.5
-weight_idle_trips = 0.3
-weight_dist_material_trips = 0.2 
+# Weights and weight error
+w_busses = 0.5
+w_idle = 0.3
+w_material = 0.2 
 
-# Checking sum of weights
-sum_of_weights = weight_number_busses+weight_idle_trips+weight_dist_material_trips
+sum_of_weights = w_busses+w_idle+w_materiak
 if round(sum_of_weights,3)!=1.0:
     raise ValueError(f"De gewichten moeten samen exact 1.0 zijn! De gewichten zijn nu samen: {sum_of_weights}")
 
-# Objective function
+# Most important variables
+start_location = ibp['start location']
+end_location = ibp['end location']
+start_time = ibp['start time']
+end_time = ibp['end time']
+activity = ibp['activity']
+line = ibp['line']
+energy_consumption = ibp['energy consumption']
+bus = ibp['bus']
+
+# Objective function (using normalized scores)
+total_distance_m, total_distance_km, deployed_buses_count, t_material_total = calculate_distances_and_kpis(ibp, dm, tt)
+material_connections = dm[
+    ((dm['start'] == 'ehvbst') & (dm['end'] == 'ehvgar')) |
+    ((dm['start'] == 'ehvgar') & (dm['end'] == 'ehvbst')) |
+    ((dm['start'] == 'ehvapt') & (dm['end'] == 'ehvgar')) |
+    ((dm['start'] == 'ehvgar') & (dm['end'] == 'ehvapt'))
+]
+
+min_busses, max_busses = 10, 20
+
+if 'idle_duration_min' in ibp.columns and not ibp['idle_duration_min'].empty:
+    min_idle, max_idle = ibp['idle_duration_min'].min(), ibp['idle_duration_min'].max()
+    idle_trip_score = ibp['idle_duration_min'].sum()
+else:
+    min_idle, max_idle = 0, 100
+    idle_trip_score = 0
+
+min_material, max_material = 0,material_connections['distance_m'].max()
+material_trip_score = total_distance_m
+
+numb_busses = deployed_buses_count
+
+norm_busses = (numb_busses - min_busses) / (max_busses - min_busses) if max_busses != min_busses else 0
+norm_idle = (idle_trip_score - min_idle) / (max_idle - min_idle) if max_idle != min_idle else 0
+norm_material = (material_trip_score - min_material) / (max_material - min_material) if max_material != min_material else 0
+
+total_score = (w_busses * norm_busses) + (w_idle * norm_idle) + (w_material * norm_material)
+
+
+
 
 
 
