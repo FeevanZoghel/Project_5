@@ -74,10 +74,27 @@ norm_material = (material_trip_score - min_material) / (max_material - min_mater
 total_score = (w_busses * norm_busses) + (w_idle * norm_idle) + (w_material * norm_material)
 
 
+# Number of trips per bus
+trips_per_bus = ibp.groupby('bus').size()
 
 
+# Checking whether the solution is feasible
+feasibility_results = run_all_feasibility_checks(ibp, tt)
 
+is_feasible = (
+    len(feasibility_results["location_continuity"]) == 0 and
+    len(feasibility_results["bus_overlap"]) == 0 and
+    feasibility_results["required_trips"] is True and
+    feasibility_results["charging_duration"] == 0 and
+    len(feasibility_results["battery_feasibility"]) == 0 and
+    feasibility_results["number_charging_speeds"] == 2 and
+    (85 <= feasibility_results["assumed_soh_percentage"] <= 95)
+)
 
+if is_feasible:
+    print("The busplan is feasible. You can calculate the objective value now.")
+else:
+    print("The busplan is not feasible. The objective value can now not be calculated.")
 
 
 
