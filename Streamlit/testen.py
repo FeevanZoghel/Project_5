@@ -211,8 +211,8 @@ def gantt_chart_bus(bp):
     # Verdeel de bussen in groepen van maximaal 10
     groepen = []
 
-    for i in range(0, len(bussen), 4):
-        groepen.append(bussen[i:i + 4])
+    for i in range(0, len(bussen), 20):
+        groepen.append(bussen[i:i + 20])
 
     # Maak voor iedere groep een aparte grafiek
     for groep in groepen:
