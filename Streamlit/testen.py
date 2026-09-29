@@ -208,16 +208,16 @@ def gantt_chart_bus(bp):
     # Alle unieke bussen
     bussen = sorted(planning['bus'].unique())
 
-    # Verdeel de bussen in groepen van maximaal 5
+    # Verdeel de bussen in groepen van maximaal 10
     groepen = []
 
-    for i in range(0, len(bussen), 5):
-        groepen.append(bussen[i:i + 5])
+    for i in range(0, len(bussen), 10):
+        groepen.append(bussen[i:i + 10])
 
     # Maak voor iedere groep een aparte grafiek
     for groep in groepen:
 
-        fig, ax = plt.subplots(figsize=(10, 10))
+        fig, ax = plt.subplots(figsize=(20, 10))
 
         planning_groep = planning[planning['bus'].isin(groep)]
 
