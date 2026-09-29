@@ -73,7 +73,8 @@ elif keuze == "Data_check":
         df2 = pd.read_excel(bestand2)
 
         # Data check
-        check_all(df)
+        with st.container(border=True):
+            check_all(df)
         with st.container(border=True):
             st.subheader(" 🚌 Feasibility checks")
 
@@ -96,7 +97,8 @@ elif keuze == "Data_check":
                 st.checkbox("All Required trips", value = check_req_trips(df,df2), disabled = True)
 
         # Gantt chart
-        gantt_chart_bus(df)
+        with st.container(border=True):
+            gantt_chart_bus(df)
 
         # Planning
         st.subheader("Ingelezen planning")
