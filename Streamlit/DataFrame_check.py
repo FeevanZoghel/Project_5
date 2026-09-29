@@ -2,6 +2,9 @@ import pandas as pd
 import streamlit as st
 
 df = pd.read_excel('Bus_Plan_Cleaned.xlsx')
+tt = pd.read_excel('Timetable')
+dm = pd.read_excel('DistanceMatrix')
+
 
 def only_check_columns(df):
     '''
@@ -273,3 +276,129 @@ def check_all(df):
             times_check(df)
             energy_check(df)
             start_end_times(df)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##################DEFENITIES FOR FEASIBILITY CHECKS##########################
+
+
+def check_min_SOC(df):
+    assumed_soh = 85
+    begincapacity = 300
+    min_battery_value = (300 / assumed_soh * 100) * 0.1  # 10% of real capacity
+    planning_sor = df.sort_values(['bus', 'start time'])
+    
+    
+    # Sort by busses
+    for bus, bus_data in planning_sor.groupby('bus'):
+        battery = begincapacity
+        
+        for battery_lose in bus_data['energy consumption']:
+            battery -= battery_lose
+            if battery <min_battery_value:
+                return False 
+
+    return True
+
+def check_SOH(assumed_soh):
+    if 85<= assumed_soh <= 95:
+        return True
+    else: 
+        return False
+
+def check_end_begin_loc(df):
+    
+    planning = df.sort_values(['bus', 'start time']).reset_index(drop=True)
+    
+    # Check for every bus
+    for bus, bus_data in planning.groupby('bus'):
+        bus_data = bus_data.reset_index(drop=True)
+        for i in range(len(bus_data)):
+            if i == len(bus_data) - 1:
+                break
+            # If end location of trip i is not equal to start location of trip i+1 -> discontinuity
+            if bus_data['end location'][i] != bus_data['start location'][i + 1]:
+                return False
+            
+    return True
+
+def check_req_trips(df, tt):
+    
+    number_of_required_trips = len(tt)
+    service_trips_in_planning = df[df['activity'] == 'service trip']
+    num_planned_trips = len(service_trips_in_planning)
+    # feasibility-outcome
+    if number_of_required_trips == num_planned_trips:
+        return True
+    else:
+        numb_missing_trips = number_of_required_trips - num_planned_trips
+        return False
+
+def check_min_charging_time(df):
+    df['start_dt'] = pd.to_datetime('2026-01-01 ' + df['start time'].astype(str))
+    df['end_dt'] = pd.to_datetime('2026-01-01 ' + df['end time'].astype(str))
+    df['charging_duration_min'] = (df['end_dt'] - df['start_dt']).dt.total_seconds() / 60
+
+    for idx, row in df.iterrows():
+        if row['activity']== 'charging' and row['charging_duration_min']< 15: 
+            return False 
+
+    return True 
+
+def check_charging_speed(df):
+
+    quick_recharge_speed = 450 / 60 # kWh/min
+    slow_recharge_speed = 60 / 60   # kWh/min
+    charging_speeds = [quick_recharge_speed, slow_recharge_speed]
+    number_charging_speeds = len(charging_speeds)
+    begincapacity = 300
+
+    planning = df.sort_values(['bus', 'start time'])
+
+    for bus, bus_data in planning.groupby('bus'):
+        battery = begincapacity
+        for idx, row in bus_data.iterrows():
+            if row['activity'] == 'charging':
+                charging_duration = (pd.to_timedelta(str(row['end time']))- pd.to_timedelta(str(row['start time']))).total_seconds() / 60   
+                charging_speed = abs(row['energy consumption']) / charging_duration
+
+                if battery < 270:
+                    if charging_speed != quick_recharge_speed:
+                        return False
+                else:
+                    if charging_speed != slow_recharge_speed:
+                        return False
+                    
+            battery -= row['energy consumption']
+
+def check_overlapping_trips(df):
+    
+    planning_sor1 = df.sort_values(['bus', 'start time']).reset_index(drop=True)
+    for bus, bus_data in planning_sor1.groupby('bus'):
+        bus_data = bus_data.reset_index(drop=True)
+
+        for i in range(len(bus_data)):
+            for j in range(i+1, len(bus_data)):
+                if bus_data['end time'][i] > bus_data['start time'][j]:
+                    return False
+
+    return True
+
+

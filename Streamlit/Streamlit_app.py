@@ -63,7 +63,32 @@ elif keuze == "Data_check":
 
         check_all(df)
 
-        st.subheader("Ingelezen planning")
+        st.subheader("Feasibility checks")
+
+        check_1 = True
+        check_2 = True
+        check_3 = False
+
+        st.checkbox(
+            "No overlapping trips",
+            value=check_1,
+            disabled=True
+        )
+
+        st.checkbox(
+            "Minimum SOC requirement is maintained",
+            value=check_2,
+            disabled=True
+        )
+
+        st.checkbox(
+            "Charging constraints are satisfied",
+            value=check_3,
+            disabled=True
+        )
+
+        # Dataframe
+        st.subheader("Ingelezen planning") 
         st.dataframe(df.head(10))
 
 
