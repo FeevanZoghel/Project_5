@@ -185,6 +185,7 @@ def gantt_chart_bus(bp):
     Elke horizontale rij stelt een bus voor.
     Elke balk stelt een activiteit voor van start time tot end time.
     '''
+    activiteiten_in_legenda = []
 
     fig, ax = plt.subplots(figsize=(16, 7))
 
@@ -210,6 +211,12 @@ def gantt_chart_bus(bp):
 
         duration = end - start
 
+        if activity not in activiteiten_in_legenda:
+            label = activity
+            activiteiten_in_legenda.append(activity)
+        else:
+            label = None
+
         ax.barh(
             bus,
             duration,
@@ -217,9 +224,9 @@ def gantt_chart_bus(bp):
             height=0.6,
             color=kleuren[activity],
             edgecolor='black',
-            alpha=0.8
+            alpha=0.8,
+            label=label
         )
-
         if activity == 'service trip':
             line = planning.iloc[i]['line']
 
@@ -246,6 +253,7 @@ def gantt_chart_bus(bp):
     ax.set_xlabel('Time')
     ax.set_ylabel('Bus')
     ax.set_title('Gantt chart bus planning')
+    ax.legend()
 
     plt.tight_layout()
 
