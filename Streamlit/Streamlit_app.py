@@ -81,51 +81,19 @@ elif keuze == "Data_check":
 
         with col1:
             st.markdown("#### Battery & charging")
-
-            st.checkbox(
-                "Minimum SOC is maintained (10%)",
-                value=check_min_SOC(df),
-                disabled=True
-            )
-
-            st.checkbox(
-                "SOH is correct (between 85 and 95%)",
-                value=check_SOH(85),
-                disabled=True
-            )
-
-            st.checkbox(
-                "Minimum charging time (15 minutes)",
-                value=check_min_charging_time(df),
-                disabled=True
-            )
-
-            st.checkbox(
-                "Charging speed is correct",
-                value=check_charging_speed(df),
-                disabled=True
-            )
+            
+            st.checkbox("Minimum SOC is maintained (10%)", value=check_min_SOC(df), disabled=True )
+            st.checkbox("SOH is correct (between 85 and 95%)", value=check_SOH(85), disabled=True)
+            st.checkbox("Minimum charging time (15 minutes)", value=check_min_charging_time(df), disabled=True)
+            st.checkbox("Charging speed is correct", value=check_charging_speed(df), disabled=True)
 
 
         with col2:
             st.markdown("#### Planning")
 
-            st.checkbox(
-                "Start and end locations match",
-                value=check_end_begin_loc(df),
-                disabled=True
-            )
-
-            st.checkbox(
-                "No overlapping trips",
-                value=check_overlapping_trips(df),
-                disabled=True
-            )
-            st.checkbox(
-                "All Required trips",
-                value = check_req_trips(df,df2),
-                disabled = True
-            )
+            st.checkbox("Start and end locations match", value=check_end_begin_loc(df), disabled=True)
+            st.checkbox("No overlapping trips", value=check_overlapping_trips(df), disabled=True)
+            st.checkbox("All Required trips", value = check_req_trips(df,df2), disabled = True)
 
         # Gantt chart
         gantt_chart_bus(df)
