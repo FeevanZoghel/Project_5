@@ -217,7 +217,7 @@ def gantt_chart_bus(bp):
     # Maak voor iedere groep een aparte grafiek
     for groep in groepen:
 
-        fig, ax = plt.subplots(figsize=(30, 6))
+        fig, ax = plt.subplots(figsize=(50, 10))
 
         planning_groep = planning[planning['bus'].isin(groep)]
 
