@@ -66,8 +66,11 @@ elif keuze == "Data_check":
     st.title("Transdev Planning Checker")
     bestand = st.file_uploader("Upload een busplanning", type=["xlsx"])
 
+    bestand2 = st.file_uplader('upload een timetable', type = ['xlsx'])
+
     if bestand is not None:
         df = pd.read_excel(bestand)
+        df2 = pd.read_excel(bestand2)
 
         # Data check
         check_all(df)
@@ -119,8 +122,8 @@ elif keuze == "Data_check":
                 disabled=True
             )
             st.checkbox(
-                "All Required trips"
-                value = check_req_trips(df)
+                "All Required trips",
+                value = check_req_trips(df,df2)
                 disabled = True
             )
 
