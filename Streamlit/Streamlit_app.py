@@ -10,6 +10,7 @@ import streamlit as st
 import pandas as pd
 
 st.sidebar.title("Menu")
+st.write('hello world')
 
 keuze = st.sidebar.selectbox(
     "Kies een pagina",
