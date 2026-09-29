@@ -253,7 +253,6 @@ def start_end_times(df):
 
     return end
         
-
 def check_all(df):
     '''
     De check van alles
