@@ -123,7 +123,7 @@ elif keuze == "Data_check":
             )
             st.checkbox(
                 "All Required trips",
-                value = check_req_trips(df,df2)
+                value = check_req_trips(df,df2),
                 disabled = True
             )
 
