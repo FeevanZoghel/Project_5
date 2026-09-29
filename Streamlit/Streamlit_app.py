@@ -70,42 +70,13 @@ elif keuze == "Data_check":
     if bestand is not None and bestand2 is not None:
         df = pd.read_excel(bestand)
         df2 = pd.read_excel(bestand2)
-
-        # General checks: 
-        soc = check_min_SOC(df)
-        soh = check_SOH(85)
-        charging_time = check_min_charging_time(df)
-        charging_speed = check_charging_speed(df)
-
-        locations = check_end_begin_loc(df)
-        overlapping = check_overlapping_trips(df)
-        required_trips = check_req_trips(df, df2)
-
-        results = [
-            soc,
-            soh,
-            charging_time,
-            charging_speed,
-            locations,
-            overlapping,
-            required_trips
-        ]
-
-        passed_checks = sum(results)
-        all_feasible = all(results)
-
-        number_of_buses = df["bus"].nunique()
-
-        number_service_trips = len(df[df["activity"] == "service trip"])
-
-
         # Data check
         check_all(df)
 
         # Planning
         with st.container(border=True):
             st.subheader("Ingelezen planning")
-            st.dataframe(df.head(10))
+            st.dataframe(df)
         
         # Feasibility checks
         with st.container(border=True):
