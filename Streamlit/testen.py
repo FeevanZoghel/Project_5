@@ -256,7 +256,6 @@ def gantt_chart_bus(bp):
                 color=kleuren[activity],
                 edgecolor='grey',
                 linewidth=1,
-                label=label
             )
 
             # Tekst in de balken
