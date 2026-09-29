@@ -100,8 +100,11 @@ elif keuze == "Data_check":
 
 
         # Data check
-        with st.container(height = 500, border=True):
-            check_all(df)
+        with st.container(border=True):
+            st.error('Data is incorrect')
+            with st.expander("Click here for details"):
+                with st.container(height=400):
+                    check_all(df)
 
         # Planning
         with st.container(border=True):
