@@ -1,9 +1,9 @@
 import pandas as pd
 import streamlit as st
 
-df = pd.read_excel('Bus_Plan_Cleaned.xlsx')
-tt = pd.read_excel('Timetable.xlsx')
-dm = pd.read_excel('DistanceMatrix.xlsx')
+# df = pd.read_excel('Bus_Plan_Cleaned.xlsx')
+# tt = pd.read_excel('Timetable.xlsx')
+# dm = pd.read_excel('DistanceMatrix.xlsx')
 
 
 def only_check_columns(df):
