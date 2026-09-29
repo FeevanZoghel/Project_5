@@ -95,7 +95,67 @@ def clean(bp,dm,tt):
 
             distances[(i,start,end)] = distance
 
-        print(f'Distance from {start} to {end} (line {i}): {distance:.4f}')
+            print(f'Distance from {start} to {end} (line {i}): {distance:.4f}')
 
+
+    d_service_total_m = 0
+
+    for rij, trip in tt.iterrows():
+
+        line = trip['line']
+        start = trip['start']
+        end = trip['end']
+
+        distance = distances[(line,start,end)]
+
+        d_service_total_m += distance
+        d_service_total_km = d_service_total_m / 1000
+
+        print(f'Total service trip distance of the lines (meters): {d_service_total_m:.2f}')
+        print(f'Total service trip distance of the lines (kilometers): {d_service_total_km:.2f}')
+
+
+    material_distances = {}
+
+    material_dm = dm[dm['line'].isna()]
+
+    for rij,trip in material_dm.iterrows():
+
+        start = trip['start']
+        end = trip['end']
+        distance = trip['distance_m']
+
+        material_distances[(start,end)] = distance
+
+    d_material_total = 0
+    t_material_total = 0
+
+    total_distance_m = 0
+    total_distance_km = 0
+
+    material_trips = bp[bp['activity'] == 'material trip']
+
+    for rij, trip in material_trips.iterrows():
+
+        start = trip['start location']
+        end = trip['end location']
+
+        distance = material_distances[(start, end)]
+
+        d_material_total += distance
+        t_material_total += 1
+
+    total_distance_m = d_service_total_m + d_material_total
+    total_distance_km = total_distance_m / 1000
+
+    print(f'Total distance of service trips and material trips (meters): {total_distance_m:.2f}')
+    print(f'Total distance of service trips and material trips (kilometers): {total_distance_km:.2f}')
+
+    print(f'Total distance of material trips:{d_material_total:.2f}')
+
+    deployed_buses_count = bp['bus'].nunique()
+    print(f'The number of busses used:{deployed_buses_count}.')
+
+    return total_distance_m, total_distance_km, deployed_buses_count, t_material_total
 
 clean(bp,dm,tt)    
