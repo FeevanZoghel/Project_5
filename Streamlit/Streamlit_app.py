@@ -83,7 +83,7 @@ elif keuze == "Data_check":
             col1, col2 = st.columns(2)
 
             with col1:
-                st.markdown("####🔋 Battery & charging")
+                st.markdown("🔋 Battery & charging")
                 
                 st.checkbox("Minimum SOC is maintained (10%)", value=check_min_SOC(df), disabled=True )
                 st.checkbox("SOH is correct (between 85% and 95%)", value=check_SOH(85), disabled=True)
@@ -92,7 +92,7 @@ elif keuze == "Data_check":
 
 
             with col2:
-                st.markdown("####📍 Planning")
+                st.markdown("📍 Planning")
 
                 st.checkbox("Start and end locations match", value=check_end_begin_loc(df), disabled=True)
                 st.checkbox("No overlapping trips", value=check_overlapping_trips(df), disabled=True)
