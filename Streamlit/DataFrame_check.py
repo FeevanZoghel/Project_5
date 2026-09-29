@@ -271,11 +271,14 @@ def check_all(df):
         st.success('De data is compleet')
     else:
         st.error('Data is incorrect')
-        if st.button('Click here for details'):
-            check_columns(df)
-            times_check(df)
-            energy_check(df)
-            start_end_times(df)
+        with st.expander('Click here for details'):
+
+            with st.container(height=400):
+
+                check_columns(df)
+                times_check(df)
+                energy_check(df)
+                start_end_times(df)
 
 
 
