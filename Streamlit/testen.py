@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.stats as st
+import scipy.stats as sp
 import math
 import time
 
@@ -10,9 +10,9 @@ import time
 t_start = time.perf_counter()
 
 # Data importing
-bp = pd.read_excel('Bus_Plan_Cleaned.xlsx')
-dm = pd.read_excel('DistanceMatrix.xlsx')
-tt = pd.read_excel('Timetable.xlsx')
+# bp = pd.read_excel('Bus_Plan_Cleaned.xlsx')
+# dm = pd.read_excel('DistanceMatrix.xlsx')
+# tt = pd.read_excel('Timetable.xlsx')
 
 def distances_and_kpis(bp,dm,tt):
 
@@ -216,4 +216,3 @@ def gantt_chart_bus(bp):
     plt.tight_layout()
     st.pyplot(fig)
 
-gantt_chart_bus(bp)
