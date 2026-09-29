@@ -76,7 +76,7 @@ elif keuze == "Data_check":
         # Planning
         with st.container(border=True):
             st.subheader("Ingelezen planning")
-            st.dataframe(df)
+            st.dataframe(df, height =300)
         
         # Feasibility checks
         with st.container(border=True):
