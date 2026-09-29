@@ -105,12 +105,12 @@ def check_valid_charging_duration(bp):
     """Check and summarize charging sessions that meet the 15-minute threshold."""
     bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
     bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
-    bp['idle_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
+    bp['charging_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
 
-    # categorize idle trips/periods into valid charging sessions and not valid charging sessions 
-    valid_charging_trips = bp[(bp['activity'] == 'idle') & (bp['idle_duration_min'] >= 15)]
-    not_valid_charging_trips = bp[(bp['activity'] == 'idle') & (bp['idle_duration_min'] < 15)]
-    valid_charging_time = valid_charging_trips['idle_duration_min'].sum()
+    # categorize charging trips/periods into valid charging sessions and not valid charging sessions 
+    valid_charging_trips = bp[(bp['activity'] == 'charging') & (bp['charging_duration_min'] >= 15)]
+    not_valid_charging_trips = bp[(bp['activity'] == 'charging') & (bp['charging_duration_min'] < 15)]
+    valid_charging_time = valid_charging_trips['charging_duration_min'].sum()
     # feasibility-outcome
     if len(not_valid_charging_trips) > 0:
         print("\nFEASIBILITY ERROR")
@@ -128,7 +128,7 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
     """Simulate battery levels throughout the day considering quick and slow charging speeds."""
     bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
     bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
-    bp['idle_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
+    bp['charging_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
 
     planning_sor = bp.sort_values(['bus', 'start time'])
     assumed_battery_value = 85
@@ -150,8 +150,8 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
         battery = start_battery
         
         for idx, row in bus_data.iterrows():
-            if row['activity'] == 'idle' and row['idle_duration_min'] >= 15:
-                time_avail = row['idle_duration_min']
+            if row['activity'] == 'charging' and row['charging_duration_min'] >= 15:
+                time_avail = row['charging_duration_min']
                 # use quick_recharge_speed if energy of a bus < 270 kWh
                 if battery < 270:
                     needed_energy = 270 - battery
@@ -167,7 +167,7 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
                     battery += min(time_avail * slow_recharge_speed, 300 - battery)
 
             else:
-                if row['activity'] != 'idle':
+                if row['activity'] != 'charging':
                     battery -= row['energy consumption']
 
             if battery < min_battery_value and bus not in empty_bus:
@@ -294,12 +294,12 @@ def calculate_distances_and_kpis(bp, dm, tt):
 
 # calculate total waiting time and the average waiting time per bus
 def calculate_waiting_time_kpis(bp, deployed_buses_count):
-    """Calculate total fleet idle time and average waiting time per deployed bus."""
+    """Calculate total fleet charging time and average waiting time per deployed bus."""
     bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
     bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
-    # select idle and calculate waiting time
-    idle = bp[bp['activity'] == 'idle']
-    tot_waiting_time_min = (idle['end_dt'] - idle['start_dt']).dt.total_seconds().sum() / 60
+    # select charging and calculate waiting time
+    charging = bp[bp['activity'] == 'charging']
+    tot_waiting_time_min = (charging['end_dt'] - charging['start_dt']).dt.total_seconds().sum() / 60
     tot_waiting_time_hours = tot_waiting_time_min / 60
     avg_waiting_time_per_bus = tot_waiting_time_min / deployed_buses_count
 

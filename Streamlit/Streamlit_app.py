@@ -13,7 +13,7 @@ from DataFrame_check import (
 )
 
 from Berekeningen import bus_energy_check
-from testen import gantt_chart_bus
+from berekeningen_cleaned import gantt_chart_bus
 
 import streamlit as st
 import pandas as pd
@@ -64,78 +64,51 @@ if keuze == "Home":
 elif keuze == "Data_check":
 
     st.title("Transdev Planning Checker")
-    bestand = st.file_uploader("Upload een busplanning", type=["xlsx"])
+    bestand, bestand2 = st.file_uploader("Upload een busplanning en de timetable", type=["xlsx"], accept_multiple_files=True)
+    
 
-    if bestand is not None:
+    if bestand is not None and bestand2 is not None:
         df = pd.read_excel(bestand)
-
-        bestand2 = st.file_uploader('upload een timetable', type = ['xlsx'])
         df2 = pd.read_excel(bestand2)
-
         # Data check
         check_all(df)
 
-        st.subheader("Feasibility checks")
+        # Planning
+        with st.container(border=True):
+            st.subheader("Ingelezen planning")
+            st.dataframe(df, height =300)
+        
+        # Feasibility checks
+        with st.container(border=True):
+            st.subheader("Feasibility checks")
 
-        col1, col2 = st.columns(2)
+            col1, col2 = st.columns(2)
 
-        with col1:
-            st.markdown("#### Battery & charging")
-
-            st.checkbox(
-                "Minimum SOC is maintained",
-                value=check_min_SOC(df),
-                disabled=True
-            )
-
-            st.checkbox(
-                "SOH is correct",
-                value=check_SOH(85),
-                disabled=True
-            )
-
-            st.checkbox(
-                "Minimum charging time is maintained",
-                value=check_min_charging_time(df),
-                disabled=True
-            )
-
-            st.checkbox(
-                "Charging speed is correct",
-                value=check_charging_speed(df),
-                disabled=True
-            )
+            with col1:
+                st.markdown("🔋 Battery & charging")
+                
+                st.checkbox("Minimum SOC is maintained (10%)", value=check_min_SOC(df), disabled=True )
+                st.checkbox("SOH is correct (between 85% and 95%)", value=check_SOH(85), disabled=True)
+                st.checkbox("Minimum charging time (15 minutes)", value=check_min_charging_time(df), disabled=True)
+                st.checkbox("Charging speed is correct", value=check_charging_speed(df), disabled=True)
 
 
-        with col2:
-            st.markdown("#### Planning")
+            with col2:
+                st.markdown("📍 Planning")
 
-            st.checkbox(
-                "Start and end locations match",
-                value=check_end_begin_loc(df),
-                disabled=True
-            )
-
-            st.checkbox(
-                "No overlapping trips",
-                value=check_overlapping_trips(df),
-                disabled=True
-            )
-            st.checkbox(
-                "All Required trips",
-                value = check_req_trips(df,df2),
-                disabled = True
-            )
+                st.checkbox("Start and end locations match", value=check_end_begin_loc(df), disabled=True)
+                st.checkbox("No overlapping trips", value=check_overlapping_trips(df), disabled=True)
+                st.checkbox("All Required trips", value = check_req_trips(df,df2), disabled = True)
 
         # Gantt chart
-        gantt_chart_bus(df)
+        with st.container(border=True):
+            st.subheader("Bus planning overview")
+            gantt_chart_bus(df)
 
-        # Planning
-        st.subheader("Ingelezen planning")
-        st.dataframe(df.head(10))
+        
     
     
-    ########STUKJE VAN MATTHIJS#################
+    
 
 
 elif keuze == "Gegevens (KPI)":
