@@ -104,8 +104,9 @@ elif keuze == "Data_check":
             gantt_chart_bus(df)
 
         # Planning
-        st.subheader("Ingelezen planning")
-        st.dataframe(df.head(10))
+        with st.container(border=True):
+            st.subheader("Ingelezen planning")
+            st.dataframe(df.head(10))
     
     
     
