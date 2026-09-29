@@ -108,3 +108,27 @@ print(bus_comb[bus_comb['Pass / Fail'] == 'PASS'])
 t_end = time.perf_counter()
 computation_time = t_end - t_start
 print(f'Computation time: {computation_time:.2f} seconds.')
+
+
+
+
+index1 = 0
+for i in range (len(tt['start'].head(1))):
+    start_loc_tt = tt['start'][index1]
+    end_loc_tt = tt['end'][index1]
+    dep_time_tt = tt['departure_time'][index1]
+    line_tt = tt['line'][index1]
+
+
+    dep_time_tt = str(dep_time_tt)
+    dep_tijd = dt.datetime.strptime(dep_time_tt, '%H:%M')
+    print(dep_tijd.strftime('%H:%M'))
+
+print(tt)
+index2 = 0
+for j in range (len(bus_plan_org['start location'].head(1))):
+    waarde = bus_plan_org.iloc[index2]
+    print(waarde)
+    if start_loc_tt in waarde and end_loc_tt in waarde and dep_time_tt in waarde and line_tt in waarde:
+        print(index2, start_loc_tt, end_loc_tt, dep_time_tt, line_tt)
+    index2 += 1
