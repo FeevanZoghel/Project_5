@@ -186,12 +186,19 @@ def gantt_chart_bus(bp):
     Elke balk stelt een activiteit voor van start time tot end time.
     '''
 
-    fig,ax = plt.subplots(figsize = (16,7))
+    fig, ax = plt.subplots(figsize=(16, 7))
 
     planning = bp.sort_values(['bus', 'start time'])
 
     start_times = pd.to_timedelta(planning['start time'].astype(str))
     end_times = pd.to_timedelta(planning['end time'].astype(str))
+
+    kleuren = {
+        'service trip': 'skyblue',
+        'material trip': 'orange',
+        'idle': 'lightgrey',
+        'charging': 'yellowgreen'
+    }
 
     for i in range(len(planning)):
 
@@ -201,12 +208,39 @@ def gantt_chart_bus(bp):
         start = start_times.iloc[i].total_seconds() / 3600
         end = end_times.iloc[i].total_seconds() / 3600
 
+        duration = end - start
 
-        duration = end-start
+        ax.barh(
+            bus,
+            duration,
+            left=start,
+            height=0.6,
+            color=kleuren[activity],
+            edgecolor='black',
+            alpha=0.8
+        )
 
-        ax.barh(bus, duration, left = start, height = 0.6, edgecolor = 'black', alpha = 0.6)
+        if activity == 'service trip':
+            line = planning.iloc[i]['line']
 
-    ax.grid(axis = 'x', linestyle = '--', alpha = 0.7)
+            ax.text(
+                start + duration / 2,
+                bus,
+                f'{int(line)}',
+                ha='center',
+                va='center',
+                fontsize=8
+            )
+
+    eerste_uur = int(start_times.dt.total_seconds().min() / 3600)
+    laatste_uur = int(end_times.dt.total_seconds().max() / 3600) + 1
+
+    uren = range(eerste_uur, laatste_uur + 1)
+
+    ax.set_xticks(uren)
+    ax.set_xticklabels([f'{uur:02d}:00' for uur in uren])
+
+    ax.grid(axis='x', linestyle='--', alpha=0.7)
     ax.set_axisbelow(True)
 
     ax.set_xlabel('Time')
@@ -214,5 +248,5 @@ def gantt_chart_bus(bp):
     ax.set_title('Gantt chart bus planning')
 
     plt.tight_layout()
-    st.pyplot(fig)
 
+    st.pyplot(fig)
