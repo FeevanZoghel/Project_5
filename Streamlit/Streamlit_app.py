@@ -65,12 +65,39 @@ elif keuze == "Data_check":
 
     st.title("Transdev Planning Checker")
     bestand = st.file_uploader("Upload een busplanning", type=["xlsx"])
+    bestand2 = st.file_uploader("Upload een timetable", type=["xlsx"])
 
-    if bestand is not None:
+    if bestand is not None and bestand2 is not None:
         df = pd.read_excel(bestand)
-
-        bestand2 = st.file_uploader('upload een timetable', type = ['xlsx'])
         df2 = pd.read_excel(bestand2)
+
+        # General checks: 
+        soc = check_min_SOC(df)
+        soh = check_SOH(85)
+        charging_time = check_min_charging_time(df)
+        charging_speed = check_charging_speed(df)
+
+        locations = check_end_begin_loc(df)
+        overlapping = check_overlapping_trips(df)
+        required_trips = check_req_trips(df, df2)
+
+        results = [
+            soc,
+            soh,
+            charging_time,
+            charging_speed,
+            locations,
+            overlapping,
+            required_trips
+        ]
+
+        passed_checks = sum(results)
+        all_feasible = all(results)
+
+        number_of_buses = df["bus"].nunique()
+
+        number_service_trips = len(df[df["activity"] == "service trip"])
+
 
         # Data check
         with st.container(border=True):
