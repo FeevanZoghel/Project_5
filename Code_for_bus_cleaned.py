@@ -22,8 +22,8 @@ tt = pd.read_excel('Timetable.xlsx')
 # checks minimum battery value per bus (min 10%)
 def check_battery_feasibility(bp, start_battery=300):
     """Check if any bus falls below the minimum required battery capacity threshold."""
-    assumed_soh_percentage = 85
-    min_battery_value = (300 / assumed_soh_percentage * 100) * 0.1  # 10% of real capacity
+    assumed_battery_value = 85
+    min_battery_value = (300 / assumed_battery_value * 100) * 0.1  # 10% of real capacity
     planning_sor = bp.sort_values(['bus', 'start time'])
     
     empty_bus = []
@@ -49,7 +49,7 @@ def check_battery_feasibility(bp, start_battery=300):
     for bus, battery in total_usage:
         print(f'Bus number {bus} has a battery content of {battery:.2f} kWh, when finishes his routes')
 
-    return empty_bus, total_usage, assumed_soh_percentage
+    return empty_bus, total_usage, assumed_battery_value
 
 # checks whether no bus starts a trip before finishing the previous
 def check_bus_overlap(bp):
@@ -131,8 +131,8 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
     bp['idle_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
 
     planning_sor = bp.sort_values(['bus', 'start time'])
-    assumed_soh_percentage = 85
-    min_battery_value = (300 / assumed_soh_percentage * 100) * 0.1 # same formula used
+    assumed_battery_value = 85
+    min_battery_value = (300 / assumed_battery_value * 100) * 0.1 # same formula used
     # 2 Charging rates in kWh: quick one and slow one
     quick_recharge_speed = 450 / 60
     slow_recharge_speed = 60 / 60
@@ -189,7 +189,7 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
         if (final_batt > 300) or (final_batt < 0):
             print(f'Bus {bus_id} has a final battery level that is not possible (above 300 kWh or under 0 kWh). \nThe battery level is: {final_batt:.2f} kWh')
 
-    return empty_bus, total_usage, number_charging_speeds, assumed_soh_percentage, quick_recharge_speed, slow_recharge_speed
+    return empty_bus, total_usage, number_charging_speeds, assumed_battery_value, quick_recharge_speed, slow_recharge_speed
 
 # checks whether the required trips are all included in the schedule
 def check_required_trips(bp, tt):
@@ -313,7 +313,7 @@ def calculate_waiting_time_kpis(bp, deployed_buses_count):
 def run_all_feasibility_checks(bp, tt):
     """Run all feasibility checks and return a summary dictionary."""
     # Call charging constraint function once to extract battery errors, speeds and soh
-    empty_buses, total_usage, number_charging_speeds, assumed_soh_percentage, quick_speed, slow_speed = check_charging_constraint_and_speeds(bp)
+    empty_buses, total_usage, number_charging_speeds, assumed_battery_value, quick_speed, slow_speed = check_charging_constraint_and_speeds(bp)
 
     # all functions of feasibility checks
     results = {
@@ -323,7 +323,7 @@ def run_all_feasibility_checks(bp, tt):
         "charging_duration": check_valid_charging_duration(bp),
         "battery_feasibility": empty_buses,
         "number_charging_speeds": number_charging_speeds,
-        "assumed_soh_percentage": assumed_soh_percentage,
+        "assumed_battery_value": assumed_battery_value,
         "quick_recharge_speed": quick_speed,
         "slow_recharge_speed": slow_speed
     }
@@ -336,7 +336,7 @@ def run_all_feasibility_checks(bp, tt):
         results["charging_duration"] == 0 and
         len(results["battery_feasibility"]) == 0 and
         results["number_charging_speeds"] == 2 and
-        (85 <= results["assumed_soh_percentage"] <= 95)
+        (85 <= results["assumed_battery_value"] <= 95)
     )
     print("\nOVERALL FEASIBILITY RESULT:", "PASSED" if all_passed else "FAILED")
     return results
@@ -372,7 +372,7 @@ def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibil
     num_speeds = feasibility_results["number_charging_speeds"]
     speed_errors = 0 if num_speeds == 2 else 1
     
-    soh_val = feasibility_results["assumed_soh_percentage"]
+    soh_val = feasibility_results["assumed_battery_value"]
     soh_errors = 0 if (85 <= soh_val <= 95) else 1
 
     quick_speed = feasibility_results["quick_recharge_speed"]
