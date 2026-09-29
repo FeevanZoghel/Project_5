@@ -119,8 +119,8 @@ elif keuze == "Data_check":
                 disabled=True
             )
             st.checkbox(
-                "All Required trips"
-                value = check_req_trips(df)
+                "All Required trips",
+                value = check_req_trips(df),
                 disabled = True
             )
 
