@@ -5,7 +5,6 @@ import pandas as pd
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.stats as st
 import math
 import time
 
@@ -214,7 +213,19 @@ def check_required_trips(bp, tt):
 
 # calculates energy consumption per bus and total energy consumption of all busses
 def calculate_energy_consumption_kpis(bp):
-    """Calculate individual and fleet-wide total energy consumption in kWh."""
+    '''
+
+    Berekent het energieverbruik per bus en van alle bussen samen.
+
+    Alleen positieve waarden worden meegenomen, omdat negatieve
+    waarden het opladen van de batterij aangeven.
+
+    De functie werkt generiek voor elk aantal bussen en ritten.
+
+    return:
+        total_consumption
+    
+    '''
     planning_sor = bp.sort_values(['bus', 'start time'])
     total_consumption = 0
     # for every bus
@@ -232,81 +243,139 @@ def calculate_energy_consumption_kpis(bp):
 
 # defines all distances from service trips and material trips, calculates the number of busses used, calculates total driven distance of all busses and calculates the number of trips
 def calculate_distances_and_kpis(bp, dm, tt):
-    """Calculate total service/deadhead distances, trip counts, and active buses."""
-    # select the distance from the distance matrix, for each line
-    line_400 = dm[dm['line'] == 400]
-    line_401 = dm[dm['line'] == 401]
-    d_ar_to_st400 = line_400['distance_m'].iloc[0]
-    d_st_to_ar400 = line_400['distance_m'].iloc[1]
-    d_ar_to_st401 = line_401['distance_m'].iloc[0]
-    d_st_to_ar401 = line_401['distance_m'].iloc[1]
+    '''
+    
+    Maakt de berekeningen voor de KPI's generiek.
 
-    print(f'Distance for airport to station (line 400):{d_ar_to_st400:.2f}')
-    print(f'Distance from station to airport (line 400):{d_st_to_ar400:.2f}')
-    print(f'Distance from airport to station (line 401): {d_ar_to_st401:.2f}')
-    print(f'Distance from station to aiport (line 401): {d_st_to_ar401:.2f}')
+    Haalt de lijnen, startlocaties, eindlocaties en afstanden automatisch
+    uit de Distance Matrix, Timetable en Bus Planning.
 
-    t_ar_to_st400 = len(tt[(tt['line'] == 400) & (tt['start'] == 'ehvapt') & (tt['end'] == 'ehvbst')])
-    t_st_to_ar400 = len(tt[(tt['line'] == 400) & (tt['start'] == 'ehvbst') & (tt['end'] == 'ehvapt')])
-    t_ar_to_st401 = len(tt[(tt['line'] == 401) & (tt['start'] == 'ehvapt') & (tt['end'] == 'ehvbst')])
-    t_st_to_ar401 = len(tt[(tt['line'] == 401) & (tt['start'] == 'ehvbst') & (tt['end'] == 'ehvapt')])
-    # calculate total service trip distance seperatly for line 400 and for line 401
-    d_400 = (t_ar_to_st400 * d_ar_to_st400) + (t_st_to_ar400 * d_st_to_ar400)
-    d_401 = (t_ar_to_st401 * d_ar_to_st401) + (t_st_to_ar401 * d_st_to_ar401)
+    Berekent:
+        - totale afstand van service trips
+        - totale afstand van material trips
+        - totale gereden afstand
+        - aantal gebruikte bussen
+        - totaal aantal material trips
 
-    d_service_total_m = d_400 + d_401
-    d_service_total_km = d_service_total_m / 1000
+    Hierdoor hoeven lijnnummers en locaties niet handmatig in de code te worden gezet.
 
-    print(f'Total service trip distance of lines 400 and 401 (meters): {d_service_total_m:.2f}')
-    print(f'Total service trip distance of lines 400 and 401 (kilometers): {d_service_total_km:.2f}')
+    return:
+        total_distance_m
+        total_distance_km
+        deployed_buses_count
+        t_material_total
 
-    # find the material trips and corresponding distances
-    t_bst_to_gar = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvbst') & (bp['end location'] == 'ehvgar')])
-    t_gar_to_bst = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvgar') & (bp['end location'] == 'ehvbst')])
-    t_apt_to_gar = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvapt') & (bp['end location'] == 'ehvgar')])
-    t_gar_to_apt = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvgar') & (bp['end location'] == 'ehvapt')])
-    t_apt_to_bst = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvapt') & (bp['end location'] == 'ehvbst')])
-    t_bst_to_apt = len(bp[(bp['activity'] == 'material trip') & (bp['start location'] == 'ehvbst') & (bp['end location'] == 'ehvapt')])
+    '''
 
-    d_bst_to_gar = dm[(dm['start'] == 'ehvbst') & (dm['end'] == 'ehvgar')]['distance_m'].iloc[0]
-    d_gar_to_bst = dm[(dm['start'] == 'ehvgar') & (dm['end'] == 'ehvbst')]['distance_m'].iloc[0]
-    d_apt_to_gar = dm[(dm['start'] == 'ehvapt') & (dm['end'] == 'ehvgar')]['distance_m'].iloc[0]
-    d_gar_to_apt = dm[(dm['start'] == 'ehvgar') & (dm['end'] == 'ehvapt')]['distance_m'].iloc[0]
-    # calculate total material trips distance
-    d_material_total = (t_bst_to_gar * d_bst_to_gar) + (t_gar_to_bst * d_gar_to_bst) + (t_apt_to_gar * d_apt_to_gar) + (t_gar_to_apt * d_gar_to_apt)
-    # calculate total distance
+    lines                   = dm['line'].dropna().unique()
+    material_dm             = dm[dm['line'].isna()]
+    material_trips          = bp[bp['activity'] == 'material trip']
+    deployed_buses_count    = bp['bus'].nunique()
+    
+    distances               = {}
+    material_distances      = {}    
+
+    d_service_total_m       = 0
+    d_material_total        = 0
+    t_material_total        = 0
+
+    total_distance_m        = 0
+    total_distance_km       = 0
+
+    for i in lines:
+        line = dm[dm['line'] == i]
+
+        for rij, trip in line.iterrows():
+
+            start = trip['start']
+            end = trip['end']
+            distance = trip['distance_m']
+
+            distances[(i,start,end)] = distance
+
+            print(f'Distance from {start} to {end} (line {i}): {distance:.4f}')
+    
+    for rij, trip in tt.iterrows():
+
+        line = trip['line']
+        start = trip['start']
+        end = trip['end']
+
+        distance = distances[(line,start,end)]
+
+        d_service_total_m += distance
+        d_service_total_km = d_service_total_m / 1000
+
+        print(f'Total service trip distance of the lines (meters): {d_service_total_m:.2f}')
+        print(f'Total service trip distance of the lines (kilometers): {d_service_total_km:.2f}')
+
+    for rij,trip in material_dm.iterrows():
+
+        start = trip['start']
+        end = trip['end']
+        distance = trip['distance_m']
+
+        material_distances[(start,end)] = distance
+
+    for rij, trip in material_trips.iterrows():
+
+        start = trip['start location']
+        end = trip['end location']
+
+        distance = material_distances[(start, end)]
+
+        d_material_total += distance
+        t_material_total += 1
+
     total_distance_m = d_service_total_m + d_material_total
     total_distance_km = total_distance_m / 1000
 
     print(f'Total distance of service trips and material trips (meters): {total_distance_m:.2f}')
     print(f'Total distance of service trips and material trips (kilometers): {total_distance_km:.2f}')
-    print(f'Total distance of material trips:{d_material_total:.2f}')
-    # number of busses used
-    deployed_buses_count = bp['bus'].nunique()
-    print(f'The number of busses used:{deployed_buses_count}.')
-    print(f'Total distance (kilometers): {total_distance_km:.2f}.')
-    print(f'Total distance (meters):{total_distance_m:.2f}.')
-    
-    t_material_total = t_bst_to_gar + t_gar_to_bst + t_apt_to_gar + t_gar_to_apt + t_apt_to_bst + t_bst_to_apt
-    print(f'Total of material trips: {t_material_total}')
-    # return KPI-values
+
+    print(f'Total distance of material trips: {d_material_total:.2f}')
+
+    print(f'The number of busses used: {deployed_buses_count}.')
+
     return total_distance_m, total_distance_km, deployed_buses_count, t_material_total
+
 
 # calculate total waiting time and the average waiting time per bus
 def calculate_waiting_time_kpis(bp, deployed_buses_count):
-    """Calculate total fleet idle time and average waiting time per deployed bus."""
-    bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
-    bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
-    # select idle and calculate waiting time
+    """
+    
+    Berekent de wachttijd van alle bussen.
+
+    Selecteert automatisch alle activiteiten met 'idle' en berekent
+    het verschil tussen de starttijd en eindtijd.
+
+    Berekent:
+        - totale wachttijd in minuten
+        - totale wachttijd in uren
+        - gemiddelde wachttijd per gebruikte bus
+
+    return:
+        tot_waiting_time_min
+        tot_waiting_time_hours
+        avg_waiting_time_per_bus
+
+    """
+
+    start_time = pd.to_timedelta(bp['start time'].astype(str))
+    end_time = pd.to_timedelta(bp['end time'].astype(str))
+
     idle = bp[bp['activity'] == 'idle']
-    tot_waiting_time_min = (idle['end_dt'] - idle['start_dt']).dt.total_seconds().sum() / 60
+
+    waiting_time = end_time[idle.index] - start_time[idle.index]
+
+    tot_waiting_time_min = waiting_time.dt.total_seconds().sum() / 60
     tot_waiting_time_hours = tot_waiting_time_min / 60
     avg_waiting_time_per_bus = tot_waiting_time_min / deployed_buses_count
 
     print(f'Total waiting time in minutes: {tot_waiting_time_min:.2f}')
     print(f'Total waiting time in hours: {tot_waiting_time_hours:.2f}')
     print(f'Average waiting time per bus (minutes): {avg_waiting_time_per_bus:.2f}')
-    # return KPI-values
+
     return tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus
 
 # Functions for all feasibility checks and kpi calculations
@@ -411,3 +480,135 @@ t_end = time.perf_counter()
 computation_time = t_end - t_start
 print(f'Computation time: {computation_time:.2f} seconds.')
 
+def gantt_chart_bus(bp):
+    '''
+    Maakt Gantt-charts van de busplanning.
+
+    Elke horizontale rij stelt een bus voor.
+    Elke balk stelt een activiteit voor van start time tot end time.
+
+    De bussen worden verdeeld over grafieken met maximaal
+    vijf bussen per grafiek.
+    '''
+
+    planning = bp.sort_values(['bus', 'start time'])
+
+    start_times = pd.to_timedelta(planning['start time'].astype(str))
+    end_times = pd.to_timedelta(planning['end time'].astype(str))
+
+    planning = planning.copy()
+    planning['start_hour'] = start_times.dt.total_seconds() / 3600
+    planning['end_hour'] = end_times.dt.total_seconds() / 3600
+
+    kleuren = {
+        'service trip': 'skyblue',
+        'material trip': 'orange',
+        'idle': 'lightgrey',
+        'charging': 'yellowgreen'
+    }
+
+    # Alle unieke bussen
+    bussen = sorted(planning['bus'].unique())
+
+    # Verdeel de bussen in groepen van maximaal 10
+    groepen = []
+
+    for i in range(0, len(bussen), 20):
+        groepen.append(bussen[i:i + 20])
+
+    # Maak voor iedere groep een aparte grafiek
+    for groep in groepen:
+
+        fig, ax = plt.subplots(figsize=(15, 5))
+
+        planning_groep = planning[planning['bus'].isin(groep)]
+
+        bus_posities = {}
+
+        for i in range(len(groep)):
+            bus_posities[groep[i]] = i
+
+        activiteiten_in_legenda = []
+
+        for i in range(len(planning_groep)):
+
+            trip = planning_groep.iloc[i]
+
+            bus = trip['bus']
+            activity = trip['activity']
+
+            start = trip['start_hour']
+            end = trip['end_hour']
+
+            duration = end - start
+
+            y = bus_posities[bus]
+
+            if activity not in activiteiten_in_legenda:
+                label = activity
+                activiteiten_in_legenda.append(activity)
+            else:
+                label = None
+
+            ax.barh(
+                y,
+                duration,
+                left=start,
+                height=0.8,
+                color=kleuren[activity],
+                edgecolor='grey',
+                linewidth=1,
+                label = label
+            )
+
+            # Tekst in de balken
+            if activity == 'service trip':
+
+                line = trip['line']
+
+                ax.text(
+                    start + duration / 2,
+                    y,
+                    f'{int(line)}',
+                    ha='center',
+                    va='center',
+                    fontsize=8
+                )
+
+
+        # Tijd-as
+        eerste_uur = int(planning['start_hour'].min())
+        laatste_uur = int(planning['end_hour'].max()) + 1
+
+        uren = range(eerste_uur, laatste_uur + 1)
+
+        ax.set_xticks(uren)
+        ax.set_xticklabels([f'{uur:02d}:00' for uur in uren])
+
+        # Busnummers
+        ax.set_yticks(range(len(groep)))
+        ax.set_yticklabels([f'Bus {bus}' for bus in groep])
+
+        # Tijd bovenaan
+        ax.xaxis.tick_top()
+        ax.xaxis.set_label_position('top')
+
+        ax.grid(axis='x', linestyle='-', alpha=0.4)
+        ax.set_axisbelow(True)
+
+        ax.set_xlabel('Time')
+        ax.set_ylabel('Bus')
+
+        ax.set_title(
+            f'Gantt chart bus {groep[0]} - {groep[-1]}'
+        )
+
+        ax.legend(
+            loc='upper center',
+            bbox_to_anchor=(0.5, -0.08),
+            ncol=4
+        )
+
+        plt.tight_layout()
+
+        st.pyplot(fig)
