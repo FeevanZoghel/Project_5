@@ -1,12 +1,19 @@
 #URL:
 #https://project5-jmfoec4ruxwpczdw5mf76w.streamlit.app/
 
-from DataFrame_check import check_all
+from DataFrame_check import (
+    check_all,
+    check_min_SOC,
+    check_SOH,
+    check_end_begin_loc,
+    check_req_trips,
+    check_min_charging_time,
+    check_charging_speed,
+    check_overlapping_trips
+)
 
 from Berekeningen import bus_energy_check
-
 from testen import gantt_chart_bus
-
 
 import streamlit as st
 import pandas as pd
@@ -55,22 +62,52 @@ if keuze == "Home":
 
 
 elif keuze == "Data_check":
-    st.header("Data")
-    st.write("Hier komt de data.")
-    st.title("Transdev Planning Checker")
 
+    st.title("Transdev Planning Checker")
     bestand = st.file_uploader("Upload een busplanning", type=["xlsx"])
 
     if bestand is not None:
         df = pd.read_excel(bestand)
 
+        # Data check
         check_all(df)
+
+        # Feasibility checks
+        st.subheader("Feasibility checks")
+
+        checks = {
+            "Minimum SOC is maintained": check_min_SOC(df),
+            "SOH is correct": check_SOH(85),
+            "Start and end locations match": check_end_begin_loc(df),
+            "Minimum charging time is maintained": check_min_charging_time(df),
+            "Charging speed is correct": check_charging_speed(df),
+            "No overlapping trips": check_overlapping_trips(df)
+        }
+
+        for naam, resultaat in checks.items():
+
+            col1, col2 = st.columns([8, 1])
+
+            with col1:
+                st.write(naam)
+
+            with col2:
+                st.checkbox(
+                    "",
+                    value=resultaat,
+                    disabled=True,
+                    key=naam
+                )
+
+        # Gantt chart
         gantt_chart_bus(df)
 
+        # Planning
         st.subheader("Ingelezen planning")
         st.dataframe(df.head(10))
-
-
+    
+    
+    ########STUKJE VAN MATTHIJS#################
 
 
 elif keuze == "Gegevens (KPI)":
