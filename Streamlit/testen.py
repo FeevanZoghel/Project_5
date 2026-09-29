@@ -273,27 +273,6 @@ def gantt_chart_bus(bp):
                     fontsize=8
                 )
 
-            elif activity == 'charging':
-
-                ax.text(
-                    start + duration / 2,
-                    y,
-                    'Charging',
-                    ha='center',
-                    va='center',
-                    fontsize=7
-                )
-
-            elif activity == 'material trip':
-
-                ax.text(
-                    start + duration / 2,
-                    y,
-                    'Material',
-                    ha='center',
-                    va='center',
-                    fontsize=7
-                )
 
         # Tijd-as
         eerste_uur = int(planning['start_hour'].min())
