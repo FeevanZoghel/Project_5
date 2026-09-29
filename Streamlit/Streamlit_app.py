@@ -13,7 +13,7 @@ from DataFrame_check import (
 )
 
 from Berekeningen import bus_energy_check
-from testen import gantt_chart_bus
+from berekeningen_cleaned import gantt_chart_bus
 
 import streamlit as st
 import pandas as pd
