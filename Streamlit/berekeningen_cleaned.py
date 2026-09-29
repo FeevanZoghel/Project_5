@@ -12,9 +12,9 @@ import time
 t_start = time.perf_counter()
 
 # Data importing
-# bp = pd.read_excel('Bus_Plan_Cleaned.xlsx')
-# dm = pd.read_excel('DistanceMatrix.xlsx')
-# tt = pd.read_excel('Timetable.xlsx')
+bp = pd.read_excel('Bus_Plan_Cleaned.xlsx')
+dm = pd.read_excel('DistanceMatrix.xlsx')
+tt = pd.read_excel('Timetable.xlsx')
 
 # Feasibility checks
 
