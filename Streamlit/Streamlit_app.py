@@ -66,7 +66,7 @@ elif keuze == "Data_check":
     st.title("Transdev Planning Checker")
     bestand = st.file_uploader("Upload een busplanning", type=["xlsx"])
 
-    bestand2 = st.file_uplader('upload een timetable', type = ['xlsx'])
+    bestand2 = st.file_uploader('upload een timetable', type = ['xlsx'])
 
     if bestand is not None:
         df = pd.read_excel(bestand)
