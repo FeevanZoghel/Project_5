@@ -72,32 +72,52 @@ elif keuze == "Data_check":
         # Data check
         check_all(df)
 
-        # Feasibility checks
         st.subheader("Feasibility checks")
 
-        checks = {
-            "Minimum SOC is maintained": check_min_SOC(df),
-            "SOH is correct": check_SOH(85),
-            "Start and end locations match": check_end_begin_loc(df),
-            "Minimum charging time is maintained": check_min_charging_time(df),
-            "Charging speed is correct": check_charging_speed(df),
-            "No overlapping trips": check_overlapping_trips(df)
-        }
+        col1, col2 = st.columns(2)
 
-        for naam, resultaat in checks.items():
+        with col1:
+            st.markdown("#### Battery & charging")
 
-            col1, col2 = st.columns([8, 1])
+            st.checkbox(
+                "Minimum SOC is maintained",
+                value=check_min_SOC(df),
+                disabled=True
+            )
 
-            with col1:
-                st.write(naam)
+            st.checkbox(
+                "SOH is correct",
+                value=check_SOH(85),
+                disabled=True
+            )
 
-            with col2:
-                st.checkbox(
-                    "",
-                    value=resultaat,
-                    disabled=True,
-                    key=naam
-                )
+            st.checkbox(
+                "Minimum charging time is maintained",
+                value=check_min_charging_time(df),
+                disabled=True
+            )
+
+            st.checkbox(
+                "Charging speed is correct",
+                value=check_charging_speed(df),
+                disabled=True
+            )
+
+
+        with col2:
+            st.markdown("#### Planning")
+
+            st.checkbox(
+                "Start and end locations match",
+                value=check_end_begin_loc(df),
+                disabled=True
+            )
+
+            st.checkbox(
+                "No overlapping trips",
+                value=check_overlapping_trips(df),
+                disabled=True
+            )
 
         # Gantt chart
         gantt_chart_bus(df)
