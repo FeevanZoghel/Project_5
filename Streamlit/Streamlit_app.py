@@ -90,14 +90,7 @@ elif keuze == "Data_check":
             overlapping,
             required_trips
         ]
-        st.write("SOC:", soc)
-        st.write("SOH:", soh)
-        st.write("Charging time:", charging_time)
-        st.write("Charging speed:", charging_speed)
-        st.write("Locations:", locations)
-        st.write("Overlapping:", overlapping)
-        st.write("Required trips:", required_trips)
-        
+
         passed_checks = sum(results)
         all_feasible = all(results)
 
@@ -107,7 +100,7 @@ elif keuze == "Data_check":
 
 
         # Data check
-        with st.container(border=True):
+        with st.container(height = 500, border=True):
             check_all(df)
 
         # Planning
