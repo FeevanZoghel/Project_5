@@ -83,7 +83,7 @@ elif keuze == "Data_check":
         
         # Feasibility checks
         with st.container(border=True):
-            st.subheader("🚌 Feasibility checks")
+            st.subheader("Feasibility checks")
 
             col1, col2 = st.columns(2)
 
@@ -105,7 +105,7 @@ elif keuze == "Data_check":
 
         # Gantt chart
         with st.container(border=True):
-            st.subheader("🚌 Bus planning overview")
+            st.subheader("Bus planning overview")
             gantt_chart_bus(df)
 
         
