@@ -180,18 +180,23 @@ def calculate_energy_consumption_kpis(bp):
 
 def gantt_chart_bus(bp):
     '''
-    Maakt een Gantt-chart van de busplanning.
+    Maakt Gantt-charts van de busplanning.
 
     Elke horizontale rij stelt een bus voor.
     Elke balk stelt een activiteit voor van start time tot end time.
-    '''
 
-    fig, ax = plt.subplots(figsize=(20, 8))
+    De bussen worden verdeeld over grafieken met maximaal
+    vijf bussen per grafiek.
+    '''
 
     planning = bp.sort_values(['bus', 'start time'])
 
     start_times = pd.to_timedelta(planning['start time'].astype(str))
     end_times = pd.to_timedelta(planning['end time'].astype(str))
+
+    planning = planning.copy()
+    planning['start_hour'] = start_times.dt.total_seconds() / 3600
+    planning['end_hour'] = end_times.dt.total_seconds() / 3600
 
     kleuren = {
         'service trip': 'skyblue',
@@ -200,106 +205,129 @@ def gantt_chart_bus(bp):
         'charging': 'yellowgreen'
     }
 
-    bussen = planning['bus'].unique()
+    # Alle unieke bussen
+    bussen = sorted(planning['bus'].unique())
 
-    bus_posities = {}
+    # Verdeel de bussen in groepen van maximaal 5
+    groepen = []
 
-    for i in range(len(bussen)):
-        bus_posities[bussen[i]] = i
+    for i in range(0, len(bussen), 5):
+        groepen.append(bussen[i:i + 5])
 
-    activiteiten_in_legenda = []
+    # Maak voor iedere groep een aparte grafiek
+    for groep in groepen:
 
-    for i in range(len(planning)):
+        fig, ax = plt.subplots(figsize=(20, 6))
 
-        bus = planning.iloc[i]['bus']
-        activity = planning.iloc[i]['activity']
+        planning_groep = planning[planning['bus'].isin(groep)]
 
-        start = start_times.iloc[i].total_seconds() / 3600
-        end = end_times.iloc[i].total_seconds() / 3600
+        bus_posities = {}
 
-        duration = end - start
+        for i in range(len(groep)):
+            bus_posities[groep[i]] = i
 
-        y = bus_posities[bus]
+        activiteiten_in_legenda = []
 
-        if activity not in activiteiten_in_legenda:
-            label = activity
-            activiteiten_in_legenda.append(activity)
-        else:
-            label = None
+        for i in range(len(planning_groep)):
 
-        ax.barh(
-            y,
-            duration,
-            left=start,
-            height=0.8,
-            color=kleuren[activity],
-            edgecolor='grey',
-            linewidth=1,
-            label=label
+            trip = planning_groep.iloc[i]
+
+            bus = trip['bus']
+            activity = trip['activity']
+
+            start = trip['start_hour']
+            end = trip['end_hour']
+
+            duration = end - start
+
+            y = bus_posities[bus]
+
+            if activity not in activiteiten_in_legenda:
+                label = activity
+                activiteiten_in_legenda.append(activity)
+            else:
+                label = None
+
+            ax.barh(
+                y,
+                duration,
+                left=start,
+                height=0.8,
+                color=kleuren[activity],
+                edgecolor='grey',
+                linewidth=1,
+                label=label
+            )
+
+            # Tekst in de balken
+            if activity == 'service trip':
+
+                line = trip['line']
+
+                ax.text(
+                    start + duration / 2,
+                    y,
+                    f'{int(line)}',
+                    ha='center',
+                    va='center',
+                    fontsize=8
+                )
+
+            elif activity == 'charging':
+
+                ax.text(
+                    start + duration / 2,
+                    y,
+                    'Charging',
+                    ha='center',
+                    va='center',
+                    fontsize=7
+                )
+
+            elif activity == 'material trip':
+
+                ax.text(
+                    start + duration / 2,
+                    y,
+                    'Material',
+                    ha='center',
+                    va='center',
+                    fontsize=7
+                )
+
+        # Tijd-as
+        eerste_uur = int(planning['start_hour'].min())
+        laatste_uur = int(planning['end_hour'].max()) + 1
+
+        uren = range(eerste_uur, laatste_uur + 1)
+
+        ax.set_xticks(uren)
+        ax.set_xticklabels([f'{uur:02d}:00' for uur in uren])
+
+        # Busnummers
+        ax.set_yticks(range(len(groep)))
+        ax.set_yticklabels([f'Bus {bus}' for bus in groep])
+
+        # Tijd bovenaan
+        ax.xaxis.tick_top()
+        ax.xaxis.set_label_position('top')
+
+        ax.grid(axis='x', linestyle='-', alpha=0.4)
+        ax.set_axisbelow(True)
+
+        ax.set_xlabel('Time')
+        ax.set_ylabel('Bus')
+
+        ax.set_title(
+            f'Gantt chart bus {groep[0]} - {groep[-1]}'
         )
 
-        if activity == 'service trip':
+        ax.legend(
+            loc='upper center',
+            bbox_to_anchor=(0.5, -0.08),
+            ncol=4
+        )
 
-            line = planning.iloc[i]['line']
+        plt.tight_layout()
 
-            ax.text(
-                start + duration / 2,
-                y,
-                f'{int(line)}',
-                ha='center',
-                va='center',
-                fontsize=7
-            )
-
-        elif activity == 'charging':
-
-            ax.text(
-                start + duration / 2,
-                y,
-                'Charging',
-                ha='center',
-                va='center',
-                fontsize=7
-            )
-
-        elif activity == 'material trip':
-
-            ax.text(
-                start + duration / 2,
-                y,
-                'Material',
-                ha='center',
-                va='center',
-                fontsize=6
-            )
-
-    eerste_uur = int(start_times.dt.total_seconds().min() / 3600)
-    laatste_uur = int(end_times.dt.total_seconds().max() / 3600) + 1
-
-    uren = range(eerste_uur, laatste_uur + 1)
-
-    ax.set_xticks(uren)
-    ax.set_xticklabels([f'{uur:02d}:00' for uur in uren])
-
-    ax.set_yticks(range(len(bussen)))
-    ax.set_yticklabels([f'Bus {bus}' for bus in bussen])
-
-    ax.xaxis.tick_top()
-    ax.xaxis.set_label_position('top')
-
-    ax.grid(axis='x', linestyle='-', alpha=0.4)
-    ax.set_axisbelow(True)
-
-    ax.set_xlabel('Time')
-    ax.set_ylabel('Bus')
-    ax.set_title('Gantt chart bus planning')
-
-    ax.legend(
-        loc='upper center',
-        bbox_to_anchor=(0.5, -0.05),
-        ncol=4
-    )
-
-    plt.tight_layout()
-
-    st.pyplot(fig)
+        st.pyplot(fig)
