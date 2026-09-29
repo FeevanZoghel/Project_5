@@ -24,7 +24,7 @@ dm = pd.read_excel('DistanceMatrix.xlsx')
 tt = pd.read_excel('Timetable.xlsx')
 bus_plan_org = pd.read_excel('Bus_Planning.xlsx')
 
-# Dataframe for improved bus plan
+# Dataframe for improved bus plan; voor alle rijen van de busplanning die in het rooster voorkomen
 ibp = pd.DataFrame(columns=['start location', 'end location','start time','end time','activity','line','energy consumption','bus'])
 
 # Data cleanen voor start- en eindtijden in 'Bus_Planning.xlsx'
@@ -40,10 +40,19 @@ for i in range (len(bus_plan_org['start time'])):
     dep_times.append(dep_bp)
     index1 += 1
 
-print(dep_times)
 # Feasibility-check 1: begin-, eindbestemming, vertrektijd en lijn moeten hetzelfde zijn
+
+index0 = 0
+for i in (bus_plan_org['line']):
+    if pd.isna(i):
+        bus_plan_org.loc[index0, 'line'] = 0
+    else:
+        bus_plan_org.loc[index0, 'line'] = int(i)
+    index0 += 1
+
 index1 = 0
-for i in range (len(tt['start'].head(1))):
+bus_plan_org['line'] = bus_plan_org['line'].astype(int).map(int)
+for i in range (len(tt['start'])):
     start_loc_tt = tt['start'][index1]
     end_loc_tt = tt['end'][index1]
     dep_time_tt = tt['departure_time'][index1]
@@ -51,10 +60,18 @@ for i in range (len(tt['start'].head(1))):
 
     index2 = 0
     for j in range (len(bus_plan_org['start location'])):
-        waarde = bus_plan_org.iloc[index2]
+        rij = bus_plan_org.iloc[index2]
+        start_loc_bp = (bus_plan_org['start location'][index2])
+        end_loc_bp = (bus_plan_org['end location'][index2])
+        line_bp = (bus_plan_org['line'][index2])
         waarde_tijd = dep_times[index2]
-        print(waarde)
-        if start_loc_tt in waarde and end_loc_tt in waarde and line_tt in waarde:
-            if dep_time_tt in waarde_tijd:
-                print(index2, start_loc_tt, dep_time_tt, end_loc_tt, line_tt)
+        if start_loc_tt in start_loc_bp:
+            if end_loc_tt in end_loc_bp:
+                    if dep_time_tt in waarde_tijd:
+                        ibp.loc[index2] = rij 
         index2 += 1
+    index1 += 1
+print(ibp) # Hierin komen alle benodigde lijnen volgens het rooster in te staan
+print(len(ibp))
+# Alle lijnen van de busplanning staan in het rooster, wat betekent dat alle lijnen nodig zijn
+print(bus_plan_org[bus_plan_org['start time'] == '06:04:00'])

@@ -132,3 +132,19 @@ for j in range (len(bus_plan_org['start location'].head(1))):
     if start_loc_tt in waarde and end_loc_tt in waarde and dep_time_tt in waarde and line_tt in waarde:
         print(index2, start_loc_tt, end_loc_tt, dep_time_tt, line_tt)
     index2 += 1
+
+for i in range (len(tt['start'].head(1))):
+    start_loc_tt = tt['start'][index1]
+    end_loc_tt = tt['end'][index1]
+    dep_time_tt = tt['departure_time'][index1]
+    line_tt = tt['line'][index1]
+
+    index2 = 0
+    for j in range (len(bus_plan_org['start location'])):
+        waarde = bus_plan_org.iloc[index2]
+        waarde_tijd = dep_times[index2]
+        if start_loc_tt in waarde and end_loc_tt in waarde and line_tt in waarde:
+            if dep_time_tt in waarde_tijd:
+                print(index2, start_loc_tt, dep_time_tt, end_loc_tt, line_tt)
+        index2 += 1
+print(start_loc_tt, end_loc_tt, dep_time_tt, line_tt)
