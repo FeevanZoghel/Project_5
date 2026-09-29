@@ -387,7 +387,7 @@ def check_charging_speed(df):
                         return False
                     
             battery -= row['energy consumption']
-
+    return True
 def check_overlapping_trips(df):
     
     planning_sor1 = df.sort_values(['bus', 'start time']).reset_index(drop=True)
