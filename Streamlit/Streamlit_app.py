@@ -118,6 +118,11 @@ elif keuze == "Data_check":
                 value=check_overlapping_trips(df),
                 disabled=True
             )
+            st.checkbox(
+                "All Required trips"
+                value = check_req_trips(df)
+                disabled = True
+            )
 
         # Gantt chart
         gantt_chart_bus(df)
