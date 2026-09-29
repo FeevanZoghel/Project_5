@@ -5,12 +5,15 @@ from DataFrame_check import check_all
 
 from Berekeningen import bus_energy_check
 
+from testen import gantt_chart_bus
+
 
 import streamlit as st
 import pandas as pd
 
 st.sidebar.title("Menu")
 st.write('hello world')
+
 
 keuze = st.sidebar.selectbox(
     "Kies een pagina",
@@ -62,33 +65,9 @@ elif keuze == "Data_check":
         df = pd.read_excel(bestand)
 
         check_all(df)
+        gantt_chart_bus(df)
 
-        st.subheader("Feasibility checks")
-
-        check_1 = True
-        check_2 = True
-        check_3 = False
-
-        st.checkbox(
-            "No overlapping trips",
-            value=check_1,
-            disabled=True
-        )
-
-        st.checkbox(
-            "Minimum SOC requirement is maintained",
-            value=check_2,
-            disabled=True
-        )
-
-        st.checkbox(
-            "Charging constraints are satisfied",
-            value=check_3,
-            disabled=True
-        )
-
-        # Dataframe
-        st.subheader("Ingelezen planning") 
+        st.subheader("Ingelezen planning")
         st.dataframe(df.head(10))
 
 
