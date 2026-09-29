@@ -185,9 +185,8 @@ def gantt_chart_bus(bp):
     Elke horizontale rij stelt een bus voor.
     Elke balk stelt een activiteit voor van start time tot end time.
     '''
-    activiteiten_in_legenda = []
 
-    fig, ax = plt.subplots(figsize=(16, 7))
+    fig, ax = plt.subplots(figsize=(20, 8))
 
     planning = bp.sort_values(['bus', 'start time'])
 
@@ -201,6 +200,15 @@ def gantt_chart_bus(bp):
         'charging': 'yellowgreen'
     }
 
+    bussen = planning['bus'].unique()
+
+    bus_posities = {}
+
+    for i in range(len(bussen)):
+        bus_posities[bussen[i]] = i
+
+    activiteiten_in_legenda = []
+
     for i in range(len(planning)):
 
         bus = planning.iloc[i]['bus']
@@ -211,6 +219,8 @@ def gantt_chart_bus(bp):
 
         duration = end - start
 
+        y = bus_posities[bus]
+
         if activity not in activiteiten_in_legenda:
             label = activity
             activiteiten_in_legenda.append(activity)
@@ -218,25 +228,49 @@ def gantt_chart_bus(bp):
             label = None
 
         ax.barh(
-            bus,
+            y,
             duration,
             left=start,
-            height=0.6,
+            height=0.8,
             color=kleuren[activity],
-            edgecolor='black',
-            alpha=0.8,
+            edgecolor='grey',
+            linewidth=1,
             label=label
         )
+
         if activity == 'service trip':
+
             line = planning.iloc[i]['line']
 
             ax.text(
                 start + duration / 2,
-                bus,
+                y,
                 f'{int(line)}',
                 ha='center',
                 va='center',
-                fontsize=8
+                fontsize=7
+            )
+
+        elif activity == 'charging':
+
+            ax.text(
+                start + duration / 2,
+                y,
+                'Charging',
+                ha='center',
+                va='center',
+                fontsize=7
+            )
+
+        elif activity == 'material trip':
+
+            ax.text(
+                start + duration / 2,
+                y,
+                'Material',
+                ha='center',
+                va='center',
+                fontsize=6
             )
 
     eerste_uur = int(start_times.dt.total_seconds().min() / 3600)
@@ -247,13 +281,24 @@ def gantt_chart_bus(bp):
     ax.set_xticks(uren)
     ax.set_xticklabels([f'{uur:02d}:00' for uur in uren])
 
-    ax.grid(axis='x', linestyle='--', alpha=0.7)
+    ax.set_yticks(range(len(bussen)))
+    ax.set_yticklabels([f'Bus {bus}' for bus in bussen])
+
+    ax.xaxis.tick_top()
+    ax.xaxis.set_label_position('top')
+
+    ax.grid(axis='x', linestyle='-', alpha=0.4)
     ax.set_axisbelow(True)
 
     ax.set_xlabel('Time')
     ax.set_ylabel('Bus')
     ax.set_title('Gantt chart bus planning')
-    ax.legend()
+
+    ax.legend(
+        loc='upper center',
+        bbox_to_anchor=(0.5, -0.05),
+        ncol=4
+    )
 
     plt.tight_layout()
 
