@@ -108,7 +108,7 @@ def check_valid_charging_duration(bp):
     bp['charging_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
 
     # categorize charging trips/periods into valid charging sessions and not valid charging sessions 
-    is_charging = bp['energy consumption'] < 0
+    is_charging = bp['energy consumption'] < 0 
     
     valid_charging_trips = bp[is_charging & (bp['charging_duration_min'] >= 15)]
     not_valid_charging_trips = bp[is_charging & (bp['charging_duration_min'] < 15)]
