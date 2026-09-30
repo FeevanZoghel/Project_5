@@ -109,9 +109,6 @@ t_end = time.perf_counter()
 computation_time = t_end - t_start
 print(f'Computation time: {computation_time:.2f} seconds.')
 
-
-
-
 index1 = 0
 for i in range (len(tt['start'].head(1))):
     start_loc_tt = tt['start'][index1]
@@ -148,3 +145,83 @@ for i in range (len(tt['start'].head(1))):
                 print(index2, start_loc_tt, dep_time_tt, end_loc_tt, line_tt)
         index2 += 1
 print(start_loc_tt, end_loc_tt, dep_time_tt, line_tt)
+
+
+# Data cleanen voor start- en eindtijden in 'Bus_Planning.xlsx'
+import datetime as dt
+index1 = 0
+bus_plan_org['start time'] = bus_plan_org['start time'].astype(str)
+dep_times = []
+for i in range (len(bus_plan_org['start time'])):
+    dep_time_bp = bus_plan_org['start time'][index1]
+    dep_time_bp = str(dep_time_bp)
+    dep_bp = dt.datetime.strptime(dep_time_bp, '%H:%M:%S')
+    dep_bp = dep_bp.strftime('%H:%M')
+    dep_times.append(dep_bp)
+    index1 += 1
+
+# Feasibility-check 1: begin-, eindbestemming, vertrektijd en lijn moeten hetzelfde zijn
+
+index0 = 0
+for i in (bus_plan_org['line']):
+    if pd.isna(i):
+        bus_plan_org.loc[index0, 'line'] = 0
+    else:
+        bus_plan_org.loc[index0, 'line'] = int(i)
+    index0 += 1
+
+index1 = 0
+bus_plan_org['line'] = bus_plan_org['line'].astype(int).map(int)
+for i in range (len(tt['start'])):
+    start_loc_tt = tt['start'][index1]
+    end_loc_tt = tt['end'][index1]
+    dep_time_tt = tt['departure_time'][index1]
+    line_tt = tt['line'][index1]
+
+    index2 = 0
+    for j in range (len(bus_plan_org['start location'])):
+        rij = bus_plan_org.iloc[index2]
+        start_loc_bp = (bus_plan_org['start location'][index2])
+        end_loc_bp = (bus_plan_org['end location'][index2])
+        line_bp = (bus_plan_org['line'][index2])
+        waarde_tijd = dep_times[index2]
+        if start_loc_tt in start_loc_bp:
+            if end_loc_tt in end_loc_bp:
+                    if dep_time_tt in waarde_tijd:
+                        ibp.loc[index2] = rij 
+        index2 += 1
+    index1 += 1
+print(ibp) # Hierin komen alle benodigde lijnen volgens het rooster in te staan
+print(len(ibp))
+# Alle lijnen van de busplanning staan in het rooster, wat betekent dat alle lijnen nodig zijn
+print(bus_plan_org[bus_plan_org['start time'] == '06:04:00'])
+
+# 3. Voor iedere bus een schema berekenen
+index1 = 0
+for i in range (len(tt['start'].head(1))):
+    start_loc_tt = tt['start'][index1]
+    end_loc_tt = tt['end'][index1]
+    dep_time_tt = tt['departure_time'][index1]
+    line_tt = tt['line'][index1]
+    ibp.loc[index1, 'start location'] = start_loc_tt
+    ibp.loc[index1, 'end location'] = end_loc_tt
+    ibp.loc[index1, 'start time'] = dep_time_tt
+    ibp.loc[index1, 'line'] = line_tt
+print(ibp)
+
+# 3. Aantal bussen wijzigen van 20 naar 50 in originele busplanning
+ibp = pd.DataFrame(bus_plan_org)
+max_aantal_bussen = 50 # 720 service trips / 20 bussen = 36 trips per bus
+
+step = int(len(ibp['start location']) / max_aantal_bussen)
+print(step)
+index0 = 0
+index1 = step
+bus_number = 1
+for i in range(max_aantal_bussen):
+    ibp.loc[index0:index1,'bus'] = bus_number
+    index0 += step
+    index1 += step
+    bus_number += 1
+print(ibp)
+run_all_feasibility_checks(ibp, tt)
