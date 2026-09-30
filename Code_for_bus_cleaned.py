@@ -108,10 +108,13 @@ def check_valid_charging_duration(bp):
     bp['charging_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
 
     # categorize charging trips/periods into valid charging sessions and not valid charging sessions 
-    valid_charging_trips = bp[(bp['activity'] == 'charging') & (bp['charging_duration_min'] >= 15)]
-    not_valid_charging_trips = bp[(bp['activity'] == 'charging') & (bp['charging_duration_min'] < 15)]
+    is_charging = bp['energy consumption'] < 0
+    
+    valid_charging_trips = bp[is_charging & (bp['charging_duration_min'] >= 15)]
+    not_valid_charging_trips = bp[is_charging & (bp['charging_duration_min'] < 15)]
+    
     valid_charging_time = valid_charging_trips['charging_duration_min'].sum()
-    # feasibility-outcome
+
     if len(not_valid_charging_trips) > 0:
         print("\nFEASIBILITY ERROR")
     else:
@@ -119,7 +122,7 @@ def check_valid_charging_duration(bp):
 
     print(f'Number of charges with duration of 15 minutes or longer: {len(valid_charging_trips)}')
     print(f'Number of charges with duration under 15 minutes: {len(not_valid_charging_trips)}')
-    print(f'Total valid charging time: {valid_charging_time:.0f} minutes')
+    print(f'Total valid charging time: {valid_charging_time:.2f} minutes')
 
     return len(not_valid_charging_trips)
 
