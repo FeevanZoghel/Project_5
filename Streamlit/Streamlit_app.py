@@ -21,7 +21,7 @@ import pandas as pd
 st.markdown("""
 <style>
 [data-testid="stVerticalBlockBorderWrapper"] {
-    border-width: 2px !important;
+    border-width: 7px !important;
 }
 </style>
 """, unsafe_allow_html=True)
