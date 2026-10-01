@@ -18,6 +18,14 @@ from berekeningen_cleaned import gantt_chart_bus
 import streamlit as st
 import pandas as pd
 
+st.markdown("""
+<style>
+[data-testid="stVerticalBlockBorderWrapper"] {
+    border-width: 2px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.sidebar.title("Menu")
 # st.write('hello world')
 
