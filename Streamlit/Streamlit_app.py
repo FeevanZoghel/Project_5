@@ -19,8 +19,11 @@ from berekeningen_cleaned import (
     calculate_energy_consumption_kpis
 )
 
+
 import streamlit as st
 import pandas as pd
+
+
 
 st.markdown("""
 <style>
@@ -142,50 +145,37 @@ if keuze == "Data Check":
     else:
         st.info("Upload the timetable to check all required trips.")
 
+    if bestand2 is not None:
+        st.session_state['tt'] = pd.read_excel(bestand2)
+        df2 = st.session_state['tt']
+
+    if bestand3 is not None:
+        st.session_state['dm'] = pd.read_excel(bestand3)
+        df3 = st.session_state['dm']
+
 
 elif keuze == "Visualisaties":
 
-    st.title("Visualisaties")
+    st.title("Planning results")
 
-    if (
-        'bp' in st.session_state
-        and 'tt' in st.session_state
-        and 'dm' in st.session_state
-    ):
+    if 'bp' in st.session_state:
 
         bp = st.session_state['bp']
-        tt = st.session_state['tt']
-        dm = st.session_state['dm']
 
-        # KPI's berekenen
-        total_distance_m, total_distance_km, deployed_buses_count, t_material_total = calculate_distances_and_kpis(
-            bp, dm, tt
-        )
-
-        col1, col2 = st.columns([1, 4])
+        col1, col2 = st.columns([3, 8])
 
         with col1:
             st.subheader("KPIs")
 
-            st.metric(
-                "Number of buses used",
-                deployed_buses_count
-            )
+            st.metric("Buses used 🚌", " ")
 
-            st.metric(
-                "Total distance",
-                f"{total_distance_km:.2f} km"
-            )
+            st.metric("Total distance ↔️", " km")
 
-            st.metric(
-                "Material trips",
-                t_material_total
-            )
+            st.metric("Energy consumption 🔋", " kWh")
+
+            st.metric("Average waiting time ⏳", " min")
 
         with col2:
             st.subheader("Bus planning")
 
             gantt_chart_bus(bp)
-
-    else:
-        st.warning("Upload the required files on the Data Check page first.")
