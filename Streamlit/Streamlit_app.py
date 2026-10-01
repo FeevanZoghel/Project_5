@@ -119,6 +119,11 @@ st.markdown("""
     color: #222222 !important;
 }
 
+[data-testid="stAlert"] {
+    border: 3px solid #EA3323 !important;
+    border-radius: 14px !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
