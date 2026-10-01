@@ -69,6 +69,7 @@ keuze = st.sidebar.selectbox("Kies een pagina", ["Data Check", "Visualisaties"])
 
 
 
+
 if keuze == "Data Check":
 
 
@@ -206,7 +207,7 @@ elif keuze == "Visualisaties":
 
     st.image(
     "https://www.transdev.com/uploads/2026/09/logo.png",
-    width=200
+    width=60
     )
 
     st.markdown("""
