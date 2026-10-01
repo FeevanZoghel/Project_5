@@ -337,7 +337,7 @@ def calculate_distances_and_kpis(bp, dm, tt):
 
     print(f'The number of busses used: {deployed_buses_count}.')
 
-    return total_distance_m, total_distance_km, deployed_buses_count, t_material_total
+    return total_distance_m, total_distance_km, deployed_buses_count, t_material_total, d_material_total
 
 
 # calculate total waiting time and the average waiting time per bus
