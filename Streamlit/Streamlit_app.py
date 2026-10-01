@@ -25,24 +25,35 @@ import streamlit as st
 import pandas as pd
 
 
+
 st.markdown("""
 <style>
 
-/* =========================================
+/* =========================================================
+   TRANSDEV KLEUREN
+   Rood:      #EA3323
+   Donker:    #222222
+   Lichtgrijs:#F3F4F6
+   ========================================================= */
+
+
+/* =========================================================
    FEASIBILITY - GROTE BUITENCONTAINER
-   ========================================= */
+   ========================================================= */
 
 .st-key-box_feasibility {
+    background-color: #FFFFFF !important;
+
     border: 3px solid #EA3323 !important;
     border-radius: 14px !important;
-    background-color: #FFFFFF !important;
+
     padding: 10px !important;
 }
 
 
-/* =========================================
-   TEKST IN FEASIBILITY CONTAINER
-   ========================================= */
+/* =========================================================
+   TEKST IN FEASIBILITY
+   ========================================================= */
 
 .st-key-box_feasibility h1,
 .st-key-box_feasibility h2,
@@ -53,112 +64,217 @@ st.markdown("""
 }
 
 
-/* =========================================
+/* =========================================================
    BATTERY + PLANNING CARDS
-   ========================================= */
+   ========================================================= */
 
 .st-key-check_cards [data-testid="stColumn"] {
+
     background-color: #FFFFFF !important;
 
+    /* Rode bovenlijn */
     border-top: 5px solid #EA3323 !important;
+
     border-radius: 12px !important;
 
     padding: 18px 20px 20px 20px !important;
 
-    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.12) !important;
+    /* Schaduw */
+    box-shadow:
+        0px 4px 14px
+        rgba(0, 0, 0, 0.12) !important;
 }
 
 
 /* Ruimte tussen Battery en Planning */
+
 .st-key-check_cards [data-testid="stHorizontalBlock"] {
     gap: 28px !important;
 }
 
 
-/* =========================================
-   FILE UPLOADERS
-   ========================================= */
+/* =========================================================
+   FILE UPLOADER - GROTE CONTAINER
+   ========================================================= */
 
-/* Hele uploadvak */
 [data-testid="stFileUploaderDropzone"] {
-    background-color: #F5F5F5 !important;
 
-    /* Zelfde border als Feasibility checks */
+    /* Iets donkerder dan wit */
+    background-color: #F3F3F3 !important;
+
+    /* Zelfde rand als feasibility */
     border: 3px solid #EA3323 !important;
+
     border-radius: 14px !important;
 
     padding: 18px !important;
 
     /* Subtiele schaduw */
-    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.10) !important;
+    box-shadow:
+        0px 4px 14px
+        rgba(0, 0, 0, 0.10) !important;
+
+    transition: all 0.2s ease !important;
 }
 
 
-/* Tekst: 200MB per file • XLSX */
+/* =========================================================
+   UPLOAD KNOP
+   ========================================================= */
+
+[data-testid="stFileUploaderDropzone"] button {
+
+    background-color: #FFFFFF !important;
+
+    color: #222222 !important;
+
+    border: 2px solid #EA3323 !important;
+
+    border-radius: 10px !important;
+
+    font-weight: 600 !important;
+
+    transition: all 0.2s ease !important;
+}
+
+
+/* Upload knop hover */
+
+[data-testid="stFileUploaderDropzone"] button:hover {
+
+    background-color: #FFF1EF !important;
+
+    color: #EA3323 !important;
+
+    border-color: #EA3323 !important;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   TEKST IN UPLOADVAK
+   ========================================================= */
+
+/* 200MB per file • XLSX */
+
 [data-testid="stFileUploaderDropzone"] span,
 [data-testid="stFileUploaderDropzone"] small {
+
     color: #555555 !important;
 }
 
 
-/* Upload knop */
-[data-testid="stFileUploaderDropzone"] button {
-    background-color: #FFFFFF !important;
-    color: #222222 !important;
+/* Upload icoon */
 
-    border: 2px solid #EA3323 !important;
-    border-radius: 10px !important;
+[data-testid="stFileUploaderDropzone"] svg {
+
+    color: #222222 !important;
+}
+
+
+/* =========================================================
+   LABEL BOVEN UPLOADER
+   ========================================================= */
+
+/* Bijvoorbeeld: Upload een busplanning */
+
+[data-testid="stFileUploader"] label {
+
+    color: #FFFFFF !important;
 
     font-weight: 600 !important;
 }
 
 
-/* Hover over Upload knop */
-[data-testid="stFileUploaderDropzone"] button:hover {
+/* =========================================================
+   GEÜPLOAD BESTAND
+   ========================================================= */
+
+[data-testid="stFileUploaderFile"] {
+
+    background-color: #FFFFFF !important;
+
+    border: 1px solid #D8D8D8 !important;
+
+    border-radius: 10px !important;
+
+    padding: 6px 8px !important;
+
+    box-shadow:
+        0px 2px 6px
+        rgba(0, 0, 0, 0.06) !important;
+}
+
+
+/* =========================================================
+   BESTANDSNAAM + BESTANDSGROOTTE
+   ========================================================= */
+
+[data-testid="stFileUploaderFile"] span,
+[data-testid="stFileUploaderFile"] small,
+[data-testid="stFileUploaderFile"] p {
+
+    color: #222222 !important;
+}
+
+
+/* =========================================================
+   ICOON BIJ GEÜPLOAD BESTAND
+   ========================================================= */
+
+[data-testid="stFileUploaderFile"] svg {
+
+    color: #222222 !important;
+}
+
+
+/* =========================================================
+   VERWIJDERKNOP VAN BESTAND
+   ========================================================= */
+
+[data-testid="stFileUploaderFile"] button {
+
+    background-color: transparent !important;
+
+    color: #EA3323 !important;
+
+    border-radius: 50% !important;
+}
+
+
+[data-testid="stFileUploaderFile"] button:hover {
+
     background-color: #FFF1EF !important;
-    border-color: #EA3323 !important;
+
     color: #EA3323 !important;
 }
 
 
-/* Upload icoon */
-[data-testid="stFileUploaderDropzone"] svg {
-    color: #222222 !important;
-}
+/* =========================================================
+   PLUS KNOP NA UPLOAD
+   ========================================================= */
 
-/* =========================================
-   LABEL BOVEN FILE UPLOADER
-   ========================================= */
+[data-testid="stFileUploader"] button {
 
-[data-testid="stFileUploader"] label {
-    color: #FFFFFF !important;
-    font-weight: 600 !important;
-}
-
-
-/* =========================================
-   ALGEMENE TRANSDEV ACCENT
-   ========================================= */
-
-/* Focus / geselecteerde elementen */
-button:focus {
     border-color: #EA3323 !important;
 }
 
 
-/* =========================================
-   AFGERONDE HOEKEN
-   ========================================= */
+/* =========================================================
+   ALGEMENE ANIMATIE
+   ========================================================= */
 
-[data-testid="stFileUploader"],
-[data-testid="stFileUploaderDropzone"],
 button {
-    transition: all 0.2s ease !important;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease !important;
 }
 
 </style>
 """, unsafe_allow_html=True)
-
 
 st.sidebar.title("Menu")
 # st.write('hello world')
