@@ -99,6 +99,37 @@ st.markdown("""
     border-color: #EA3323 !important;
 }
 
+/* Pagina blijft zwart */
+[data-testid="stAppViewContainer"] {
+    background: #0E1117 !important;
+}
+
+/* Error / alert boxes wit */
+[data-testid="stAlert"] {
+    background: #FFFFFF !important;
+    color: #222222 !important;
+    border-radius: 12px !important;
+}
+
+/* Tekst in alerts */
+[data-testid="stAlert"] p {
+    color: #222222 !important;
+}
+
+/* Expander / Click here for details wit */
+[data-testid="stExpander"] {
+    background: #FFFFFF !important;
+    border: 2px solid #EA3323 !important;
+    border-radius: 12px !important;
+}
+
+/* Expander tekst donker */
+[data-testid="stExpander"] summary,
+[data-testid="stExpander"] p,
+[data-testid="stExpander"] span {
+    color: #222222 !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
