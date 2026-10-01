@@ -116,7 +116,7 @@ if keuze == "Data Check":
 
         with st.container(border=True, key="box_feasibility"):
 
-            col_title, col_logo = st.columns([5, 1])
+            col_title, col_logo = st.columns([5, 1], vertical_alignment="center")
 
             with col_title:
                 st.subheader("Feasibility checks")
@@ -124,7 +124,9 @@ if keuze == "Data Check":
             with col_logo:
                 st.image("Logo_Transdev.png", width=130)
 
-            col1, col2 = st.columns(2)
+            # De echte cards
+            with st.container(key="check_cards"):
+                col1, col2 = st.columns(2)
 
             # -----------------------------
             # BATTERY & CHARGING
