@@ -202,6 +202,27 @@ body,
     border-radius: 3px;
 }
 
+.feasibility-title {
+    font-size: 34px;
+    font-weight: 700;
+    color: #222222;
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #E5E5E5;
+    position: relative;
+}
+
+.feasibility-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 120px;
+    height: 4px;
+    background: #EA3323;
+    border-radius: 3px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -271,7 +292,11 @@ if keuze == "Data Check":
             col_title, col_logo = st.columns([5, 1], vertical_alignment="center")
 
             with col_title:
-                st.subheader("Feasibility checks")
+                st.markdown("""
+                <div class="feasibility-title">
+                    Feasibility checks
+                </div>
+                """, unsafe_allow_html=True)
 
             with col_logo:
                 st.image(
