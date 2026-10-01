@@ -22,8 +22,9 @@ import pandas as pd
 # Dikkere border van st.container(border=True)
 st.markdown("""
 <style>
-div[data-testid="stVerticalBlockBorderWrapper"] > div {
-    border-width: 3px !important;
+div[data-testid="stVerticalBlockBorderWrapper"] > div[data-testid="stVerticalBlock"] {
+    border-width: 4px !important;
+    border-color: #EA3323 !important;
 }
 </style>
 """, unsafe_allow_html=True)
