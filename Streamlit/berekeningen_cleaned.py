@@ -500,6 +500,9 @@ def gantt_chart_bus(bp):
     planning['start_hour'] = start_times.dt.total_seconds() / 3600
     planning['end_hour'] = end_times.dt.total_seconds() / 3600
 
+    planning.loc[planning['start_hour'] < 5, 'start_hour'] += 24
+    planning.loc[planning['end_hour'] <= 5, 'end_hour'] += 24
+
     kleuren = {
         'service trip': 'skyblue',
         'material trip': 'orange',
@@ -577,13 +580,12 @@ def gantt_chart_bus(bp):
 
 
         # Tijd-as
-        eerste_uur = int(planning['start_hour'].min())
-        laatste_uur = int(planning['end_hour'].max()) + 1
+        uren = range(5, 30)
 
-        uren = range(eerste_uur, laatste_uur + 1)
+        ax.set_xlim(5, 29)
 
         ax.set_xticks(uren)
-        ax.set_xticklabels([f'{uur:02d}:00' for uur in uren])
+        ax.set_xticklabels([f'{uur % 24:02d}:00' for uur in uren])
 
         # Busnummers
         ax.set_yticks(range(len(groep)))
@@ -600,7 +602,7 @@ def gantt_chart_bus(bp):
         ax.set_ylabel('Bus')
 
         ax.set_title(
-            f'Gantt chart bus {groep[0]} - {groep[-1]}'
+            f'Improved bus plan'
         )
 
         ax.legend(
