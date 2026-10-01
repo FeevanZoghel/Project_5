@@ -175,6 +175,12 @@ body,
     background-color: #FFFFFF !important;
 }
 
+/* Titel Feasibility checks */
+.st-key-box_feasibility h3 {
+    font-size: 34px !important;
+    font-weight: 700 !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
