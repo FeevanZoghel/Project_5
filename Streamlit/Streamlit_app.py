@@ -22,131 +22,100 @@ st.sidebar.title("Menu")
 # st.write('hello world')
 
 
-keuze = st.sidebar.selectbox(
-    "Kies een pagina",
-    ["Home", "Data_check", "Gegevens (KPI)"]
-)
-
-if keuze == "Home":
-    st.header("Home")
-    st.write("Welkom!")
-    st.title("Mijn Streamlit App")
-    st.write("Welkom bij mijn app!")
-    st.subheader("Voer je gegevens in")
-    naam = st.text_input("Wat is je naam?")
-    leeftijd = st.number_input("Wat is je leeftijd?", min_value=0, max_value=120)
-    keuze = st.selectbox(
-        "Kies een optie",
-        ["Optie 1", "Optie 2", "Optie 3"]
-    )
-    if keuze == 'Optie 3':
-        st.write('Kies niet deze')
-    # Checkbox
-    akkoord = st.checkbox("Ik ga akkoord")
-    # Knop
-    if st.button("Versturen"):
-        st.write("Hallo", naam)
-        st.write("Je bent", leeftijd, "jaar oud.")
-        st.write("Je koos:", keuze)
-    # DataFrame maken
-    df = pd.DataFrame({
-        "Naam": ["Jan", "Piet", "Sophie"],
-        "Leeftijd": [21, 24, 19]
-    })
-    # DataFrame laten zien
-    st.subheader("Data")
-    st.dataframe(df)
-    # Alleen eerste rijen
-    st.write("Eerste twee rijen:")
-    st.dataframe(df.head(2))
+keuze = st.sidebar.selectbox("Kies een pagina", ["Data Check", "Visualisaties"])
 
 
-elif keuze == "Data_check":
+
+if keuze == "Data Check":
 
     st.title("Transdev Planning Checker")
 
-    bestanden = st.file_uploader(
-        "Upload een busplanning en de timetable",
-        type=["xlsx"],
-        accept_multiple_files=True
-    )
+    bestand1 = st.file_uploader('Upload een busplanning', type=['xlsx'], accept_multiple_files=False)
+    bestand2 = st.file_uploader('Upload een timetable', type = ['xlsx'], accept_multiple_files = False)
+    bestand3 = st.file_uploader('Upload de distance matrix', type = ['xlsx'], accept_multiple_files = False)
 
-    if len(bestanden) == 2:
-        bestand = bestanden[0]
-        bestand2 = bestanden[1]
+    if bestand1 is not None:
+        st.session_state['bp'] = pd.read_excel(bestand1)
+        df1 = st.session_state['bp']
 
-        df = pd.read_excel(bestand)
-        df2 = pd.read_excel(bestand2)
+        check_all(df1)
 
-        # Data check
-        check_all(df)
+    # Feasibility checks
+    with st.container(border=True):
+        st.subheader("Feasibility checks")
 
-        # Planning
-        with st.container(border=True):
-            st.subheader("Ingelezen planning")
-            st.write(df.head(10))
+        col1, col2 = st.columns(2)
 
-        # Feasibility checks
-        with st.container(border=True):
-            st.subheader("Feasibility checks")
+        with col1:
+            st.markdown("🔋 Battery & charging")
 
-            col1, col2 = st.columns(2)
+            st.checkbox(
+                "Minimum SOC is maintained (10%)",
+                value=check_min_SOC(df1),
+                disabled=True
+            )
 
-            with col1:
-                st.markdown("🔋 Battery & charging")
+            st.checkbox(
+                "SOH is correct (between 85% and 95%)",
+                value=check_SOH(85),
+                disabled=True
+            )
 
-                st.checkbox(
-                    "Minimum SOC is maintained (10%)",
-                    value=check_min_SOC(df),
-                    disabled=True
-                )
+            st.checkbox(
+                "Minimum charging time (15 minutes)",
+                value=check_min_charging_time(df1),
+                disabled=True
+            )
 
-                st.checkbox(
-                    "SOH is correct (between 85% and 95%)",
-                    value=check_SOH(85),
-                    disabled=True
-                )
+            st.checkbox(
+                "Charging speed is correct",
+                value=check_charging_speed(df1),
+                disabled=True
+            )
 
-                st.checkbox(
-                    "Minimum charging time (15 minutes)",
-                    value=check_min_charging_time(df),
-                    disabled=True
-                )
+        with col2:
+            st.markdown("📍 Planning")
 
-                st.checkbox(
-                    "Charging speed is correct",
-                    value=check_charging_speed(df),
-                    disabled=True
-                )
+            st.checkbox(
+                "Start and end locations match",
+                value=check_end_begin_loc(df1),
+                disabled=True
+            )
 
-            with col2:
-                st.markdown("📍 Planning")
+            st.checkbox(
+                "No overlapping trips",
+                value=check_overlapping_trips(df1),
+                disabled=True
+            )
 
-                st.checkbox(
-                    "Start and end locations match",
-                    value=check_end_begin_loc(df),
-                    disabled=True
-                )
+            st.checkbox(
+                "All Required trips",
+                value=check_req_trips(df1, df2),
+                disabled=True
+            )
 
-                st.checkbox(
-                    "No overlapping trips",
-                    value=check_overlapping_trips(df),
-                    disabled=True
-                )
+    if bestand2 is not None:
+        st.session_state['tt'] = pd.read_excel(bestand2)
+        df2 = st.session_state['tt']
 
-                st.checkbox(
-                    "All Required trips",
-                    value=check_req_trips(df, df2),
-                    disabled=True
-                )
-
-        # Gantt chart
-        with st.container(border=True):
-            st.subheader("Bus planning overview")
-            gantt_chart_bus(df)
+    if bestand3 is not None:
+        st.session_state['dm'] = pd.read_excel(bestand3)
+        df3 = st.session_state['dm']
+ 
+    # Planning
+    # with st.container(border=True):
+    #     st.subheader("Ingelezen planning")
+    #     st.write(df.head(10))
 
 
-elif keuze == "Gegevens (KPI)":
+
+    # Gantt chart
+    with st.container(border=True):
+        st.subheader("Bus planning overview")
+        gantt_chart_bus(df)
+
+
+elif keuze == "Visualisaties":
     bestand = st.file_uploader("Upload een busplanning", type=["xlsx"])
 
     if bestand is not None:
