@@ -45,19 +45,15 @@ st.markdown("""
 }
 
 /* Battery + Planning cards */
-.st-key-box_feasibility [data-testid="stColumn"] {
+.st-key-check_cards [data-testid="stColumn"] {
     background-color: #FFFFFF !important;
-
     border-top: 5px solid #EA3323 !important;
     border-radius: 12px !important;
-
     padding: 18px 20px 20px 20px !important;
-
     box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.12) !important;
 }
 
-/* Ruimte tussen de twee cards */
-.st-key-box_feasibility [data-testid="stHorizontalBlock"] {
+.st-key-check_cards [data-testid="stHorizontalBlock"] {
     gap: 28px !important;
 }
 
