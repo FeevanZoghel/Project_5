@@ -79,23 +79,24 @@ st.markdown("""
    FILE UPLOADERS
    ========================================= */
 
-/* Groot uploadvak */
+/* Hele uploadvak */
 [data-testid="stFileUploaderDropzone"] {
-    background-color: #FFFFFF !important;
+    background-color: #F5F5F5 !important;
 
-    border: 1px solid #EA3323 !important;
-    border-radius: 12px !important;
+    /* Zelfde border als Feasibility checks */
+    border: 3px solid #EA3323 !important;
+    border-radius: 14px !important;
 
     padding: 18px !important;
+
+    /* Subtiele schaduw */
+    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.10) !important;
 }
 
 
-/* Tekst zoals:
-   200MB per file • XLSX
-*/
+/* Tekst: 200MB per file • XLSX */
 [data-testid="stFileUploaderDropzone"] span,
-[data-testid="stFileUploaderDropzone"] small,
-[data-testid="stFileUploaderDropzone"] div {
+[data-testid="stFileUploaderDropzone"] small {
     color: #555555 !important;
 }
 
@@ -103,7 +104,6 @@ st.markdown("""
 /* Upload knop */
 [data-testid="stFileUploaderDropzone"] button {
     background-color: #FFFFFF !important;
-
     color: #222222 !important;
 
     border: 2px solid #EA3323 !important;
@@ -113,20 +113,18 @@ st.markdown("""
 }
 
 
-/* Upload knop wanneer je eroverheen gaat */
+/* Hover over Upload knop */
 [data-testid="stFileUploaderDropzone"] button:hover {
-    background-color: #FFF3F1 !important;
+    background-color: #FFF1EF !important;
     border-color: #EA3323 !important;
     color: #EA3323 !important;
 }
 
 
-/* Upload icoon donker maken */
+/* Upload icoon */
 [data-testid="stFileUploaderDropzone"] svg {
     color: #222222 !important;
-    fill: #222222 !important;
 }
-
 
 /* =========================================
    LABEL BOVEN FILE UPLOADER
