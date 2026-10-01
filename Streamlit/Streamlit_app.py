@@ -202,35 +202,7 @@ body,
     border-radius: 3px;
 }
 
-.feasibility-title {
-    font-size: 34px;
-    font-weight: 700;
-    color: #222222;
-    padding-bottom: 14px;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #E5E5E5;
-    position: relative;
-}
 
-.feasibility-title {
-    font-size: 34px;
-    font-weight: 700;
-    color: #222222;
-    padding-bottom: 14px;
-    margin-bottom: 20px;
-    position: relative;
-}
-
-.feasibility-title::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 60px;
-    height: 4px;
-    background: #EA3323;
-    border-radius: 3px;
-}
 </style>
 """, unsafe_allow_html=True)
 
