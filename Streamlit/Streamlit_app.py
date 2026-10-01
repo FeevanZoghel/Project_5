@@ -217,7 +217,7 @@ body,
     position: absolute;
     left: 0;
     bottom: -2px;
-    width: 120px;
+    width: 60px;
     height: 4px;
     background: #EA3323;
     border-radius: 3px;
