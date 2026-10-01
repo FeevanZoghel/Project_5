@@ -189,17 +189,26 @@ elif keuze == "Visualisaties":
 
     st.title("Planning results")
 
-    if 'bp' in st.session_state:
+    if (
+    'bp' in st.session_state
+    and 'tt' in st.session_state
+    and 'dm' in st.session_state
+):
 
         bp = st.session_state['bp']
+        tt = st.session_state['tt']
+        dm = st.session_state['dm']
 
         # KPI's berekenen
-        total_distance_m, total_distance_km, deployed_buses_count, t_material_total = calculate_distances_and_kpis(df1, df3, df2)
+        total_distance_m, total_distance_km, deployed_buses_count, t_material_total = calculate_distances_and_kpis(
+            bp, dm, tt
+        )
 
-        tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus = calculate_waiting_time_kpis(df1, deployed_buses_count)
+        tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus = calculate_waiting_time_kpis(
+            bp, deployed_buses_count
+        )
 
-        total_consumption = calculate_energy_consumption_kpis(df1)
-
+        total_consumption = calculate_energy_consumption_kpis(bp)
         col1, col2 = st.columns([3, 8])
 
         with col1:
