@@ -152,10 +152,10 @@ if keuze == "Data Check":
 
 
 
-    # Gantt chart
-    with st.container(border=True):
-        st.subheader("Bus planning overview")
-        gantt_chart_bus(df)
+    # # Gantt chart
+    # with st.container(border=True):
+    #     st.subheader("Bus planning overview")
+    #     gantt_chart_bus(df)
 
 
 elif keuze == "Visualisaties":
