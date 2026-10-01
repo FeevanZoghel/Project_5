@@ -30,7 +30,7 @@ st.markdown("""
 
 /* Grote buitencontainer */
 .st-key-box_feasibility {
-    border: 6px double #EA3323 !important;
+    border: 3px solid #EA3323 !important;
     border-radius: 14px !important;
     background-color: white !important;
 }
@@ -40,7 +40,7 @@ st.markdown("""
 .st-key-box_feasibility h2,
 .st-key-box_feasibility h3,
 .st-key-box_feasibility p,
-.st-key-box_feasibility span {
+.st-key-box_feasibility span {  
     color: #222222 !important;
 }
 
@@ -110,23 +110,19 @@ if keuze == "Data Check":
     # Alleen uitvoeren als busplanning aanwezig is
     if 'bp' in st.session_state:
 
-        st.markdown("""
-        <style>
-        .block-container {
-            max-width: 60%;
-            padding-left: 2rem;
-            padding-right: 2rem;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
         df1 = st.session_state['bp']
 
         check_all(df1)
 
         with st.container(border=True, key="box_feasibility"):
 
-            st.subheader("Feasibility checks")
+            col_title, col_logo = st.columns([5, 1])
+
+            with col_title:
+                st.subheader("Feasibility checks")
+
+            with col_logo:
+                st.image("transdev_logo.png", width=130)
 
             col1, col2 = st.columns(2)
 
@@ -238,18 +234,17 @@ elif keuze == "Visualisaties":
 
             st.metric("Number of buses used 🚌",deployed_buses_count)
 
-            st.metric('Average waiting time ⏳', f'{avg_waiting_time_per_bus:.2f} min/bus')
+            st.metric('Average waiting time', f'{avg_waiting_time_per_bus:.2f} min/bus')
 
             st.metric("Material trips 🛠️", f'{t_material_total} trips')
 
+            st.metric('Material trip distance', f'{d_material_total:.3f} km')
 
         with col2 :
 
-            st.metric('Material trip distance 📏', f'{d_material_total} km')
-            
-            st.metric('Charging time 🔋', f'{total_charging_time_hours:.2f} hours')
+            st.metric('Charging time', f'{total_charging_time_hours:.2f} hours')
 
-            st.metric('Energy consumption ⚡', f'{total_consumption:.2f} kWh')
+            st.metric('Energy consumption', f'{total_consumption:.2f} kWh')
 
             st.metric("Total driving distance ↔️", f"{total_distance_km:.2f} km")
 
