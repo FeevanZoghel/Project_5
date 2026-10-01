@@ -131,10 +131,17 @@ if keuze == "Data Check":
                     check_overlapping_trips(df1)
                 )
 
-                status_check(
-                    "All required trips",
-                    check_req_trips(df1, df2)
-                )  
+                if 'tt' in st.session_state:
+
+                    df2 = st.session_state['tt']
+
+                    status_check(
+                        "All required trips",
+                        check_req_trips(df1, df2)
+                    )
+
+    else:
+        st.info("Upload the timetable to check all required trips.")
 
     if bestand2 is not None:
         st.session_state['tt'] = pd.read_excel(bestand2)
