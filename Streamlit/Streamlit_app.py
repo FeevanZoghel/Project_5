@@ -75,15 +75,6 @@ keuze = st.sidebar.selectbox("Kies een pagina", ["Data Check", "Visualisaties"])
 
 if keuze == "Data Check":
 
-    st.markdown("""
-    <style>
-    .block-container {
-        max-width: 70%;
-        padding-left: 2rem;
-        padding-right: 2rem;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
     st.title("Transdev Planning Checker")
 
