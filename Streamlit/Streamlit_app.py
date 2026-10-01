@@ -130,7 +130,7 @@ if keuze == "Data Check":
             with col_logo:
                 st.image(
                     "https://www.transdev.com/uploads/2026/09/logo.png",
-                    width=100
+                    width=100,
                     height = 50
                 )
             # De echte cards
