@@ -221,18 +221,6 @@ body,
     position: relative;
 }
 
-/* Lichtgrijze lijn */
-.feasibility-title::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 120px; /* ← hiermee maak je de grijze lijn korter/langer */
-    height: 2px;
-    background: #E5E5E5;
-}
-
-/* Rode lijn */
 .feasibility-title::after {
     content: "";
     position: absolute;
@@ -243,7 +231,6 @@ body,
     background: #EA3323;
     border-radius: 3px;
 }
-
 </style>
 """, unsafe_allow_html=True)
 
