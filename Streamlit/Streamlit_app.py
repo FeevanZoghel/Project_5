@@ -154,7 +154,7 @@ elif keuze == "Visualisaties":
 
         bp = st.session_state['bp']
 
-        col1, col2 = st.columns([1, 4])
+        col1, col2 = st.columns([3, 8])
 
         with col1:
             st.subheader("KPIs")
