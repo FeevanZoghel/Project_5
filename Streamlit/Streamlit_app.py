@@ -19,7 +19,7 @@ import streamlit as st
 import pandas as pd
 
 st.sidebar.title("Menu")
-st.write('hello world')
+# st.write('hello world')
 
 
 keuze = st.sidebar.selectbox(
@@ -61,80 +61,89 @@ if keuze == "Home":
     st.dataframe(df.head(2))
 
 
-if len(bestanden) == 2:
-    bestand = bestanden[0]
-    bestand2 = bestanden[1]
+elif keuze == "Data_check":
 
-    df = pd.read_excel(bestand)
-    df2 = pd.read_excel(bestand2)
+    st.title("Transdev Planning Checker")
 
-    # Data check
-    check_all(df)
+    bestanden = st.file_uploader(
+        "Upload een busplanning en de timetable",
+        type=["xlsx"],
+        accept_multiple_files=True
+    )
 
-    # Planning
-    with st.container(border=True):
-        st.subheader("Ingelezen planning")
-        st.dataframe(df, height=300)
+    if len(bestanden) == 2:
+        bestand = bestanden[0]
+        bestand2 = bestanden[1]
 
-    # Feasibility checks
-    with st.container(border=True):
-        st.subheader("Feasibility checks")
+        df = pd.read_excel(bestand)
+        df2 = pd.read_excel(bestand2)
 
-        col1, col2 = st.columns(2)
+        # Data check
+        check_all(df)
 
-        with col1:
-            st.markdown("🔋 Battery & charging")
+        # Planning
+        with st.container(border=True):
+            st.subheader("Ingelezen planning")
+            st.dataframe(df, height=300)
 
-            st.checkbox(
-                "Minimum SOC is maintained (10%)",
-                value=check_min_SOC(df),
-                disabled=True
-            )
+        # Feasibility checks
+        with st.container(border=True):
+            st.subheader("Feasibility checks")
 
-            st.checkbox(
-                "SOH is correct (between 85% and 95%)",
-                value=check_SOH(85),
-                disabled=True
-            )
+            col1, col2 = st.columns(2)
 
-            st.checkbox(
-                "Minimum charging time (15 minutes)",
-                value=check_min_charging_time(df),
-                disabled=True
-            )
+            with col1:
+                st.markdown("🔋 Battery & charging")
 
-            st.checkbox(
-                "Charging speed is correct",
-                value=check_charging_speed(df),
-                disabled=True
-            )
+                st.checkbox(
+                    "Minimum SOC is maintained (10%)",
+                    value=check_min_SOC(df),
+                    disabled=True
+                )
 
-        with col2:
-            st.markdown("📍 Planning")
+                st.checkbox(
+                    "SOH is correct (between 85% and 95%)",
+                    value=check_SOH(85),
+                    disabled=True
+                )
 
-            st.checkbox(
-                "Start and end locations match",
-                value=check_end_begin_loc(df),
-                disabled=True
-            )
+                st.checkbox(
+                    "Minimum charging time (15 minutes)",
+                    value=check_min_charging_time(df),
+                    disabled=True
+                )
 
-            st.checkbox(
-                "No overlapping trips",
-                value=check_overlapping_trips(df),
-                disabled=True
-            )
+                st.checkbox(
+                    "Charging speed is correct",
+                    value=check_charging_speed(df),
+                    disabled=True
+                )
 
-            st.checkbox(
-                "All Required trips",
-                value=check_req_trips(df, df2),
-                disabled=True
-            )
+            with col2:
+                st.markdown("📍 Planning")
 
-    # Gantt chart
-    with st.container(border=True):
-        st.subheader("Bus planning overview")
-        gantt_chart_bus(df)
+                st.checkbox(
+                    "Start and end locations match",
+                    value=check_end_begin_loc(df),
+                    disabled=True
+                )
 
+                st.checkbox(
+                    "No overlapping trips",
+                    value=check_overlapping_trips(df),
+                    disabled=True
+                )
+
+                st.checkbox(
+                    "All Required trips",
+                    value=check_req_trips(df, df2),
+                    disabled=True
+                )
+
+        # Gantt chart
+        with st.container(border=True):
+            st.subheader("Bus planning overview")
+            gantt_chart_bus(df)
 
 elif keuze == "Gegevens (KPI)":
     bestand = st.file_uploader("Upload een busplanning", type=["xlsx"])
