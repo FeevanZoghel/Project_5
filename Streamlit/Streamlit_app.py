@@ -19,14 +19,27 @@ from berekeningen_cleaned import (
     calculate_energy_consumption_kpis
 )
 
+
 import streamlit as st
 import pandas as pd
+
+
 
 st.markdown("""
 <style>
 [class*="st-key-box_"] {
     border: 3px solid #EA3323 !important;
     border-radius: 12px !important;
+    background-color: white !important;
+}
+
+/* Tekst in de containers donker maken */
+[class*="st-key-box_"] h1,
+[class*="st-key-box_"] h2,
+[class*="st-key-box_"] h3,
+[class*="st-key-box_"] p,
+[class*="st-key-box_"] span {
+    color: #1F1F1F !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -142,20 +155,22 @@ if keuze == "Data Check":
     else:
         st.info("Upload the timetable to check all required trips.")
 
+    if bestand2 is not None:
+        st.session_state['tt'] = pd.read_excel(bestand2)
+        df2 = st.session_state['tt']
+
+    if bestand3 is not None:
+        st.session_state['dm'] = pd.read_excel(bestand3)
+        df3 = st.session_state['dm']
+
 
 elif keuze == "Visualisaties":
 
-    st.title("Visualisaties")
+    st.title("Planning results")
 
-    if (
-        'bp' in st.session_state
-        and 'tt' in st.session_state
-        and 'dm' in st.session_state
-    ):
+    if 'bp' in st.session_state:
 
         bp = st.session_state['bp']
-        tt = st.session_state['tt']
-        dm = st.session_state['dm']
 
         # KPI's berekenen
         total_distance_m, total_distance_km, deployed_buses_count, t_material_total = calculate_distances_and_kpis(
@@ -193,10 +208,8 @@ elif keuze == "Visualisaties":
                 "Total driving distance ↔️",
                 f"{total_distance_km:.2f} km"
             )
+
         with col2:
             st.subheader("Bus planning")
 
             gantt_chart_bus(bp)
-
-    else:
-        st.warning("Upload the required files on the Data Check page first.")
