@@ -280,52 +280,23 @@ def check_all(df):
                 energy_check(df)
                 start_end_times(df)
 
-# Functie voor een feasibility status
 def status_check(tekst, goed):
+
     if goed:
-        kleur = "#28A745"   # groen
+        kleur = "#28A745"
         symbool = "✓"
     else:
-        kleur = "#EA3323"   # Transdev rood
+        kleur = "#EA3323"
         symbool = "✕"
 
-    st.markdown(
-        f"""
-        <div style="
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 18px 0;
-        ">
-            <div style="
-                width: 24px;
-                height: 24px;
-                min-width: 24px;
-                border-radius: 6px;
-                border: 2px solid {kleur};
-                background-color: {kleur};
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-weight: bold;
-                font-size: 17px;
-                line-height: 1;
-            ">
-                {symbool}
-            </div>
+    html = f"""
+<div style="display:flex; align-items:center; gap:12px; margin:18px 0;">
+<div style="width:24px; height:24px; min-width:24px; border-radius:6px; background-color:{kleur}; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:17px;">{symbool}</div>
+<span style="font-size:16px; color:white;">{tekst}</span>
+</div>
+"""
 
-            <span style="
-                font-size: 16px;
-                color: #FFFFFF;
-            ">
-                {tekst}
-            </span>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
+    st.markdown(html, unsafe_allow_html=True)
 
 
 
