@@ -25,22 +25,43 @@ import pandas as pd
 
 
 
-st.markdown(""""
+st.markdown("""
 <style>
-[class*="st-key-box_"] {
+
+/* Grote Feasibility container */
+.st-key-box_feasibility {
     border: 3px solid #EA3323 !important;
     border-radius: 12px !important;
     background-color: white !important;
 }
 
-/* Tekst in de containers donker maken */
-[class*="st-key-box_"] h1,
-[class*="st-key-box_"] h2,
-[class*="st-key-box_"] h3,
-[class*="st-key-box_"] p,
-[class*="st-key-box_"] span {
+/* Tekst donker */
+.st-key-box_feasibility h1,
+.st-key-box_feasibility h2,
+.st-key-box_feasibility h3,
+.st-key-box_feasibility p,
+.st-key-box_feasibility span {
     color: #1F1F1F !important;
 }
+
+
+/* Battery card */
+.st-key-box_battery {
+    background-color: #F5F6F7 !important;
+    border-top: 5px solid #EA3323 !important;
+    border-radius: 10px !important;
+    padding: 18px !important;
+}
+
+
+/* Planning card */
+.st-key-box_planning {
+    background-color: #F5F6F7 !important;
+    border-top: 5px solid #EA3323 !important;
+    border-radius: 10px !important;
+    padding: 18px !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
