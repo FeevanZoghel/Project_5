@@ -29,6 +29,25 @@ import pandas as pd
 st.markdown("""
 <style>
 
+/* Achtergrond hele app */
+[data-testid="stAppViewContainer"] {
+    background:
+        radial-gradient(
+            circle at 92% 8%,
+            rgba(234, 51, 35, 0.28) 0%,
+            rgba(234, 51, 35, 0.12) 18%,
+            transparent 42%
+        ),
+        linear-gradient(
+            135deg,
+            #0E1117 0%,
+            #15181E 55%,
+            #0B0D12 100%
+        ) !important;
+
+    background-attachment: fixed !important;
+}
+
 /* Feasibility buitenvak */
 .st-key-box_feasibility {
     background: white !important;
