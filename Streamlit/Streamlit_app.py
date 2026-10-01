@@ -181,6 +181,27 @@ body,
     font-weight: 700 !important;
 }
 
+.column-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222222;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    border-bottom: 2px solid #E5E5E5;
+    position: relative;
+}
+
+.column-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 70px;
+    height: 3px;
+    background: #EA3323;
+    border-radius: 3px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -267,7 +288,11 @@ if keuze == "Data Check":
                 # -----------------------------
                 with col1:
 
-                    st.markdown("🔋 **Battery & charging**")
+                    st.markdown("""
+                    <div class="column-title">
+                        🔋 Battery & charging
+                    </div>
+                    """, unsafe_allow_html=True)
 
                     status_check(
                         "Minimum SOC is maintained (10%)",
@@ -295,7 +320,11 @@ if keuze == "Data Check":
                 # -----------------------------
                 with col2:
 
-                    st.markdown("📍 **Planning**")
+                    st.markdown("""
+                    <div class="column-title">
+                        📍 Planning
+                    </div>
+                    """, unsafe_allow_html=True)
 
                     status_check(
                         "Start and end locations match",
