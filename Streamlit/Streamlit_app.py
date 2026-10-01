@@ -148,6 +148,32 @@ body,
         ) !important;
     background-attachment: fixed !important;
 }
+/* Hele expander wit */
+[data-testid="stExpander"] {
+    background-color: #FFFFFF !important;
+    border: 3px solid #EA3323 !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+}
+
+/* Bovenste balk: "Click here for details" */
+[data-testid="stExpander"] details,
+[data-testid="stExpander"] summary,
+[data-testid="stExpander"] summary:hover {
+    background-color: #FFFFFF !important;
+    color: #222222 !important;
+}
+
+/* Tekst + pijltje in header donker */
+[data-testid="stExpander"] summary * {
+    color: #222222 !important;
+    fill: #222222 !important;
+}
+
+/* Inhoud ook wit */
+[data-testid="stExpanderDetails"] {
+    background-color: #FFFFFF !important;
+}
 
 </style>
 """, unsafe_allow_html=True)
