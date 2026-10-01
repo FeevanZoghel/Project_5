@@ -122,64 +122,65 @@ if keuze == "Data Check":
 
             # De echte cards
             with st.container(key="check_cards"):
+
                 col1, col2 = st.columns(2)
 
-            # -----------------------------
-            # BATTERY & CHARGING
-            # -----------------------------
-            with col1:
+                # -----------------------------
+                # BATTERY & CHARGING
+                # -----------------------------
+                with col1:
 
-                st.markdown("🔋 **Battery & charging**")
-
-                status_check(
-                    "Minimum SOC is maintained (10%)",
-                    check_min_SOC(df1)
-                )
-
-                status_check(
-                    "SOH is correct (between 85% and 95%)",
-                    check_SOH(85)
-                )
-
-                status_check(
-                    "Minimum charging time (15 minutes)",
-                    check_min_charging_time(df1)
-                )
-
-                status_check(
-                    "Charging speed is correct",
-                    check_charging_speed(df1)
-                )
-
-
-            # -----------------------------
-            # PLANNING
-            # -----------------------------
-            with col2:
-
-                st.markdown("📍 **Planning**")
-
-                status_check(
-                    "Start and end locations match",
-                    check_end_begin_loc(df1)
-                )
-
-                status_check(
-                    "No overlapping trips",
-                    check_overlapping_trips(df1)
-                )
-
-                if 'tt' in st.session_state:
-
-                    df2 = st.session_state['tt']
+                    st.markdown("🔋 **Battery & charging**")
 
                     status_check(
-                        "All required trips",
-                        check_req_trips(df1, df2)
+                        "Minimum SOC is maintained (10%)",
+                        check_min_SOC(df1)
                     )
 
-    else:
-        st.info("Upload the timetable to check all required trips.")
+                    status_check(
+                        "SOH is correct (between 85% and 95%)",
+                        check_SOH(85)
+                    )
+
+                    status_check(
+                        "Minimum charging time (15 minutes)",
+                        check_min_charging_time(df1)
+                    )
+
+                    status_check(
+                        "Charging speed is correct",
+                        check_charging_speed(df1)
+                    )
+
+
+                # -----------------------------
+                # PLANNING
+                # -----------------------------
+                with col2:
+
+                    st.markdown("📍 **Planning**")
+
+                    status_check(
+                        "Start and end locations match",
+                        check_end_begin_loc(df1)
+                    )
+
+                    status_check(
+                        "No overlapping trips",
+                        check_overlapping_trips(df1)
+                    )
+
+                    if "tt" in st.session_state:
+
+                        df2 = st.session_state["tt"]
+
+                        status_check(
+                            "All required trips",
+                            check_req_trips(df1, df2)
+                        )
+
+                    else:
+                        st.info("Upload the timetable to check all required trips.")
 
     if bestand2 is not None:
         st.session_state['tt'] = pd.read_excel(bestand2)
