@@ -30,132 +30,53 @@ st.markdown("""
 <style>
 
 /* ===== FEASIBILITY ===== */
-.st-key-box_feasibility {
-    background: white !important;
-    border: 3px solid #EA3323 !important;
-    border-radius: 14px !important;
-    padding: 10px !important;
-}
+.st-key-box_feasibility {background:white !important; border:3px solid #EA3323 !important; border-radius:14px !important; padding:10px !important;}
 
-.st-key-box_feasibility h1,
-.st-key-box_feasibility h2,
-.st-key-box_feasibility h3,
-.st-key-box_feasibility p,
-.st-key-box_feasibility span { color: #222 !important; }
+.st-key-box_feasibility h1, .st-key-box_feasibility h2, .st-key-box_feasibility h3, .st-key-box_feasibility p, .st-key-box_feasibility span {color:#222 !important;}
 
-.st-key-check_cards [data-testid="stColumn"] {
-    background: white !important;
-    border-top: 5px solid #EA3323 !important;
-    border-radius: 12px !important;
-    padding: 18px 20px !important;
-    box-shadow: 0 4px 14px rgba(0,0,0,.12) !important;
-}
+.st-key-check_cards [data-testid="stColumn"] {background:white !important; border-top:5px solid #EA3323 !important; border-radius:12px !important; padding:18px 20px !important; box-shadow:0 4px 14px rgba(0,0,0,.12) !important;}
 
-.st-key-check_cards [data-testid="stHorizontalBlock"] { gap: 28px !important; }
+.st-key-check_cards [data-testid="stHorizontalBlock"] {gap:28px !important;}
 
 
 /* ===== UPLOAD ===== */
-[data-testid="stFileUploaderDropzone"] {
-    background: #F2F2F2 !important;
-    border: 3px solid #EA3323 !important;
-    border-radius: 14px !important;
-}
+[data-testid="stFileUploaderDropzone"] {background:#F2F2F2 !important; border:3px solid #EA3323 !important; border-radius:14px !important;}
 
-[data-testid="stFileUploaderDropzone"] button {
-    background: white !important;
-    color: #222 !important;
-    border: 2px solid #EA3323 !important;
-    border-radius: 10px !important;
-}
+[data-testid="stFileUploaderDropzone"] button {background:white !important; color:#222 !important; border:2px solid #EA3323 !important; border-radius:10px !important;}
 
-[data-testid="stFileUploaderDropzone"] span,
-[data-testid="stFileUploaderDropzone"] small { color: #555 !important; }
+[data-testid="stFileUploaderDropzone"] span, [data-testid="stFileUploaderDropzone"] small {color:#555 !important;}
 
-[data-testid="stFileUploaderFile"],
-[data-testid="stFileUploaderFile"] div { background: white !important; color: #222 !important; }
+[data-testid="stFileUploaderFile"], [data-testid="stFileUploaderFile"] div {background:white !important; color:#222 !important;}
 
-[data-testid="stFileUploaderFile"] span,
-[data-testid="stFileUploaderFile"] small,
-[data-testid="stFileUploaderFile"] p { color: #222 !important; }
+[data-testid="stFileUploaderFile"] span, [data-testid="stFileUploaderFile"] small, [data-testid="stFileUploaderFile"] p {color:#222 !important;}
 
-[data-testid="stFileUploader"] button { border-color: #EA3323 !important; }
+[data-testid="stFileUploader"] button {border-color:#EA3323 !important;}
 
 
 /* ===== ACHTERGROND ===== */
-html, body,
-[data-testid="stApp"],
-[data-testid="stAppViewContainer"],
-[data-testid="stMain"],
-.main {
-    background:
-        radial-gradient(circle at 85% 10%, rgba(234,51,35,.30) 0%, rgba(234,51,35,.12) 20%, transparent 45%),
-        linear-gradient(135deg, #0E1117 0%, #1A1D24 55%, #090B0F 100%) !important;
-    background-attachment: fixed !important;
-}
+html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-testid="stMain"], .main {background:radial-gradient(circle at 85% 10%, rgba(234,51,35,.30) 0%, rgba(234,51,35,.12) 20%, transparent 45%), linear-gradient(135deg,#0E1117 0%,#1A1D24 55%,#090B0F 100%) !important; background-attachment:fixed !important;}
 
 
 /* ===== ERROR + DETAILS ===== */
-[data-testid="stAlert"] {
-    border: 3px solid #EA3323 !important;
-    border-radius: 14px !important;
-}
+[data-testid="stAlert"] {border:3px solid #EA3323 !important; border-radius:14px !important;}
 
-[data-testid="stExpander"] {
-    background: white !important;
-    border: 3px solid #EA3323 !important;
-    border-radius: 14px !important;
-    overflow: hidden !important;
-}
+[data-testid="stExpander"] {background:white !important; border:3px solid #EA3323 !important; border-radius:14px !important; overflow:hidden !important;}
 
-[data-testid="stExpander"] details,
-[data-testid="stExpander"] summary,
-[data-testid="stExpander"] summary:hover,
-[data-testid="stExpanderDetails"] { background: white !important; }
+[data-testid="stExpander"] details, [data-testid="stExpander"] summary, [data-testid="stExpander"] summary:hover, [data-testid="stExpanderDetails"] {background:white !important;}
 
-[data-testid="stExpander"] summary,
-[data-testid="stExpander"] p,
-[data-testid="stExpander"] span { color: #222 !important; }
+[data-testid="stExpander"] summary, [data-testid="stExpander"] p, [data-testid="stExpander"] span {color:#222 !important;}
 
-[data-testid="stExpander"] summary * {
-    color: #222 !important;
-    fill: #222 !important;
-}
+[data-testid="stExpander"] summary * {color:#222 !important; fill:#222 !important;}
 
 
 /* ===== TITELS ===== */
-.st-key-box_feasibility h3 {
-    font-size: 50px !important;
-    font-weight: 700 !important;
-}
+.st-key-box_feasibility h3 {font-size:50px !important; font-weight:700 !important;}
 
-.column-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #222;
-    padding-bottom: 12px;
-    margin-bottom: 18px;
-    border-bottom: 2px solid #E5E5E5;
-    position: relative;
-}
+.column-title {font-size:20px; font-weight:700; color:#222; padding-bottom:12px; margin-bottom:18px; border-bottom:2px solid #E5E5E5; position:relative;}
 
-.column-title::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -2px;
-    width: 70px;
-    height: 3px;
-    background: #EA3323;
-    border-radius: 3px;
-}
+.column-title::after {content:""; position:absolute; left:0; bottom:-2px; width:70px; height:3px; background:#EA3323; border-radius:3px;}
 
-.feasibility-title {
-    font-size: 34px;
-    font-weight: 700;
-    color: #222;
-    padding-bottom: 14px;
-    margin-bottom: 20px;
-}
+.feasibility-title {font-size:34px; font-weight:700; color:#222; padding-bottom:14px; margin-bottom:20px;}
 
 </style>
 """, unsafe_allow_html=True)
