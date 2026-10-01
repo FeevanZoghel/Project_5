@@ -29,24 +29,18 @@ import pandas as pd
 st.markdown("""
 <style>
 
-/* Feasibility buitenvak */
+/* Feasibility */
 .st-key-box_feasibility {
     background: white !important;
     border: 3px solid #EA3323 !important;
     border-radius: 14px !important;
-    padding: 10px !important;
 }
 
-/* Donkere tekst */
-.st-key-box_feasibility h1,
-.st-key-box_feasibility h2,
-.st-key-box_feasibility h3,
-.st-key-box_feasibility p,
-.st-key-box_feasibility span {
-    color: #222 !important;
+.st-key-box_feasibility * {
+    color: #222;
 }
 
-/* Battery + Planning cards */
+/* Battery + Planning */
 .st-key-check_cards [data-testid="stColumn"] {
     background: white !important;
     border-top: 5px solid #EA3323 !important;
@@ -55,46 +49,27 @@ st.markdown("""
     box-shadow: 0 4px 14px rgba(0,0,0,.12) !important;
 }
 
-.st-key-check_cards [data-testid="stHorizontalBlock"] {
-    gap: 28px !important;
-}
-
 /* Uploadvak */
 [data-testid="stFileUploaderDropzone"] {
-    background: #F2F2F2 !important;
+    background: #F3F3F3 !important;
     border: 3px solid #EA3323 !important;
     border-radius: 14px !important;
 }
 
-/* Uploadknop */
-[data-testid="stFileUploaderDropzone"] button {
+/* Geüpload bestand */
+[data-testid="stFileChip"] {
     background: white !important;
     color: #222 !important;
-    border: 2px solid #EA3323 !important;
+    border: 1px solid #D8D8D8 !important;
     border-radius: 10px !important;
 }
 
-/* Tekst uploadvak */
-[data-testid="stFileUploaderDropzone"] span,
-[data-testid="stFileUploaderDropzone"] small {
-    color: #555 !important;
-}
-
-/* Geüpload bestand: wit */
-[data-testid="stFileUploaderFile"],
-[data-testid="stFileUploaderFile"] div {
-    background: white !important;
+/* Bestandsnaam */
+[data-testid="stFileChipName"] {
     color: #222 !important;
 }
 
-/* Tekst geüpload bestand */
-[data-testid="stFileUploaderFile"] span,
-[data-testid="stFileUploaderFile"] small,
-[data-testid="stFileUploaderFile"] p {
-    color: #222 !important;
-}
-
-/* Knoppen/icoontjes */
+/* Upload / plus / verwijder knop */
 [data-testid="stFileUploader"] button {
     border-color: #EA3323 !important;
 }
