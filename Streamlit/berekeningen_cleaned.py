@@ -19,7 +19,7 @@ tt = pd.read_excel('Timetable.xlsx')
 # Feasibility checks
 
 # checks minimum battery value per bus (min 10%)
-def check_battery_feasibility(bp, start_battery=300):
+def check_battery_feasibility(bus_planning, start_battery=300):
     """Check if any bus falls below the minimum required battery capacity threshold."""
     assumed_soh_percentage = 85
     min_battery_value = (300 / assumed_soh_percentage * 100) * 0.1  # 10% of real capacity
@@ -51,7 +51,7 @@ def check_battery_feasibility(bp, start_battery=300):
     return empty_bus, total_usage, assumed_soh_percentage
 
 # checks whether no bus starts a trip before finishing the previous
-def check_bus_overlap(bp):
+def check_bus_overlap(bus_planning):
     """Verify that no bus is scheduled for overlapping trips."""
     planning_sor1 = bp.sort_values(['bus', 'start time']).reset_index(drop=True)
     bus_overlap = []
@@ -76,7 +76,7 @@ def check_bus_overlap(bp):
     return bus_overlap
 
 # checks whether trip arrival matches next trip departure
-def check_location_continuity(bp):
+def check_location_continuity(bus_planning):
     """Verify that trip arrival locations match the next trip departure locations."""
     planning_sor1 = bp.sort_values(['bus', 'start time']).reset_index(drop=True)
     discontinuities = []
@@ -100,7 +100,7 @@ def check_location_continuity(bp):
     return discontinuities
 
 # calculates charging session count and duration (>=15 min)
-def check_valid_charging_duration(bp):
+def check_valid_charging_duration(bus_planning):
     """Check and summarize charging sessions that meet the 15-minute threshold."""
     bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
     bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
@@ -123,7 +123,7 @@ def check_valid_charging_duration(bp):
     return len(not_valid_charging_trips)
 
 # calculate the energy usage of busses (takes the quick recharge speed and slow recharge speed into account)
-def check_charging_constraint_and_speeds(bp, start_battery=300):
+def check_charging_constraint_and_speeds(bus_planning, start_battery=300):
     """Simulate battery levels throughout the day considering quick and slow charging speeds."""
     bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
     bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
@@ -191,7 +191,7 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
     return empty_bus, total_usage, number_charging_speeds, assumed_soh_percentage, quick_recharge_speed, slow_recharge_speed
 
 # checks whether the required trips are all included in the schedule
-def check_required_trips(bp, tt):
+def check_required_trips(bus_planning, time_table):
     """Check if all required timetable trips are included in the schedule."""
     # compare number of service trips in planning with number of required service trips in planning
     number_of_required_trips = len(tt)
@@ -212,7 +212,7 @@ def check_required_trips(bp, tt):
 # Calculating KPI values
 
 # calculates energy consumption per bus and total energy consumption of all busses
-def calculate_energy_consumption_kpis(bp):
+def calculate_energy_consumption_kpis(bus_planning):
     '''
 
     Berekent het energieverbruik per bus en van alle bussen samen.
@@ -242,7 +242,7 @@ def calculate_energy_consumption_kpis(bp):
     return total_consumption
 
 # defines all distances from service trips and material trips, calculates the number of busses used, calculates total driven distance of all busses and calculates the number of trips
-def calculate_distances_and_kpis(bp, dm, tt):
+def calculate_distances_and_kpis(bus_planning, distance_matrix, time_table):
     '''
     
     Maakt de berekeningen voor de KPI's generiek.
@@ -341,7 +341,7 @@ def calculate_distances_and_kpis(bp, dm, tt):
 
 
 # calculate total waiting time and the average waiting time per bus
-def calculate_waiting_time_kpis(bp, deployed_buses_count):
+def calculate_waiting_time_kpis(bus_planning, deployed_busses):
     """
     
     Berekent de wachttijd van alle bussen.
@@ -379,7 +379,7 @@ def calculate_waiting_time_kpis(bp, deployed_buses_count):
     return tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus
 
 # Functions for all feasibility checks and kpi calculations
-def run_all_feasibility_checks(bp, tt):
+def run_all_feasibility_checks(bus_planning, time_table):
     """Run all feasibility checks and return a summary dictionary."""
     # Call charging constraint function once to extract battery errors, speeds and soh
     empty_buses, total_usage, number_charging_speeds, assumed_soh_percentage, quick_speed, slow_speed = check_charging_constraint_and_speeds(bp)
@@ -410,7 +410,7 @@ def run_all_feasibility_checks(bp, tt):
     print("\nOVERALL FEASIBILITY RESULT:", "PASSED" if all_passed else "FAILED")
     return results
 
-def run_all_kpi_calculations(bp, dm, tt):
+def run_all_kpi_calculations(bus_planning, distance_matrix, time_table):
     """Run all KPI calculations and return a summary dictionary."""
     total_energy = calculate_energy_consumption_kpis(bp)
     total_dist_m, total_dist_km, deployed_buses, tot_material_trips = calculate_distances_and_kpis(bp, dm, tt)
@@ -480,7 +480,7 @@ t_end = time.perf_counter()
 computation_time = t_end - t_start
 print(f'Computation time: {computation_time:.2f} seconds.')
 
-def gantt_chart_bus(bp):
+def gantt_chart_bus(bus_planning):
     '''
     Maakt Gantt-charts van de busplanning.
 
