@@ -144,31 +144,42 @@ if keuze == "Data Check":
     if bestand3 is not None:
         st.session_state['dm'] = pd.read_excel(bestand3)
         df3 = st.session_state['dm']
- 
-    # Planning
-    # with st.container(border=True):
-    #     st.subheader("Ingelezen planning")
-    #     st.write(df.head(10))
-
-
-
-    # # Gantt chart
-    # with st.container(border=True):
-    #     st.subheader("Bus planning overview")
-    #     gantt_chart_bus(df)
 
 
 elif keuze == "Visualisaties":
-    bestand = st.file_uploader("Upload een busplanning", type=["xlsx"])
 
-    if bestand is not None:
-        df = pd.read_excel(bestand)
+    st.title("Planning results")
 
-        check_all(df)
-        keuze2 = st.selectbox("What do you want to see?",
-        ["Energy Consumption", "Een andere die ik nog niet heb bedacht"]
-        )
+    if 'bp' in st.session_state:
 
-        if keuze2 == "Energy Consumption":
-            st.subheader('Energy consumption from busses:')
-            bus_energy_check(df)
+        bp = st.session_state['bp']
+
+        col1, col2 = st.columns([1, 4])
+
+        with col1:
+            st.subheader("KPIs")
+
+            st.metric(
+                "Total distance",
+                "1,284 km"
+            )
+
+            st.metric(
+                "Buses used",
+                "20"
+            )
+
+            st.metric(
+                "Energy consumption",
+                "2,845 kWh"
+            )
+
+            st.metric(
+                "Average waiting time",
+                "34 min"
+            )
+
+        with col2:
+            st.subheader("Bus planning")
+
+            gantt_chart_bus(bp)
