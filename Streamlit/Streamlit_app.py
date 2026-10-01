@@ -13,10 +13,8 @@ from DataFrame_check import (
 )
 
 from Berekeningen import bus_energy_check
-from berekeningen_cleaned import (
-    gantt_chart_bus,
-    calculate_distances_and_kpis
-)
+from berekeningen_cleaned import gantt_chart_bus
+from testen import status_check
 
 import streamlit as st
 import pandas as pd
@@ -80,65 +78,60 @@ if keuze == "Data Check":
         check_all(df1)
 
         with st.container(border=True, key="box_feasibility"):
+
             st.subheader("Feasibility checks")
 
             col1, col2 = st.columns(2)
 
+            # -----------------------------
+            # BATTERY & CHARGING
+            # -----------------------------
             with col1:
-                st.markdown("🔋 Battery & charging")
 
-                st.checkbox(
+                st.markdown("🔋 **Battery & charging**")
+
+                status_check(
                     "Minimum SOC is maintained (10%)",
-                    value=check_min_SOC(df1),
-                    disabled=True
+                    check_min_SOC(df1)
                 )
 
-                st.checkbox(
+                status_check(
                     "SOH is correct (between 85% and 95%)",
-                    value=check_SOH(85),
-                    disabled=True
+                    check_SOH(85)
                 )
 
-                st.checkbox(
+                status_check(
                     "Minimum charging time (15 minutes)",
-                    value=check_min_charging_time(df1),
-                    disabled=True
+                    check_min_charging_time(df1)
                 )
 
-                st.checkbox(
+                status_check(
                     "Charging speed is correct",
-                    value=check_charging_speed(df1),
-                    disabled=True
+                    check_charging_speed(df1)
                 )
 
+
+            # -----------------------------
+            # PLANNING
+            # -----------------------------
             with col2:
-                st.markdown("📍 Planning")
 
-                st.checkbox(
+                st.markdown("📍 **Planning**")
+
+                status_check(
                     "Start and end locations match",
-                    value=check_end_begin_loc(df1),
-                    disabled=True
+                    check_end_begin_loc(df1)
                 )
 
-                st.checkbox(
+                status_check(
                     "No overlapping trips",
-                    value=check_overlapping_trips(df1),
-                    disabled=True
+                    check_overlapping_trips(df1)
                 )
 
-                # Deze check heeft OOK de timetable nodig
-                if 'tt' in st.session_state:
-
-                    df2 = st.session_state['tt']
-
-                    st.checkbox(
-                        "All Required trips",
-                        value=check_req_trips(df1, df2),
-                        disabled=True
-                    )
-
-                else:
-                    st.write("Upload the timetable to check all required trips.")
+                status_check(
+                    "All required trips",
+                    check_req_trips(df1, df2)
+                )  
 
     if bestand2 is not None:
         st.session_state['tt'] = pd.read_excel(bestand2)
@@ -151,47 +144,26 @@ if keuze == "Data Check":
 
 elif keuze == "Visualisaties":
 
-    st.title("Visualisaties")
+    st.title("Planning results")
 
-    if (
-        'bp' in st.session_state
-        and 'tt' in st.session_state
-        and 'dm' in st.session_state
-    ):
+    if 'bp' in st.session_state:
 
         bp = st.session_state['bp']
-        tt = st.session_state['tt']
-        dm = st.session_state['dm']
 
-        # KPI's berekenen
-        total_distance_m, total_distance_km, deployed_buses_count, t_material_total = calculate_distances_and_kpis(
-            bp, dm, tt
-        )
-
-        col1, col2 = st.columns([1, 4])
+        col1, col2 = st.columns([3, 8])
 
         with col1:
             st.subheader("KPIs")
 
-            st.metric(
-                "Number of buses used",
-                deployed_buses_count
-            )
+            st.metric("Buses used 🚌", " ")
 
-            st.metric(
-                "Total distance",
-                f"{total_distance_km:.2f} km"
-            )
+            st.metric("Total distance ↔️", " km")
 
-            st.metric(
-                "Material trips",
-                t_material_total
-            )
+            st.metric("Energy consumption 🔋", " kWh")
+
+            st.metric("Average waiting time ⏳", " min")
 
         with col2:
             st.subheader("Bus planning")
 
             gantt_chart_bus(bp)
-
-    else:
-        st.warning("Upload the required files on the Data Check page first.")
