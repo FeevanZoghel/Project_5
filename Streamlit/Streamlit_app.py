@@ -110,6 +110,16 @@ if keuze == "Data Check":
     # Alleen uitvoeren als busplanning aanwezig is
     if 'bp' in st.session_state:
 
+        st.markdown("""
+        <style>
+        .block-container {
+            max-width: 60%;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
         df1 = st.session_state['bp']
 
         check_all(df1)
@@ -228,17 +238,18 @@ elif keuze == "Visualisaties":
 
             st.metric("Number of buses used 🚌",deployed_buses_count)
 
-            st.metric('Average waiting time', f'{avg_waiting_time_per_bus:.2f} min/bus')
+            st.metric('Average waiting time ⏳', f'{avg_waiting_time_per_bus:.2f} min/bus')
 
             st.metric("Material trips 🛠️", f'{t_material_total} trips')
 
-            st.metric('Material trip distance', f'{d_material_total:.3f} km')
 
         with col2 :
 
-            st.metric('Charging time', f'{total_charging_time_hours:.2f} hours')
+            st.metric('Material trip distance 📏', f'{d_material_total} km')
+            
+            st.metric('Charging time 🔋', f'{total_charging_time_hours:.2f} hours')
 
-            st.metric('Energy consumption', f'{total_consumption:.2f} kWh')
+            st.metric('Energy consumption ⚡', f'{total_consumption:.2f} kWh')
 
             st.metric("Total driving distance ↔️", f"{total_distance_km:.2f} km")
 
