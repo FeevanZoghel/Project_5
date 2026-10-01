@@ -28,7 +28,7 @@ import pandas as pd
 st.markdown("""
 <style>
 
-/* Grote Feasibility container */
+/* Grote buitencontainer */
 .st-key-box_feasibility {
     border: 3px solid #EA3323 !important;
     border-radius: 12px !important;
@@ -44,26 +44,17 @@ st.markdown("""
     color: #1F1F1F !important;
 }
 
-
-/* Battery card */
-.st-key-box_battery {
+/* De twee kolommen binnen Feasibility */
+.st-key-box_feasibility [data-testid="stColumn"] {
     background-color: #F5F6F7 !important;
-    border-top: 5px solid #EA3323 !important;
     border-radius: 10px !important;
     padding: 18px !important;
-}
-
-
-/* Planning card */
-.st-key-box_planning {
-    background-color: #F5F6F7 !important;
     border-top: 5px solid #EA3323 !important;
-    border-radius: 10px !important;
-    padding: 18px !important;
 }
 
 </style>
 """, unsafe_allow_html=True)
+
 
 st.sidebar.title("Menu")
 # st.write('hello world')
