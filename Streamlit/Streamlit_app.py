@@ -177,7 +177,7 @@ body,
 
 /* Titel Feasibility checks */
 .st-key-box_feasibility h3 {
-    font-size: 34px !important;
+    font-size: 50px !important;
     font-weight: 700 !important;
 }
 
