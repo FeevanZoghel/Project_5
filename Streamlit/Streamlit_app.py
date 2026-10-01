@@ -28,18 +28,14 @@ import pandas as pd
 st.markdown("""
 <style>
 
-/* =========================================
-   GROTE FEASIBILITY CONTAINER
-   ========================================= */
-
+/* Grote buitencontainer */
 .st-key-box_feasibility {
     border: 3px solid #EA3323 !important;
     border-radius: 14px !important;
     background-color: white !important;
-    padding: 8px !important;
 }
 
-/* Tekst donker */
+/* Alle tekst donker */
 .st-key-box_feasibility h1,
 .st-key-box_feasibility h2,
 .st-key-box_feasibility h3,
@@ -48,47 +44,21 @@ st.markdown("""
     color: #222222 !important;
 }
 
-
-/* =========================================
-   BATTERY + PLANNING CARDS
-   ========================================= */
-
+/* Battery + Planning cards */
 .st-key-box_feasibility [data-testid="stColumn"] {
-
-    /* Achtergrond */
     background-color: #FFFFFF !important;
 
-    /* Rode bovenrand */
     border-top: 5px solid #EA3323 !important;
-
-    /* Afronding */
     border-radius: 12px !important;
 
-    /* Ruimte binnen card */
-    padding: 18px 20px !important;
+    padding: 18px 20px 20px 20px !important;
 
-    /* Schaduw */
-    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.12) !important;
 }
 
-
-/* =========================================
-   TITELS BATTERY / PLANNING
-   ========================================= */
-
-.st-key-box_feasibility [data-testid="stColumn"] h3 {
-    font-size: 19px !important;
-    font-weight: 700 !important;
-    margin-bottom: 14px !important;
-}
-
-
-/* =========================================
-   IETS MEER RUIMTE TUSSEN DE CARDS
-   ========================================= */
-
+/* Ruimte tussen de twee cards */
 .st-key-box_feasibility [data-testid="stHorizontalBlock"] {
-    gap: 22px !important;
+    gap: 28px !important;
 }
 
 </style>
