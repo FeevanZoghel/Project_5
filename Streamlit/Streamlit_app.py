@@ -17,7 +17,8 @@ from berekeningen_cleaned import (
     calculate_waiting_time_kpis,
     calculate_energy_consumption_kpis
 )
-from testen import status_check
+
+# from testen import status_check
 
 import streamlit as st
 import pandas as pd
