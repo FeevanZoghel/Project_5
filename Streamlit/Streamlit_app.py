@@ -131,48 +131,7 @@ if keuze == "Data Check":
                 status_check(
                     "All required trips",
                     check_req_trips(df1, df2)
-                )    if goed:
-                st.markdown(
-                    f"""
-                    <div style="display:flex; align-items:center; gap:12px; margin:15px 0;">
-                        <div style="
-                            width:24px;
-                            height:24px;
-                            border-radius:6px;
-                            background-color:#28a745;
-                            display:flex;
-                            align-items:center;
-                            justify-content:center;
-                            color:white;
-                            font-weight:bold;
-                            font-size:17px;
-                        ">✓</div>
-                        <span>{tekst}</span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-            else:
-                st.markdown(
-                    f"""
-                    <div style="display:flex; align-items:center; gap:12px; margin:15px 0;">
-                        <div style="
-                            width:24px;
-                            height:24px;
-                            border-radius:6px;
-                            background-color:#EA3323;
-                            display:flex;
-                            align-items:center;
-                            justify-content:center;
-                            color:white;
-                            font-weight:bold;
-                            font-size:17px;
-                        ">✕</div>
-                        <span>{tekst}</span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
+                )  
 
     if bestand2 is not None:
         st.session_state['tt'] = pd.read_excel(bestand2)
