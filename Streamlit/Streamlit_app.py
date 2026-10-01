@@ -212,7 +212,7 @@ elif keuze == "Visualisaties":
         total_charging_time_min, total_charging_time_hours = calculate_charging_time_kpis(bp)
 
         total_consumption = calculate_energy_consumption_kpis(bp)
-        col1, col2 = st.columns([4, 9])
+        col1, col2, col3 = st.columns([5, 4, 9])
 
         with col1:
             st.subheader("KPIs")
@@ -225,13 +225,15 @@ elif keuze == "Visualisaties":
 
             st.metric('Material trip distance', f'{total_distance_km:.3f} km')
 
+        with col2 :
+
             st.metric('Charging time', f'{total_charging_time_hours:.2f} hours')
 
             st.metric('Energy consumption', f'{total_consumption:.2f} kWh')
 
             st.metric("Total driving distance ↔️", f"{total_distance_km:.2f} km")
 
-        with col2:
+        with col3:
             st.subheader("Bus planning")
 
             gantt_chart_bus(bp)
