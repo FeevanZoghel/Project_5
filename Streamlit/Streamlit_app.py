@@ -212,11 +212,32 @@ body,
     position: relative;
 }
 
+.feasibility-title {
+    font-size: 34px;
+    font-weight: 700;
+    color: #222222;
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+/* Lichtgrijze lijn */
+.feasibility-title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 120px; /* ← hiermee maak je de grijze lijn korter/langer */
+    height: 2px;
+    background: #E5E5E5;
+}
+
+/* Rode lijn */
 .feasibility-title::after {
     content: "";
     position: absolute;
     left: 0;
-    bottom: -2px;
+    bottom: 0;
     width: 60px;
     height: 4px;
     background: #EA3323;
