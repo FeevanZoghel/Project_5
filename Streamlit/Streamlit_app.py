@@ -29,24 +29,6 @@ import pandas as pd
 st.markdown("""
 <style>
 
-/* Achtergrond hele app */
-[data-testid="stAppViewContainer"] {
-    background:
-        radial-gradient(
-            circle at 92% 8%,
-            rgba(234, 51, 35, 0.28) 0%,
-            rgba(234, 51, 35, 0.12) 18%,
-            transparent 42%
-        ),
-        linear-gradient(
-            135deg,
-            #0E1117 0%,
-            #15181E 55%,
-            #0B0D12 100%
-        ) !important;
-
-    background-attachment: fixed !important;
-}
 
 /* Feasibility buitenvak */
 .st-key-box_feasibility {
@@ -141,6 +123,30 @@ st.markdown("""
 [data-testid="stAlert"] {
     border: 3px solid #EA3323 !important;
     border-radius: 14px !important;
+}
+
+/* ===== ACHTERGROND HELE PAGINA ===== */
+
+html,
+body,
+[data-testid="stApp"],
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+.main {
+    background:
+        radial-gradient(
+            circle at 85% 10%,
+            rgba(234, 51, 35, 0.30) 0%,
+            rgba(234, 51, 35, 0.12) 20%,
+            transparent 45%
+        ),
+        linear-gradient(
+            135deg,
+            #0E1117 0%,
+            #1A1D24 55%,
+            #090B0F 100%
+        ) !important;
+    background-attachment: fixed !important;
 }
 
 </style>
