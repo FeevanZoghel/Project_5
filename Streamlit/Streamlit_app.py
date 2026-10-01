@@ -205,11 +205,6 @@ if keuze == "Data Check":
 
 elif keuze == "Visualisaties":
 
-    st.image(
-    "https://www.transdev.com/uploads/2026/09/logo.png",
-    width=60
-    )
-
     st.markdown("""
         <style>
         .block-container {
@@ -266,6 +261,12 @@ elif keuze == "Visualisaties":
             st.metric("Total driving distance ↔️", f"{total_distance_km:.2f} km")
 
         with col3:
+
+            st.image(
+            "https://www.transdev.com/uploads/2026/09/logo.png",
+            width=60
+            )
+
             st.subheader("Bus planning")
 
             gantt_chart_bus(bp)
