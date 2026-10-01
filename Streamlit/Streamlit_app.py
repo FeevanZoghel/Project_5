@@ -118,8 +118,10 @@ if keuze == "Data Check":
                 st.subheader("Feasibility checks")
 
             with col_logo:
-                logo_path = Path(__file__).parent / "Logo_Transdev.png"
-                st.image(str(logo_path), width=130)
+                st.image(
+                    "https://www.transdev.com/uploads/2026/09/logo.png",
+                    width=130
+                )
             # De echte cards
             with st.container(key="check_cards"):
 
@@ -196,7 +198,7 @@ elif keuze == "Visualisaties":
     "https://www.transdev.com/uploads/2026/09/logo.png",
     width=200
     )
-    
+
     st.markdown("""
         <style>
         .block-container {
