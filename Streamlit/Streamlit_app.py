@@ -77,65 +77,101 @@ if keuze == "Data Check":
         check_all(df1)
 
         with st.container(border=True, key="box_feasibility"):
+
             st.subheader("Feasibility checks")
 
             col1, col2 = st.columns(2)
 
+            # -----------------------------
+            # BATTERY & CHARGING
+            # -----------------------------
             with col1:
-                st.markdown("🔋 Battery & charging")
 
-                st.checkbox(
+                st.markdown("🔋 **Battery & charging**")
+
+                status_check(
                     "Minimum SOC is maintained (10%)",
-                    value=check_min_SOC(df1),
-                    disabled=True
+                    check_min_SOC(df1)
                 )
 
-                st.checkbox(
+                status_check(
                     "SOH is correct (between 85% and 95%)",
-                    value=check_SOH(85),
-                    disabled=True
+                    check_SOH(85)
                 )
 
-                st.checkbox(
+                status_check(
                     "Minimum charging time (15 minutes)",
-                    value=check_min_charging_time(df1),
-                    disabled=True
+                    check_min_charging_time(df1)
                 )
 
-                st.checkbox(
+                status_check(
                     "Charging speed is correct",
-                    value=check_charging_speed(df1),
-                    disabled=True
+                    check_charging_speed(df1)
                 )
 
+
+            # -----------------------------
+            # PLANNING
+            # -----------------------------
             with col2:
-                st.markdown("📍 Planning")
 
-                st.checkbox(
+                st.markdown("📍 **Planning**")
+
+                status_check(
                     "Start and end locations match",
-                    value=check_end_begin_loc(df1),
-                    disabled=True
+                    check_end_begin_loc(df1)
                 )
 
-                st.checkbox(
+                status_check(
                     "No overlapping trips",
-                    value=check_overlapping_trips(df1),
-                    disabled=True
+                    check_overlapping_trips(df1)
                 )
 
-                # Deze check heeft OOK de timetable nodig
-                if 'tt' in st.session_state:
-
-                    df2 = st.session_state['tt']
-
-                    st.checkbox(
-                        "All Required trips",
-                        value=check_req_trips(df1, df2),
-                        disabled=True
-                    )
-
-                else:
-                    st.write("Upload the timetable to check all required trips.")
+                status_check(
+                    "All required trips",
+                    check_req_trips(df1, df2)
+                )    if goed:
+                st.markdown(
+                    f"""
+                    <div style="display:flex; align-items:center; gap:12px; margin:15px 0;">
+                        <div style="
+                            width:24px;
+                            height:24px;
+                            border-radius:6px;
+                            background-color:#28a745;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            color:white;
+                            font-weight:bold;
+                            font-size:17px;
+                        ">✓</div>
+                        <span>{tekst}</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            else:
+                st.markdown(
+                    f"""
+                    <div style="display:flex; align-items:center; gap:12px; margin:15px 0;">
+                        <div style="
+                            width:24px;
+                            height:24px;
+                            border-radius:6px;
+                            background-color:#EA3323;
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            color:white;
+                            font-weight:bold;
+                            font-size:17px;
+                        ">✕</div>
+                        <span>{tekst}</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
 
     if bestand2 is not None:
         st.session_state['tt'] = pd.read_excel(bestand2)
