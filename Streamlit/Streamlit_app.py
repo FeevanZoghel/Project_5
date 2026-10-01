@@ -30,7 +30,7 @@ st.markdown("""
 
 /* Grote buitencontainer */
 .st-key-box_feasibility {
-    border: 3px solid #EA3323 !important;
+    border: 6px double #EA3323 !important;
     border-radius: 14px !important;
     background-color: white !important;
 }
