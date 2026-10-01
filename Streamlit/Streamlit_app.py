@@ -20,7 +20,7 @@ from berekeningen_cleaned import (
     calculate_charging_time_kpis
 )
 
-
+from pathlib import Path
 import streamlit as st
 import pandas as pd
 
@@ -118,8 +118,8 @@ if keuze == "Data Check":
                 st.subheader("Feasibility checks")
 
             with col_logo:
-                st.image("Logo_Transdev.png", width=130)
-
+                logo_path = Path(__file__).parent / "Logo_Transdev.png"
+                st.image(str(logo_path), width=130)
             # De echte cards
             with st.container(key="check_cards"):
 
