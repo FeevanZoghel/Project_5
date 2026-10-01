@@ -170,6 +170,7 @@ keuze = st.sidebar.selectbox("Kies een pagina", ["Data Check", "Visualisaties"])
 
 
 
+
 if keuze == "Data Check":
 
 
@@ -207,6 +208,16 @@ if keuze == "Data Check":
     # Alleen uitvoeren als busplanning aanwezig is
     if 'bp' in st.session_state:
 
+        st.markdown("""
+        <style>
+        .block-container {
+            max-width: 60%;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
         df1 = st.session_state['bp']
 
         check_all(df1)
@@ -221,7 +232,7 @@ if keuze == "Data Check":
             with col_logo:
                 st.image(
                     "https://www.transdev.com/uploads/2026/09/logo.png",
-                    width=130
+                    width=80
                 )
             # De echte cards
             with st.container(key="check_cards"):
@@ -295,11 +306,6 @@ if keuze == "Data Check":
 
 elif keuze == "Visualisaties":
 
-    st.image(
-    "https://www.transdev.com/uploads/2026/09/logo.png",
-    width=200
-    )
-
     st.markdown("""
         <style>
         .block-container {
@@ -356,6 +362,12 @@ elif keuze == "Visualisaties":
             st.metric("Total driving distance ↔️", f"{total_distance_km:.2f} km")
 
         with col3:
+
+            st.image(
+            "https://www.transdev.com/uploads/2026/09/logo.png",
+            width=60
+            )
+
             st.subheader("Bus planning")
 
             gantt_chart_bus(bp)
