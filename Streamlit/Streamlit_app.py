@@ -9,7 +9,8 @@ from DataFrame_check import (
     check_req_trips,
     check_min_charging_time,
     check_charging_speed,
-    check_overlapping_trips
+    check_overlapping_trips,
+    status_check
 )
 from berekeningen_cleaned import (
     gantt_chart_bus,
@@ -17,7 +18,6 @@ from berekeningen_cleaned import (
     calculate_waiting_time_kpis,
     calculate_energy_consumption_kpis
 )
-from testen import status_check
 
 import streamlit as st
 import pandas as pd
