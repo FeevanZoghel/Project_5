@@ -106,6 +106,16 @@ if keuze == "Data Check":
     # Alleen uitvoeren als busplanning aanwezig is
     if 'bp' in st.session_state:
 
+        st.markdown("""
+        <style>
+        .block-container {
+            max-width: 60%;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
         df1 = st.session_state['bp']
 
         check_all(df1)
