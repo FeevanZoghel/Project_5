@@ -14,6 +14,7 @@ from DataFrame_check import (
 
 from Berekeningen import bus_energy_check
 from berekeningen_cleaned import gantt_chart_bus
+from testen import status_check
 
 import streamlit as st
 import pandas as pd
