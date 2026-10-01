@@ -8,6 +8,7 @@ from Code_for_bus_cleaned import check_charging_constraint_and_speeds, check_loc
 # Importing relevant Python libraries
 import pandas as pd 
 import streamlit as st
+from datetime import datetime, timedelta
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as st
@@ -103,12 +104,9 @@ for i in range(n):
 print(bus_comb)
 print(bus_comb[bus_comb['Pass / Fail'] == 'PASS'])
 
-# 1. Weight-waarden instellen voor drie grootste prioriteiten
-weights = [0.5, 0.3, 0.2]
-
 # 2. Zoekgebieden bepalen
 min_aantal_bussen = 0
-max_aantal_bussen = 50
+max_aantal_bussen = 20
 min_totale_wachttijd_uren = 0
 max_totale_wachttijd_uren = 8.42
 min_totale_afstand_mt_km = 0
@@ -122,6 +120,7 @@ ec_trip = dict({'aptbst400': 12.3,
                 'aptbst401': 10.86,
                 'bstapt400': 10.8036})
 
+bus_number = 1
 index1 = 0
 for i in range (len(tt['start'].head(1))):
     start_loc_tt = tt['start'][index1]
@@ -130,12 +129,37 @@ for i in range (len(tt['start'].head(1))):
     line_tt = tt['line'][index1]
     end_time_tt = dm['max_travel_time'][index1]
     activity_tt = 'service trip'
-    filter1 = dm[dm['start'] == start_loc_tt]['end'] == end_loc_tt
-    print(filter1)
-    energy_consumption_tt = dm
+
+    filter123 = dm[
+    (dm['start'] == start_loc_tt) &
+    (dm['end'] == end_loc_tt) & 
+    (dm['line'] == line_tt)]
+
+    energy_consumption_tt = (float(filter123['distance_m'] / 1000 * 1.2))
+    dep_time_tt = str(dep_time_tt)
+
+    driving_time_tt = float(filter123['max_travel_time'])
+    driving_time_tt = str(driving_time_tt)
+    driving_time_tt = (f'00:{driving_time_tt[0:2]}')
+    
+    dep_time_tt = datetime.strptime(dep_time_tt, "%H:%M")
+    drive_time = dt.datetime.strptime(driving_time_tt, '%H:%M')
+    end_time = (dep_time_tt - datetime(1900,1,1)) + (drive_time - datetime(1900,1,1))
+    end_time = '0'+ str(end_time)
+
+    print(end_time, activity_tt, energy_consumption_tt, bus_number)
+
+    # Alles samenvoegen tot een gehele filterwijziging
+
     ibp.loc[index1, 'start location'] = start_loc_tt
     ibp.loc[index1, 'end location'] = end_loc_tt
     ibp.loc[index1, 'start time'] = dep_time_tt
     ibp.loc[index1, 'line'] = line_tt
+    ibp.loc[index1, 'end time'] = end_time
+    ibp.loc[index1, 'activity'] = 'service trip'
+    ibp.loc[index1, 'energy consumption'] = energy_consumption_tt
+    ibp.loc[index1, 'bus'] = bus_number
+
 print(ibp)
+
 
