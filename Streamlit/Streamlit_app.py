@@ -25,7 +25,6 @@ import streamlit as st
 import pandas as pd
 
 
-
 st.markdown("""
 <style>
 
@@ -217,6 +216,22 @@ if keuze == "Data Check":
 
 
 elif keuze == "Visualisaties":
+    keuze = st.sidebar.selectbox(
+    "Kies een pagina",
+    ["Data Check", "Visualisaties"]
+)
+
+if keuze == "Visualisaties":
+    
+    st.markdown("""
+        <style>
+        .block-container {
+            max-width: 95%;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
     st.title("Planning results")
 
