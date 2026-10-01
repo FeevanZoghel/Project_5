@@ -30,6 +30,7 @@ st.markdown("""
 [class*="st-key-box_"] {
     border: 3px solid #EA3323 !important;
     border-radius: 12px !important;
+    background-color: white !important;
 }
 </style>
 """, unsafe_allow_html=True)
