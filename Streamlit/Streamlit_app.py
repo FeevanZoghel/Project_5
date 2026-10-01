@@ -19,12 +19,11 @@ import streamlit as st
 import pandas as pd
 
 
-# Dikkere border van st.container(border=True)
 st.markdown("""
 <style>
-div[data-testid="stVerticalBlockBorderWrapper"] > div[data-testid="stVerticalBlock"] {
-    border-width: 4px !important;
-    border-color: #EA3323 !important;
+[class*="st-key-box_"] {
+    border: 3px solid #EA3323 !important;
+    border-radius: 12px !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -77,7 +76,7 @@ if keuze == "Data Check":
 
         check_all(df1)
 
-        with st.container(border=True):
+        with st.container(border=True, key="box_feasibility"):
             st.subheader("Feasibility checks")
 
             col1, col2 = st.columns(2)
