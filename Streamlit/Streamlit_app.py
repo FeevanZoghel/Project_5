@@ -31,25 +31,34 @@ st.markdown("""
 /* Grote buitencontainer */
 .st-key-box_feasibility {
     border: 3px solid #EA3323 !important;
-    border-radius: 12px !important;
+    border-radius: 14px !important;
     background-color: white !important;
 }
 
-/* Tekst donker */
+/* Alle tekst donker */
 .st-key-box_feasibility h1,
 .st-key-box_feasibility h2,
 .st-key-box_feasibility h3,
 .st-key-box_feasibility p,
 .st-key-box_feasibility span {
-    color: #1F1F1F !important;
+    color: #222222 !important;
 }
 
-/* De twee kolommen binnen Feasibility */
+/* Battery + Planning cards */
 .st-key-box_feasibility [data-testid="stColumn"] {
-    background-color: #F5F6F7 !important;
-    border-radius: 10px !important;
-    padding: 18px !important;
+    background-color: #FFFFFF !important;
+
     border-top: 5px solid #EA3323 !important;
+    border-radius: 12px !important;
+
+    padding: 18px 20px 20px 20px !important;
+
+    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Ruimte tussen de twee cards */
+.st-key-box_feasibility [data-testid="stHorizontalBlock"] {
+    gap: 28px !important;
 }
 
 </style>
