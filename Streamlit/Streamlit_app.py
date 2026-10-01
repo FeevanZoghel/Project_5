@@ -113,7 +113,7 @@ if keuze == "Data Check":
         st.markdown("""
         <style>
         .block-container {
-            max-width: 70%;
+            max-width: 60%;
             padding-left: 2rem;
             padding-right: 2rem;
         }
