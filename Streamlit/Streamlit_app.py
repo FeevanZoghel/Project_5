@@ -16,7 +16,8 @@ from berekeningen_cleaned import (
     gantt_chart_bus,
     calculate_distances_and_kpis,
     calculate_waiting_time_kpis,
-    calculate_energy_consumption_kpis
+    calculate_energy_consumption_kpis,
+    calculate_charging_time_kpis
 )
 
 
@@ -196,39 +197,34 @@ elif keuze == "Visualisaties":
         )
 
         tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus = calculate_waiting_time_kpis(
-            bp, deployed_buses_count
+            bp, deployed_buses_count            
         )
 
+        total_charging_time_min, total_charging_time_hours = calculate_charging_time_kpis(bp)
+
         total_consumption = calculate_energy_consumption_kpis(bp)
-        col1, col2 = st.columns([3, 8])
+        col1, col2, col3 = st.columns([5, 4, 9])
 
         with col1:
             st.subheader("KPIs")
 
-            st.metric(
-                "Number of buses used 🚌",
-                deployed_buses_count
-            )
+            st.metric("Number of buses used 🚌",deployed_buses_count)
 
             st.metric('Average waiting time', f'{avg_waiting_time_per_bus:.2f} min/bus')
 
-            st.metric(
-                "Material trips 🛠️", f'{t_material_total} trips'
-            )
+            st.metric("Material trips 🛠️", f'{t_material_total} trips')
 
             st.metric('Material trip distance', f'{total_distance_km:.3f} km')
 
-            st.metric('Charging time', f'min')
+        with col2 :
+
+            st.metric('Charging time', f'{total_charging_time_hours:.2f} hours')
 
             st.metric('Energy consumption', f'{total_consumption:.2f} kWh')
 
+            st.metric("Total driving distance ↔️", f"{total_distance_km:.2f} km")
 
-            st.metric(
-                "Total driving distance ↔️",
-                f"{total_distance_km:.2f} km"
-            )
-
-        with col2:
+        with col3:
             st.subheader("Bus planning")
 
             gantt_chart_bus(bp)

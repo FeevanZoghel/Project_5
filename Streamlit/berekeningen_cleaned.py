@@ -430,6 +430,30 @@ def run_all_kpi_calculations(bp, dm, tt):
     print("\nKPI CALCULATIONS COMPLETED")
     return kpis
 
+def calculate_charging_time_kpis(bp):
+    '''
+    Berekent de totale laadtijd van alle bussen.
+
+    Selecteert automatisch alle activiteiten met 'charging'
+    en berekent het verschil tussen start time en end time.
+
+    return:
+        total_charging_time_min
+        total_charging_time_hours
+    '''
+
+    start_time = pd.to_timedelta(bp['start time'].astype(str))
+    end_time = pd.to_timedelta(bp['end time'].astype(str))
+
+    charging = bp[bp['activity'] == 'charging']
+
+    charging_time = end_time[charging.index] - start_time[charging.index]
+
+    total_charging_time_min = charging_time.dt.total_seconds().sum() / 60
+    total_charging_time_hours = total_charging_time_min / 60
+
+    return total_charging_time_min, total_charging_time_hours
+
 # Exporting the results to excel file
 def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibility_and_KPI_results_busplan.xlsx'):
     """Export feasibility checks summary and KPIs to Excel."""
