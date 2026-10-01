@@ -190,30 +190,18 @@ elif keuze == "Visualisaties":
 
         bp = st.session_state['bp']
 
-        col1, col2 = st.columns([1, 4])
+        col1, col2 = st.columns([3, 8])
 
         with col1:
             st.subheader("KPIs")
 
-            st.metric(
-                "Total distance",
-                "1,284 km"
-            )
+            st.metric("Buses used 🚌", " ")
 
-            st.metric(
-                "Buses used",
-                "20"
-            )
+            st.metric("Total distance ↔️", " km")
 
-            st.metric(
-                "Energy consumption",
-                "2,845 kWh"
-            )
+            st.metric("Energy consumption 🔋", " kWh")
 
-            st.metric(
-                "Average waiting time",
-                "34 min"
-            )
+            st.metric("Average waiting time ⏳", " min")
 
         with col2:
             st.subheader("Bus planning")
