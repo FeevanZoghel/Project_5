@@ -242,10 +242,11 @@ elif keuze == "Visualisaties":
 
             st.metric("Material trips 🛠️", f'{t_material_total} trips')
 
-            st.metric('Material trip distance 📏', f'{d_material_total} km')
 
         with col2 :
 
+            st.metric('Material trip distance 📏', f'{d_material_total} km')
+            
             st.metric('Charging time 🔋', f'{total_charging_time_hours:.2f} hours')
 
             st.metric('Energy consumption ⚡', f'{total_consumption:.2f} kWh')
