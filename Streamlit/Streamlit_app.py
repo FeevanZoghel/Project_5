@@ -160,22 +160,22 @@ elif keuze == "Visualisaties":
             st.subheader("KPIs")
 
             st.metric(
-                "Total distance",
+                "Total distance ↔️",
                 "1,284 km"
             )
 
             st.metric(
-                "Buses used",
+                "Buses used 🚌",
                 "20"
             )
 
             st.metric(
-                "Energy consumption",
+                "Energy consumption 🔋",
                 "2,845 kWh"
             )
 
             st.metric(
-                "Average waiting time",
+                "Average waiting time ⏳",
                 "34 min"
             )
 
