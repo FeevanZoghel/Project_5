@@ -149,19 +149,38 @@ if keuze == "Data Check":
 
 elif keuze == "Visualisaties":
 
-    st.title("Visualisaties")
+    st.title("Planning results")
 
     if 'bp' in st.session_state:
 
-        df1 = st.session_state['bp']
+        bp = st.session_state['bp']
 
-        with st.container(border=True):
-            st.subheader("Ingelezen planning")
-            st.write(df1.head(10))
+        col1, col2 = st.columns([1, 4])
 
-        with st.container(border=True):
-            st.subheader("Bus planning overview")
-            gantt_chart_bus(df1)
+        with col1:
+            st.subheader("KPIs")
 
-    else:
-        st.warning("Upload eerst een busplanning op de Data Check pagina.")
+            st.metric(
+                "Total distance",
+                "1,284 km"
+            )
+
+            st.metric(
+                "Buses used",
+                "20"
+            )
+
+            st.metric(
+                "Energy consumption",
+                "2,845 kWh"
+            )
+
+            st.metric(
+                "Average waiting time",
+                "34 min"
+            )
+
+        with col2:
+            st.subheader("Bus planning")
+
+            gantt_chart_bus(bp)
