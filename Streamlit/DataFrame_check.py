@@ -280,6 +280,30 @@ def check_all(df):
                 energy_check(df)
                 start_end_times(df)
 
+def status_check(tekst, goed):
+
+    if goed:
+        kleur = "#4CAF50"
+        symbool = "✓"
+    else:
+        kleur = "#EA3323"
+        symbool = "✕"
+
+    html = f"""
+<div style="background:#F3F4F6; border-radius:10px; padding:10px 14px; margin:10px 0; display:flex; align-items:center; gap:14px; width:100%; box-sizing:border-box;">
+    <div style="width:32px; height:32px; min-width:32px; border-radius:6px; background:{kleur}; color:white; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:bold; line-height:1;">
+        {symbool}
+    </div>
+    <span style="font-size:16px; color:#222222; font-weight:500;">
+        {tekst}
+    </span>
+</div>
+"""
+
+    st.markdown(html, unsafe_allow_html=True)
+
+
+
 
 
 

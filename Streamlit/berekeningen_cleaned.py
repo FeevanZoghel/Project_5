@@ -337,7 +337,7 @@ def calculate_distances_and_kpis(bp, dm, tt):
 
     print(f'The number of busses used: {deployed_buses_count}.')
 
-    return total_distance_m, total_distance_km, deployed_buses_count, t_material_total
+    return total_distance_m, total_distance_km, deployed_buses_count, t_material_total, d_material_total
 
 
 # calculate total waiting time and the average waiting time per bus
@@ -413,7 +413,7 @@ def run_all_feasibility_checks(bp, tt):
 def run_all_kpi_calculations(bp, dm, tt):
     """Run all KPI calculations and return a summary dictionary."""
     total_energy = calculate_energy_consumption_kpis(bp)
-    total_dist_m, total_dist_km, deployed_buses, tot_material_trips = calculate_distances_and_kpis(bp, dm, tt)
+    total_dist_m, total_dist_km, deployed_buses, tot_material_trips, d_material_total = calculate_distances_and_kpis(bp, dm, tt)
     wait_min, wait_hours, avg_wait_per_bus = calculate_waiting_time_kpis(bp, deployed_buses)
     
     # All functions used for kpi's
@@ -429,6 +429,30 @@ def run_all_kpi_calculations(bp, dm, tt):
     }
     print("\nKPI CALCULATIONS COMPLETED")
     return kpis
+
+def calculate_charging_time_kpis(bp):
+    '''
+    Berekent de totale laadtijd van alle bussen.
+
+    Selecteert automatisch alle activiteiten met 'charging'
+    en berekent het verschil tussen start time en end time.
+
+    return:
+        total_charging_time_min
+        total_charging_time_hours
+    '''
+
+    start_time = pd.to_timedelta(bp['start time'].astype(str))
+    end_time = pd.to_timedelta(bp['end time'].astype(str))
+
+    charging = bp[bp['activity'] == 'charging']
+
+    charging_time = end_time[charging.index] - start_time[charging.index]
+
+    total_charging_time_min = charging_time.dt.total_seconds().sum() / 60
+    total_charging_time_hours = total_charging_time_min / 60
+
+    return total_charging_time_min, total_charging_time_hours
 
 # Exporting the results to excel file
 def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibility_and_KPI_results_busplan.xlsx'):
@@ -500,6 +524,9 @@ def gantt_chart_bus(bp):
     planning['start_hour'] = start_times.dt.total_seconds() / 3600
     planning['end_hour'] = end_times.dt.total_seconds() / 3600
 
+    planning.loc[planning['start_hour'] < 5, 'start_hour'] += 24
+    planning.loc[planning['end_hour'] <= 5, 'end_hour'] += 24
+
     kleuren = {
         'service trip': 'skyblue',
         'material trip': 'orange',
@@ -519,7 +546,7 @@ def gantt_chart_bus(bp):
     # Maak voor iedere groep een aparte grafiek
     for groep in groepen:
 
-        fig, ax = plt.subplots(figsize=(15, 5))
+        fig, ax = plt.subplots(figsize=(18, 8))
 
         planning_groep = planning[planning['bus'].isin(groep)]
 
@@ -577,13 +604,12 @@ def gantt_chart_bus(bp):
 
 
         # Tijd-as
-        eerste_uur = int(planning['start_hour'].min())
-        laatste_uur = int(planning['end_hour'].max()) + 1
+        uren = range(5, 30)
 
-        uren = range(eerste_uur, laatste_uur + 1)
+        ax.set_xlim(5, 29)
 
         ax.set_xticks(uren)
-        ax.set_xticklabels([f'{uur:02d}:00' for uur in uren])
+        ax.set_xticklabels([f'{uur % 24:02d}:00' for uur in uren])
 
         # Busnummers
         ax.set_yticks(range(len(groep)))
@@ -600,7 +626,7 @@ def gantt_chart_bus(bp):
         ax.set_ylabel('Bus')
 
         ax.set_title(
-            f'Gantt chart bus {groep[0]} - {groep[-1]}'
+            f'Improved bus plan'
         )
 
         ax.legend(
