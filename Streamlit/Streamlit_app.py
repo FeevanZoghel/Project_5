@@ -104,17 +104,6 @@ st.markdown("""
     background: #0E1117 !important;
 }
 
-/* Error / alert boxes wit */
-[data-testid="stAlert"] {
-    background: #FFFFFF !important;
-    color: #222222 !important;
-    border-radius: 12px !important;
-}
-
-/* Tekst in alerts */
-[data-testid="stAlert"] p {
-    color: #222222 !important;
-}
 
 /* Expander / Click here for details wit */
 [data-testid="stExpander"] {
