@@ -214,14 +214,7 @@ if keuze == "Data Check":
         st.session_state['dm'] = pd.read_excel(bestand3)
         df3 = st.session_state['dm']
 
-
 elif keuze == "Visualisaties":
-    keuze = st.sidebar.selectbox(
-    "Kies een pagina",
-    ["Data Check", "Visualisaties"]
-)
-
-if keuze == "Visualisaties":
     
     st.markdown("""
         <style>
