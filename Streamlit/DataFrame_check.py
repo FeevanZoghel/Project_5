@@ -283,16 +283,20 @@ def check_all(df):
 def status_check(tekst, goed):
 
     if goed:
-        kleur = "#28A745"
+        kleur = "#4CAF50"
         symbool = "✓"
     else:
         kleur = "#EA3323"
         symbool = "✕"
 
     html = f"""
-<div style="display:flex; align-items:center; gap:12px; margin:18px 0;">
-<div style="width:24px; height:24px; min-width:24px; border-radius:6px; background-color:{kleur}; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:17px;">{symbool}</div>
-<span style="font-size:16px; color:white;">{tekst}</span>
+<div style="background:#F3F4F6; border-radius:10px; padding:10px 14px; margin:10px 0; display:flex; align-items:center; gap:14px; width:100%; box-sizing:border-box;">
+    <div style="width:32px; height:32px; min-width:32px; border-radius:6px; background:{kleur}; color:white; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:bold; line-height:1;">
+        {symbool}
+    </div>
+    <span style="font-size:16px; color:#222222; font-weight:500;">
+        {tekst}
+    </span>
 </div>
 """
 
