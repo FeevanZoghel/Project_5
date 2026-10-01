@@ -142,14 +142,6 @@ if keuze == "Data Check":
     else:
         st.info("Upload the timetable to check all required trips.")
 
-    if bestand2 is not None:
-        st.session_state['tt'] = pd.read_excel(bestand2)
-        df2 = st.session_state['tt']
-
-    if bestand3 is not None:
-        st.session_state['dm'] = pd.read_excel(bestand3)
-        df3 = st.session_state['dm']
-
 
 elif keuze == "Visualisaties":
 
