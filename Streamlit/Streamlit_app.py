@@ -32,6 +32,15 @@ st.markdown("""
     border-radius: 12px !important;
     background-color: white !important;
 }
+
+/* Tekst in de containers donker maken */
+[class*="st-key-box_"] h1,
+[class*="st-key-box_"] h2,
+[class*="st-key-box_"] h3,
+[class*="st-key-box_"] p,
+[class*="st-key-box_"] span {
+    color: #1F1F1F !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
