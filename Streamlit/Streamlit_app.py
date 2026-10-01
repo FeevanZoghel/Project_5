@@ -122,7 +122,7 @@ if keuze == "Data Check":
                 st.subheader("Feasibility checks")
 
             with col_logo:
-                st.image("transdev_logo.png", width=130)
+                st.image("Logo_Transdev.png", width=130)
 
             col1, col2 = st.columns(2)
 
