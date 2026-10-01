@@ -24,6 +24,10 @@ from berekeningen_cleaned import (
 import streamlit as st
 import pandas as pd
 
+st.set_page_config(
+    page_title="Transdev Planning Checker",
+    layout="wide"
+)
 
 
 st.markdown("""
