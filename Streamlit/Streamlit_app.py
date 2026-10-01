@@ -66,6 +66,16 @@ keuze = st.sidebar.selectbox("Kies een pagina", ["Data Check", "Visualisaties"])
 
 if keuze == "Data Check":
 
+    st.markdown("""
+    <style>
+    .block-container {
+        max-width: 70%;
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     st.title("Transdev Planning Checker")
 
     bestand1 = st.file_uploader(
@@ -200,7 +210,7 @@ elif keuze == "Visualisaties":
         dm = st.session_state['dm']
 
         # KPI's berekenen
-        total_distance_m, total_distance_km, deployed_buses_count, t_material_total = calculate_distances_and_kpis(
+        total_distance_m, total_distance_km, deployed_buses_count, t_material_total, d_material_total = calculate_distances_and_kpis(
             bp, dm, tt
         )
 
@@ -222,7 +232,7 @@ elif keuze == "Visualisaties":
 
             st.metric("Material trips 🛠️", f'{t_material_total} trips')
 
-            st.metric('Material trip distance', f'{total_distance_km:.3f} km')
+            st.metric('Material trip distance', f'{d_material_total:.3f} km')
 
         with col2 :
 
