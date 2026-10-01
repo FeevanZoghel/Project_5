@@ -191,6 +191,11 @@ if keuze == "Data Check":
         df3 = st.session_state['dm']
 
 elif keuze == "Visualisaties":
+
+    st.image(
+    "https://www.transdev.com/uploads/2026/09/logo.png",
+    width=200
+    )
     
     st.markdown("""
         <style>
