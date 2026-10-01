@@ -84,7 +84,7 @@ elif keuze == "Data_check":
         # Planning
         with st.container(border=True):
             st.subheader("Ingelezen planning")
-            st.dataframe(df, height=300)
+            st.write(df.head(10))
 
         # Feasibility checks
         with st.container(border=True):
@@ -144,6 +144,7 @@ elif keuze == "Data_check":
         with st.container(border=True):
             st.subheader("Bus planning overview")
             gantt_chart_bus(df)
+
 
 elif keuze == "Gegevens (KPI)":
     bestand = st.file_uploader("Upload een busplanning", type=["xlsx"])
