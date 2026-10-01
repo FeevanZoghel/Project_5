@@ -211,7 +211,15 @@ body,
     border-bottom: 2px solid #E5E5E5;
     position: relative;
 }
+.feasibility-title {
+    border-bottom: none !important;
+}
 
+.feasibility-title::before,
+.feasibility-title::after {
+    display: none !important;
+    content: none !important;
+}
 
 </style>
 """, unsafe_allow_html=True)
