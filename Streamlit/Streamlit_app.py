@@ -11,14 +11,16 @@ from DataFrame_check import (
     check_charging_speed,
     check_overlapping_trips
 )
-
-from Berekeningen import bus_energy_check
-from berekeningen_cleaned import gantt_chart_bus
+from berekeningen_cleaned import (
+    gantt_chart_bus,
+    calculate_distances_and_kpis,
+    calculate_waiting_time_kpis,
+    calculate_energy_consumption_kpis
+)
 from testen import status_check
 
 import streamlit as st
 import pandas as pd
-
 
 st.markdown("""
 <style>
