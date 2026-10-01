@@ -202,6 +202,16 @@ body,
     border-radius: 3px;
 }
 
+.feasibility-title {
+    font-size: 34px;
+    font-weight: 700;
+    color: #222222;
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #E5E5E5;
+    position: relative;
+}
+
 
 </style>
 """, unsafe_allow_html=True)
