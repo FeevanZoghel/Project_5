@@ -18,11 +18,12 @@ from berekeningen_cleaned import gantt_chart_bus
 import streamlit as st
 import pandas as pd
 
-# Dikkere rode borders
+
+# Dikkere border van st.container(border=True)
 st.markdown("""
 <style>
-div[data-testid="stVerticalBlockBorderWrapper"] {
-    border: 3px solid #EA3323 !important;
+div[data-testid="stVerticalBlockBorderWrapper"] > div {
+    border-width: 3px !important;
 }
 </style>
 """, unsafe_allow_html=True)
