@@ -286,7 +286,8 @@ def check_min_SOC_print(df):
         return False
 
     return True
-`
+
+
 def check_end_begin_loc_print(df):
 
     planning = df.sort_values(['bus', 'start time']).reset_index(drop=True)
