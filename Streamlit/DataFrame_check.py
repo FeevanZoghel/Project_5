@@ -314,6 +314,7 @@ def check_end_begin_loc_print(df):
     if fout:
         return False
 
+
     return True
 def status_check(tekst, goed):
 
