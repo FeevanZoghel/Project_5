@@ -286,7 +286,8 @@ def check_min_SOC_print(df):
         return False
 
     return True
-`
+
+
 def check_end_begin_loc_print(df):
 
     planning = df.sort_values(['bus', 'start time']).reset_index(drop=True)
@@ -313,6 +314,7 @@ def check_end_begin_loc_print(df):
 
     if fout:
         return False
+
 
     return True
 def status_check(tekst, goed):
@@ -454,8 +456,9 @@ def check_all(df):
     tijden_correct = only_times_check(df)
     eind_tijden_correct = only_start_end_times(df)
     min_SOC_correct = check_min_SOC(df)
+    locations_correct = check_end_begin_loc(df)
 
-    if kolommen_correct is True and energy_correct is True and tijden_correct is True and eind_tijden_correct is True and min_SOC_correct is True:
+    if kolommen_correct is True and energy_correct is True and tijden_correct is True and eind_tijden_correct is True and min_SOC_correct is True and locations_correct is True:
         st.success('De data is compleet')
     else:
         st.error('Data is incorrect')
@@ -468,3 +471,4 @@ def check_all(df):
                 energy_check(df)
                 start_end_times(df)
                 check_min_SOC_print(df)
+                check_end_begin_loc_print(df)
