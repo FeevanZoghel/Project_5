@@ -259,22 +259,31 @@ def start_end_times(df):
 def check_min_SOC_print(df):
     assumed_soh = 85
     begincapacity = 300
-    min_battery_value = (300 / assumed_soh * 100) * 0.1  # 10% of real capacity
+    min_battery_value = (300 / assumed_soh * 100) * 0.1
+
     planning_sor = df.sort_values(['bus', 'start time'])
-    
-    
-    # Sort by busses
+
+    fout = False
+
     for bus, bus_data in planning_sor.groupby('bus'):
         battery = begincapacity
         min_battery = begincapacity
-        
+
         for battery_lose in bus_data['energy consumption']:
             battery -= battery_lose
-            if battery <min_battery_value:
-                return False 
+
+            if battery < min_battery:
+                min_battery = battery
 
         if min_battery < min_battery_value:
-            st.error(f'Bus {bus}: FAILED - battery below minimum of {min_battery_value:.2f} kWh')
+            st.error(
+                f'Bus {bus}: battery drops to {min_battery:.2f} kWh. '
+                f'Minimum allowed is {min_battery_value:.2f} kWh.'
+            )
+            fout = True
+
+    if fout:
+        return False
 
     return True
 
