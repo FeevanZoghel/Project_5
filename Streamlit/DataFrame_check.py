@@ -255,30 +255,29 @@ def start_end_times(df):
             end = True
 
     return end
+
+def check_min_SOC_print(df):
+    assumed_soh = 85
+    begincapacity = 300
+    min_battery_value = (300 / assumed_soh * 100) * 0.1  # 10% of real capacity
+    planning_sor = df.sort_values(['bus', 'start time'])
+    
+    
+    # Sort by busses
+    for bus, bus_data in planning_sor.groupby('bus'):
+        battery = begincapacity
+        min_battery = begincapacity
         
-def check_all(df):
-    '''
-    De check van alles
-    Ff in een def gezet, want dan kan je makkelijk terughalen
-    '''
-    kolommen_correct = only_check_columns(df)
-    energy_correct = only_energy_check(df)
-    tijden_correct = only_times_check(df)
-    eind_tijden_correct = only_start_end_times(df)
+        for battery_lose in bus_data['energy consumption']:
+            battery -= battery_lose
+            if battery <min_battery_value:
+                return False 
 
+        if min_battery < min_battery_value:
+            st.error(f'Bus {bus}: FAILED - battery below minimum of {min_battery_value:.2f} kWh')
 
-    if kolommen_correct is True and energy_correct is True and tijden_correct is True and eind_tijden_correct is True:
-        st.success('De data is compleet')
-    else:
-        st.error('Data is incorrect')
-        with st.expander('Click here for details'):
+    return True
 
-            with st.container(height=400):
-
-                check_columns(df)
-                times_check(df)
-                energy_check(df)
-                start_end_times(df)
 
 def status_check(tekst, goed):
 
@@ -301,26 +300,6 @@ def status_check(tekst, goed):
 """
 
     st.markdown(html, unsafe_allow_html=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ##################DEFENITIES FOR FEASIBILITY CHECKS##########################
@@ -429,3 +408,27 @@ def check_overlapping_trips(df):
     return True
 
 
+def check_all(df):
+    '''
+    De check van alles
+    Ff in een def gezet, want dan kan je makkelijk terughalen
+    '''
+    kolommen_correct = only_check_columns(df)
+    energy_correct = only_energy_check(df)
+    tijden_correct = only_times_check(df)
+    eind_tijden_correct = only_start_end_times(df)
+    min_SOC_correct = check_min_SOC(df)
+
+    if kolommen_correct is True and energy_correct is True and tijden_correct is True and eind_tijden_correct is True and min_SOC_correct is True:
+        st.success('De data is compleet')
+    else:
+        st.error('Data is incorrect')
+        with st.expander('Click here for details'):
+
+            with st.container(height=400):
+
+                check_columns(df)
+                times_check(df)
+                energy_check(df)
+                start_end_times(df)
+                check_min_SOC_print(df)
