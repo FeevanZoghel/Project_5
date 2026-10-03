@@ -286,8 +286,35 @@ def check_min_SOC_print(df):
         return False
 
     return True
+`
+def check_end_begin_loc_print(df):
 
+    planning = df.sort_values(['bus', 'start time']).reset_index(drop=True)
 
+    fout = False
+
+    for bus, bus_data in planning.groupby('bus'):
+        bus_data = bus_data.reset_index(drop=True)
+
+        for i in range(len(bus_data) - 1):
+
+            end_location = bus_data['end location'][i]
+            next_start_location = bus_data['start location'][i + 1]
+
+            if end_location != next_start_location:
+
+                st.error(
+                    f'Bus {bus}: location mismatch. '
+                    f'Trip ends at "{end_location}", but the next trip '
+                    f'starts at "{next_start_location}".'
+                )
+
+                fout = True
+
+    if fout:
+        return False
+
+    return True
 def status_check(tekst, goed):
 
     if goed:
