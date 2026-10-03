@@ -287,7 +287,6 @@ def check_min_SOC_print(df):
 
     return True
 
-
 def check_end_begin_loc_print(df):
 
     planning = df.sort_values(['bus', 'start time']).reset_index(drop=True)
@@ -317,6 +316,153 @@ def check_end_begin_loc_print(df):
 
 
     return True
+
+def check_req_trips_print(df, tt):
+
+    number_of_required_trips = len(tt)
+    service_trips_in_planning = df[df['activity'] == 'service trip']
+    num_planned_trips = len(service_trips_in_planning)
+
+    if number_of_required_trips != num_planned_trips:
+
+        difference = number_of_required_trips - num_planned_trips
+
+        if difference > 0:
+            st.error(
+                f'{difference} required service trip(s) are missing. '
+                f'Required: {number_of_required_trips}, '
+                f'planned: {num_planned_trips}.'
+            )
+        else:
+            st.error(
+                f'There are {abs(difference)} too many service trips. '
+                f'Required: {number_of_required_trips}, '
+                f'planned: {num_planned_trips}.'
+            )
+
+        return False
+
+    return True
+
+def check_min_charging_time_print(df):
+
+    start_dt = pd.to_datetime(
+        '2026-01-01 ' + df['start time'].astype(str)
+    )
+
+    end_dt = pd.to_datetime(
+        '2026-01-01 ' + df['end time'].astype(str)
+    )
+
+    charging_duration_min = (
+        end_dt - start_dt
+    ).dt.total_seconds() / 60
+
+    fout = False
+
+    for idx, row in df.iterrows():
+
+        if row['activity'] == 'charging':
+
+            duration = charging_duration_min.loc[idx]
+
+            if duration < 15:
+
+                st.error(
+                    f'Bus {row["bus"]}: charging time is only '
+                    f'{duration:.1f} minutes '
+                    f'({row["start time"]} - {row["end time"]}). '
+                    f'Minimum required is 15 minutes.'
+                )
+
+                fout = True
+
+    if fout:
+        return False
+
+    return True
+
+def check_charging_speed_print(df):
+
+    quick_recharge_speed = 450 / 60
+    slow_recharge_speed = 60 / 60
+    begincapacity = 300
+
+    planning = df.sort_values(['bus', 'start time'])
+
+    fout = False
+
+    for bus, bus_data in planning.groupby('bus'):
+
+        battery = begincapacity
+
+        for idx, row in bus_data.iterrows():
+
+            if row['activity'] == 'charging':
+
+                charging_duration = (
+                    pd.to_timedelta(str(row['end time']))
+                    - pd.to_timedelta(str(row['start time']))
+                ).total_seconds() / 60
+
+                charging_speed = (
+                    abs(row['energy consumption']) / charging_duration
+                )
+
+                if battery < 270:
+                    required_speed = quick_recharge_speed
+                else:
+                    required_speed = slow_recharge_speed
+
+                if abs(charging_speed - required_speed) > 1e-9:
+
+                    st.error(
+                        f'Bus {bus}: incorrect charging speed. '
+                        f'Calculated speed: {charging_speed:.2f} kWh/min. '
+                        f'Required speed: {required_speed:.2f} kWh/min. '
+                        f'Battery before charging: {battery:.2f} kWh.'
+                    )
+
+                    fout = True
+
+            battery -= row['energy consumption']
+
+    if fout:
+        return False
+
+    return True
+
+def check_overlapping_trips_print(df):
+
+    planning = df.sort_values(
+        ['bus', 'start time']
+    ).reset_index(drop=True)
+
+    fout = False
+
+    for bus, bus_data in planning.groupby('bus'):
+
+        bus_data = bus_data.reset_index(drop=True)
+
+        for i in range(len(bus_data)):
+            for j in range(i + 1, len(bus_data)):
+
+                if bus_data['end time'][i] > bus_data['start time'][j]:
+
+                    st.error(
+                        f'Bus {bus}: overlapping trips. '
+                        f'Trip {i + 1} ends at {bus_data["end time"][i]}, '
+                        f'while trip {j + 1} starts at '
+                        f'{bus_data["start time"][j]}.'
+                    )
+
+                    fout = True
+
+    if fout:
+        return False
+
+    return True
+
 def status_check(tekst, goed):
 
     if goed:
@@ -448,20 +594,38 @@ def check_overlapping_trips(df):
 
 def check_all(df):
     '''
-    De check van alles
-    Ff in een def gezet, want dan kan je makkelijk terughalen
+    De check van alles.
+    Controleert de busplanning en laat details zien
+    wanneer één of meerdere checks niet kloppen.
     '''
+
     kolommen_correct = only_check_columns(df)
     energy_correct = only_energy_check(df)
     tijden_correct = only_times_check(df)
     eind_tijden_correct = only_start_end_times(df)
+
     min_SOC_correct = check_min_SOC(df)
     locations_correct = check_end_begin_loc(df)
+    charging_time_correct = check_min_charging_time(df)
+    charging_speed_correct = check_charging_speed(df)
+    overlapping_correct = check_overlapping_trips(df)
 
-    if kolommen_correct is True and energy_correct is True and tijden_correct is True and eind_tijden_correct is True and min_SOC_correct is True and locations_correct is True:
+    if (
+        kolommen_correct is True
+        and energy_correct is True
+        and tijden_correct is True
+        and eind_tijden_correct is True
+        and min_SOC_correct is True
+        and locations_correct is True
+        and charging_time_correct is True
+        and charging_speed_correct is True
+        and overlapping_correct is True
+    ):
         st.success('De data is compleet')
+
     else:
         st.error('Data is incorrect')
+
         with st.expander('Click here for details'):
 
             with st.container(height=400):
@@ -470,5 +634,9 @@ def check_all(df):
                 times_check(df)
                 energy_check(df)
                 start_end_times(df)
+
                 check_min_SOC_print(df)
                 check_end_begin_loc_print(df)
+                check_min_charging_time_print(df)
+                check_charging_speed_print(df)
+                check_overlapping_trips_print(df)
