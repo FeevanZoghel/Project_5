@@ -174,7 +174,7 @@ def show_activity_time_errors(df):
         if duration < pd.Timedelta(0):
             st.error(f'Row {row_index + 2}: invalid activity duration.')
 
-            
+
 def validate_minimum_soc(df):
     """
     Checks whether every bus remains above the minimum allowed SOC.
@@ -211,7 +211,7 @@ def show_minimum_soc_errors(df):
             minimum_battery = min(minimum_battery, battery)
 
         if minimum_battery < minimum_battery_value:
-            st.error(f'Bus {bus}: battery drops to {minimum_battery:.2f} kWh. Minimum allowed is {minimum_battery_value:.2f} kWh.')
+            st.error(f'Bus {bus}: SOC drops to {minimum_battery:.2f} kWh')
 
 
 def validate_soh(assumed_soh):
@@ -257,7 +257,7 @@ def show_location_continuity_errors(df):
             next_start_location = bus_data.loc[index + 1, 'start location']
 
             if current_end_location != next_start_location:
-                st.error(f'Bus {bus}: activity ending at {bus_data.loc[index, "end time"]} ends at "{current_end_location}", but the next activity starts at "{next_start_location}" at {bus_data.loc[index + 1, "start time"]}.')
+                st.error(f'Bus {bus}: location mismatch "{current_end_location}" → "{next_start_location}".')
 
 
 def validate_required_trips(df, timetable):
@@ -281,10 +281,10 @@ def show_required_trip_errors(df, timetable):
     difference = required_trip_count - planned_trip_count
 
     if difference > 0:
-        st.error(f'{difference} required service trip(s) are missing. Required: {required_trip_count}, planned: {planned_trip_count}.')
+        st.error(f'{difference} required trip(s) missing ({planned_trip_count}/{required_trip_count} planned).')
 
     elif difference < 0:
-        st.error(f'There are {abs(difference)} too many service trips. Required: {required_trip_count}, planned: {planned_trip_count}.')
+        st.error(f'{abs(difference)} extra trip(s) planned ({planned_trip_count}/{required_trip_count} required).')
 
 
 def validate_minimum_charging_time(df):
@@ -316,7 +316,7 @@ def show_minimum_charging_time_errors(df):
             duration = charging_duration_minutes.loc[index]
 
             if duration < MINIMUM_CHARGING_TIME:
-                st.error(f'Bus {row["bus"]}: charging time is only {duration:.1f} minutes ({row["start time"]} - {row["end time"]}). Minimum required is {MINIMUM_CHARGING_TIME} minutes.')
+                st.error(f'Bus {row["bus"]}: charging time {duration:.1f} min ({MINIMUM_CHARGING_TIME} min required).')
 
 
 def validate_charging_speed(df):
@@ -366,7 +366,7 @@ def show_charging_speed_errors(df):
                     required_speed = SLOW_CHARGING_SPEED
 
                 if abs(charging_speed - required_speed) > 1e-9:
-                    st.error(f'Bus {bus}: incorrect charging speed. Calculated speed: {charging_speed:.2f} kWh/min. Required speed: {required_speed:.2f} kWh/min. Battery before charging: {battery:.2f} kWh.')
+                    st.error(f'Bus {bus}: charging speed {charging_speed:.2f} kWh/min ({required_speed:.2f} required).')
 
             battery -= row['energy consumption']
 
@@ -404,7 +404,7 @@ def show_overlapping_trip_errors(df):
             next_start_time = pd.to_timedelta(str(bus_data.loc[index + 1, 'start time']))
 
             if current_end_time > next_start_time:
-                st.error(f'Bus {bus}: overlapping activities. Activity {index + 1} ends at {bus_data.loc[index, "end time"]}, while activity {index + 2} starts at {bus_data.loc[index + 1, "start time"]}.')
+                st.error(f'Bus {bus}: activities overlap ({bus_data.loc[index, "end time"]} → {bus_data.loc[index + 1, "start time"]}).')
 
 
 def status_check(text, is_valid):
