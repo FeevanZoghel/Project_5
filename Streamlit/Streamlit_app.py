@@ -200,19 +200,6 @@ body,
 st.markdown(f"""
 <style>
 
-/* Radio-balletjes volledig verbergen */
-[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child {{
-    border: none !important;
-    background: transparent !important;
-    box-shadow: none !important;
-}}
-
-/* Ook het bolletje/stipje binnenin verwijderen */
-[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child::before,
-[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child::after {{
-    display: none !important;
-    content: none !important;
-}}
 
 /* ================================
    SIDEBAR
