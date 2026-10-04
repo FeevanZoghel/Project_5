@@ -166,7 +166,8 @@ def show_activity_time_errors(df):
 
         if duration < pd.Timedelta(0):
             st.error(f'Row {row_index + 2}: end time ({df.iloc[row_index]["end time"]}) must be after start time ({df.iloc[row_index]["start time"]}).')
-
+        elif end_time < start_time:
+            end_time += pd.Timedelta(days=1)
 
 def validate_minimum_soc(df):
     """
