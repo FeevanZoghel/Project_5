@@ -1,6 +1,6 @@
 import streamlit as st
 import base64
-from pathlib import path
+from pathlib import Path
 
 # Afbeeldingen
 data_check_path = Path(__file__).parent / "Data_check_icon.png"
