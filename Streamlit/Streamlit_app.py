@@ -38,37 +38,36 @@ with open(visualisations_path, "rb") as file:
 st.markdown(f"""
 <style>
 
-/* Radio-cirkels verbergen */
-[data-testid="stSidebar"] [data-testid="stRadio"] label > div:first-child {{
+/* De twee menu-items */
+[data-testid="stSidebar"] div[role="radiogroup"] label {{
+    position: relative !important;
+    padding-left: 42px !important;
+}}
+
+/* ALLES wat Streamlit vóór de tekst van de radio zet verbergen */
+[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {{
     display: none !important;
 }}
 
-/* Tekst en icoon naast elkaar */
-[data-testid="stSidebar"] [data-testid="stRadio"] label p {{
-    display: flex !important;
-    align-items: center !important;
+/* Extra zekerheid: radio-input zelf verbergen */
+[data-testid="stSidebar"] input[type="radio"] {{
+    display: none !important;
 }}
 
-/* Data Check icon */
-[data-testid="stSidebar"] [data-testid="stRadio"] label:nth-of-type(1) p::before {{
-    content: "";
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
-    margin-right: 9px;
-    background: url("data:image/png;base64,{data_check_icon}") center / contain no-repeat !important;
+/* Data Check */
+[data-testid="stSidebar"] div[role="radiogroup"] label:nth-of-type(1) {{
+    background-image: url("data:image/png;base64,{data_check_icon}") !important;
+    background-repeat: no-repeat !important;
+    background-size: 20px 20px !important;
+    background-position: 12px center !important;
 }}
 
-/* Visualisations icon */
-[data-testid="stSidebar"] [data-testid="stRadio"] label:nth-of-type(2) p::before {{
-    content: "";
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
-    margin-right: 9px;
-    background: url("data:image/png;base64,{visualisations_icon}") center / contain no-repeat !important;
+/* Visualisations */
+[data-testid="stSidebar"] div[role="radiogroup"] label:nth-of-type(2) {{
+    background-image: url("data:image/png;base64,{visualisations_icon}") !important;
+    background-repeat: no-repeat !important;
+    background-size: 20px 20px !important;
+    background-position: 12px center !important;
 }}
 
 </style>
