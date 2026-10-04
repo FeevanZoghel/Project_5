@@ -629,7 +629,7 @@ elif keuze == "Visualisations":
 
             with col_logo:
                 st.image(
-                    "https://www.transdev.com/uploads/2026/09/logo.png",
+                    "https://storage.googleapis.com/exenzo-jobboard/financenl/public/upload/transdev.png",
                     width=80
                 )
 
