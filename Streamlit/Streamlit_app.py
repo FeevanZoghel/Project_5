@@ -76,38 +76,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown(f"""
-<style>
-
-/* Radio-balletjes vervangen door eigen iconen */
-[data-testid="stSidebar"] [role="radio"] > div:first-child {{
-    width: 28px !important;
-    height: 28px !important;
-    min-width: 28px !important;
-
-    border: none !important;
-    background-color: transparent !important;
-    box-shadow: none !important;
-
-    background-size: contain !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-}}
-
-/* Data Check icoon */
-[data-testid="stSidebar"] label:nth-of-type(1)
-[role="radio"] > div:first-child {{
-    background-image: url("data:image/png;base64,{data_check_icon}") !important;
-}}
-
-/* Visualisations icoon */
-[data-testid="stSidebar"] label:nth-of-type(2)
-[role="radio"] > div:first-child {{
-    background-image: url("data:image/png;base64,{visualisations_icon}") !important;
-}}
-
-</style>
-""", unsafe_allow_html=True)
 
 st.markdown("""
 <style>
