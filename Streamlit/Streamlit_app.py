@@ -112,7 +112,7 @@ st.markdown(f'''
     [data-testid="stRadioOption"]
     [data-testid="stMarkdownContainer"] p {{
         color: #AEB4BC !important;
-        font-size: 15px !important;
+        font-size: 20px !important;
     }}
 
     /* Geselecteerde rode balk */
@@ -132,9 +132,6 @@ st.markdown(f'''
 
 </style>
 ''', unsafe_allow_html=True)
-
-
-
 
 st.sidebar.markdown("""
 <div class="sidebar-title">
