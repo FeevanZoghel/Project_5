@@ -175,6 +175,15 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
     display: none;
 }
 
+/* Tekst */
+[data-testid="stSidebar"] div[role="radiogroup"] label p {
+    display: flex;
+    align-items: center;
+    color: #AEB3BC !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    margin: 0 !important;
+}
 
 </style>
 """, unsafe_allow_html=True)
@@ -186,7 +195,7 @@ st.sidebar.markdown('<div class="menu-title">Menu</div>', unsafe_allow_html=True
 
 keuze = st.sidebar.radio(
     "Navigation",
-    ["Data Check", "Visualisations"],
+    ["Visualisations", "Data Check"],
     label_visibility="collapsed"
 )
 
