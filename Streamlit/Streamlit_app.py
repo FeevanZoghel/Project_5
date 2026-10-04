@@ -204,10 +204,12 @@ st.sidebar.markdown("""
 <div class="sidebar-line"></div>
 """, unsafe_allow_html=True)
 
+img1 = 'data_check_icon.png'
+img2 = 'visualisations_icon.png'
 
 keuze = st.sidebar.radio(
     "Navigation",
-    [f"{data_check_path} Data Check", f"{visualisations_path} Visualisations"],
+    [f"{img1} Data Check", f"{img2} Visualisations"],
     label_visibility="collapsed"
 )
 
