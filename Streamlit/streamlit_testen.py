@@ -1,20 +1,20 @@
 import streamlit as st
 
-import streamlit as st
-
-# Custom CSS to hide the radio circles/dots
 st.markdown(
     """
     <style>
-    div[role="radiogroup"] label > div:first-child {
+    /* Verberg alleen de standaard radio-cirkels */
+    div[role="radiogroup"] div[role="radio"] > div:first-child {
         display: none !important;
-
+    }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# Standard Streamlit radio component
-genre = st.radio("What's your favorite movie genre", ["Comedy", "Drama", "Documentary"])
+genre = st.radio(
+    "What's your favorite movie genre",
+    ["Comedy", "Drama", "Documentary"]
+)
 
 st.write("You selected:", genre)
