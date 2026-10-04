@@ -415,7 +415,7 @@ def run_all_feasibility_checks(bp, tt):
 def run_all_kpi_calculations(bp, dm, tt):
     """Run all KPI calculations and return a summary dictionary."""
     total_energy = calculate_energy_consumption_kpis(bp)
-    total_dist_m, total_dist_km, deployed_buses, tot_material_trips, d_material_total = calculate_distances_and_kpis(bp, dm, tt)
+    total_dist_m, total_dist_km, deployed_buses, tot_material_trips, d_material_total, d_material_total_km = calculate_distances_and_kpis(bp, dm, tt)
     wait_min, wait_hours, avg_wait_per_bus = calculate_waiting_time_kpis(bp, deployed_buses)
     
     # All functions used for kpi's
