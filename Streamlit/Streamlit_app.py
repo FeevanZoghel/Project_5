@@ -37,7 +37,19 @@ with open(visualisations_path, "rb") as file:
 
 st.markdown(f"""
 <style>
-
+/* Visualisations icon */
+[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(2) p::before {{
+    content: "";
+    display: inline-block;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin-right: 9px;
+    background-image: url("data:image/png;base64,{visualisations_icon}");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}}
 /* Data Check icon */
 [data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(1) p::before {{
     content: "";
@@ -52,19 +64,7 @@ st.markdown(f"""
     background-position: center;
 }}
 
-/* Visualisations icon */
-[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(2) p::before {{
-    content: "";
-    display: inline-block;
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    margin-right: 9px;
-    background-image: url("data:image/png;base64,{visualisations_icon}");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}}
+
 
 /* Remove Streamlit radio circles */
 [data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {{
