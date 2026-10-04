@@ -38,37 +38,37 @@ with open(visualisations_path, "rb") as file:
 st.markdown(f"""
 <style>
 
-/* Data Check */
-[data-testid="stSidebar"] label:has(input[value="Data Check"]) p::before {{
-    content: "";
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-    margin-right: 9px;
-    background-image: url("data:image/png;base64,{data_check_icon}") !important;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}}
-
-/* Visualisations */
-[data-testid="stSidebar"] label:has(input[value="Visualisations"]) p::before {{
-    content: "";
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-    margin-right: 9px;
-    background-image: url("data:image/png;base64,{visualisations_icon}") !important;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}}
-
-/* Hide original Streamlit radio circle */
-[data-testid="stSidebar"] label:has(input[type="radio"]) > div:first-child {{
+/* Radio-cirkels verbergen */
+[data-testid="stSidebar"] [data-testid="stRadio"] label > div:first-child {{
     display: none !important;
+}}
+
+/* Tekst en icoon naast elkaar */
+[data-testid="stSidebar"] [data-testid="stRadio"] label p {{
+    display: flex !important;
+    align-items: center !important;
+}}
+
+/* Data Check icon */
+[data-testid="stSidebar"] [data-testid="stRadio"] label:nth-of-type(1) p::before {{
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    margin-right: 9px;
+    background: url("data:image/png;base64,{data_check_icon}") center / contain no-repeat !important;
+}}
+
+/* Visualisations icon */
+[data-testid="stSidebar"] [data-testid="stRadio"] label:nth-of-type(2) p::before {{
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    margin-right: 9px;
+    background: url("data:image/png;base64,{visualisations_icon}") center / contain no-repeat !important;
 }}
 
 </style>
@@ -170,10 +170,6 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
     transition: all 0.15s ease;
 }
 
-/* Verberg standaard radio button */
-[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {
-    display: none;
-}
 
 /* Tekst */
 [data-testid="stSidebar"] div[role="radiogroup"] label p {
