@@ -150,8 +150,17 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
 }
 
 /* Data Check icoon */
-[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(1) p::before {
-    content: "☑";
+[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(2) p::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 9px;
+
+    background-image: url("https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/ui-actions/check-box-9eg7wf755rnlyhecj3byq.png/check-box-kwdm8b3h7xyp5uxnx8lt.png?_a=DATAiZAAZAA0");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 /* Visualisations icoon */
