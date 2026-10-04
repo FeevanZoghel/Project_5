@@ -612,6 +612,7 @@ elif keuze == "Visualisations":
         total_consumption = calculate_energy_consumption_kpis(bp)
 
         # Main dashboard
+        # Main dashboard
         with st.container(key="results_dashboard"):
 
             # Header
@@ -633,12 +634,9 @@ elif keuze == "Visualisations":
                 )
 
             # KPI + Gantt chart
+            col_kpi, col_chart = st.columns([2.4, 7.6], gap="medium")
 
-            # -------------------------
             # KPI CARD
-            # -------------------------
-           col_kpi, col_chart = st.columns([2.4, 7.6], gap="medium")
-
             with col_kpi:
                 with st.container(key="kpi_card"):
 
@@ -716,11 +714,9 @@ elif keuze == "Visualisations":
                         <div class="kpi-value">{total_distance_km:.2f} km</div>
                     </div>
                     """, unsafe_allow_html=True)
-            # -------------------------
-            # GANTT CHART CARD
-            # -------------------------
-            with col_chart:
 
+            # GANTT CHART CARD
+            with col_chart:
                 with st.container(key="chart_card"):
 
                     st.markdown(
