@@ -1,7 +1,7 @@
 #URL:
 #https://project5-jmfoec4ruxwpczdw5mf76w.streamlit.app/
 
-from DataFrame_check import (
+from Streamlit.DataFrame_check_nieuw import (
     validate_bus_planning,
     validate_minimum_soc,
     validate_soh,
