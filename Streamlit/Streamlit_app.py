@@ -26,14 +26,20 @@ import base64
 import streamlit as st
 import pandas as pd
 
+from pathlib import Path
+import base64
+import streamlit as st
+import pandas as pd
+
+# Afbeeldingen
 data_check_path = Path(__file__).parent / "Data_check_icon.png"
 visualisations_path = Path(__file__).parent / "visualisations_icon.png"
 
 # Afbeeldingen omzetten zodat CSS ze kan gebruiken
-with open("Data_check_icon.png", "rb") as f:
+with open(data_check_path, "rb") as f:
     data_check_icon = base64.b64encode(f.read()).decode()
 
-with open("visualisations_icon.png", "rb") as f:
+with open(visualisations_path, "rb") as f:
     visualisations_icon = base64.b64encode(f.read()).decode()
 
 
@@ -44,11 +50,13 @@ st.sidebar.markdown("""
 <div class="sidebar-line"></div>
 """, unsafe_allow_html=True)
 
+
 keuze = st.sidebar.radio(
     "Navigation",
     ["Data Check", "Visualisations"],
     label_visibility="collapsed"
 )
+
 
 st.markdown(f"""
 <style>
