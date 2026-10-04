@@ -83,6 +83,8 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
 """, unsafe_allow_html=True)
 
 
+
+
 st.sidebar.title("Menu")
 # st.write('hello world')
 
@@ -157,7 +159,7 @@ if keuze == "Data Check":
 
             with col_logo:
                 st.image(
-                   "https://www.transdev.com/uploads/2026/09/logo.png",
+                    "https://www.transdev.com/uploads/2026/09/logo.png",
                     width=80
                 )
             # De echte cards
@@ -228,7 +230,7 @@ if keuze == "Data Check":
         st.session_state['dm'] = pd.read_excel(bestand3)
         df3 = st.session_state['dm']
 
-elif keuze == "Visualisaties":
+elif keuze == "Visualisations":
 
     st.markdown("""
     <style>
