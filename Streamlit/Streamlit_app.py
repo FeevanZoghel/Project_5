@@ -26,6 +26,16 @@ import streamlit as st
 import pandas as pd
 
 
+st.markdown("""
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+
+/* hier staat de rest van jullie CSS */
+
+</style>
+""", unsafe_allow_html=True)
 
 st.markdown("""
 <style>
@@ -94,7 +104,31 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
     ) !important;
 }
 
+/* Ruimte voor icoon */
+[data-testid="stSidebar"] div[role="radiogroup"] label p {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
+/* Basisinstellingen icoon */
+[data-testid="stSidebar"] div[role="radiogroup"] label p::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    width: 22px;
+    text-align: center;
+    font-size: 19px;
+}
+
+/* Data Check: clipboard-check */
+[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(1) p::before {
+    content: "\f46c";
+}
+
+/* Visualisations: chart-column */
+[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(2) p::before {
+    content: "\e0e3";
+}
 
 /* Sidebar ruimte */
 [data-testid="stSidebar"] [data-testid="stSidebarContent"] {
@@ -173,7 +207,7 @@ st.sidebar.markdown('<div class="menu-title">Menu</div>', unsafe_allow_html=True
 
 keuze = st.sidebar.radio(
     "Navigation",
-    ["☑  Data Check", "▥  Visualisations"],
+    ["Data Check", "Visualisations"],
     label_visibility="collapsed"
 )
 
