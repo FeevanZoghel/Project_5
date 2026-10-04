@@ -31,16 +31,47 @@ import base64
 import streamlit as st
 import pandas as pd
 
-# Afbeeldingen
-data_check_path = Path(__file__).parent / "Data_check_icon.png"
-visualisations_path = Path(__file__).parent / "visualisations_icon.png"
+base_path = Path(__file__).parent
 
-# Afbeeldingen omzetten zodat CSS ze kan gebruiken
-with open(data_check_path, "rb") as f:
-    data_check_icon = base64.b64encode(f.read()).decode()
+data_check_icon = base64.b64encode(
+    (base_path / "Data_check_icon.png").read_bytes()
+).decode()
 
-with open(visualisations_path, "rb") as f:
-    visualisations_icon = base64.b64encode(f.read()).decode()
+visualisations_icon = base64.b64encode(
+    (base_path / "visualisations_icon.png").read_bytes()
+).decode()
+
+
+st.markdown(f"""
+<style>
+
+[data-testid="stRadioOption"] > div > div:first-child {{
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+
+    border: none !important;
+    border-radius: 0 !important;
+
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+}}
+
+/* Data Check */
+[data-testid="stRadioGroup"] > div:nth-child(1)
+[data-testid="stRadioOption"] > div > div:first-child {{
+    background-image: url("data:image/png;base64,{data_check_icon}") !important;
+}}
+
+/* Visualisations */
+[data-testid="stRadioGroup"] > div:nth-child(2)
+[data-testid="stRadioOption"] > div > div:first-child {{
+    background-image: url("data:image/png;base64,{visualisations_icon}") !important;
+}}
+
+</style>
+""", unsafe_allow_html=True)
 
 
 st.sidebar.markdown("""
@@ -57,35 +88,7 @@ keuze = st.sidebar.radio(
     label_visibility="collapsed"
 )
 
-st.markdown("""
-<style>
 
-/* Alleen het radio-rondje verbergen, tekst blijft staan */
-[data-testid="stRadioOption"] > div > div:first-child {
-    display: none !important;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown(f"""
-<style>
-
-/* DATA CHECK ICOON */
-[data-testid="stSidebar"] [data-testid="stRadio"]
-label:nth-of-type(1) [role="radio"] > div:first-child {{
-    background-image: url("data:image/png;base64,{data_check_icon}") !important;
-}}
-
-
-/* VISUALISATIONS ICOON */
-[data-testid="stSidebar"] [data-testid="stRadio"]
-label:nth-of-type(2) [role="radio"] > div:first-child {{
-    background-image: url("data:image/png;base64,{visualisations_icon}") !important;
-}}
-
-</style>
-""", unsafe_allow_html=True)
 
 
 st.markdown("""
