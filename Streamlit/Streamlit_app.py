@@ -40,11 +40,7 @@ visualisations_icon = base64.b64encode(
 st.markdown(f"""
 <style>
 
-/* ========================================
-   ICONEN IN SIDEBAR
-   ======================================== */
-
-/* Het standaard radio-icoon ombouwen tot PNG-container */
+/* PNG-container */
 [data-testid="stSidebar"] [data-testid="stRadioOption"] > div > div:first-child {{
     width: 24px !important;
     height: 24px !important;
@@ -59,6 +55,11 @@ st.markdown(f"""
     background-position: center !important;
 }}
 
+/* Verwijder het resterende radio-stipje */
+[data-testid="stSidebar"]
+[data-testid="stRadioOption"] > div > div:first-child > * {{
+    display: none !important;
+}}
 
 /* Data Check */
 [data-testid="stSidebar"]
@@ -66,7 +67,6 @@ st.markdown(f"""
 [data-testid="stRadioOption"] > div > div:first-child {{
     background-image: url("data:image/png;base64,{data_check_icon}") !important;
 }}
-
 
 /* Visualisations */
 [data-testid="stSidebar"]
