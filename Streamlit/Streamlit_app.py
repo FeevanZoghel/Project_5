@@ -220,12 +220,6 @@ keuze = st.sidebar.radio(
     ["Data Check", "Visualisations"],
     label_visibility="collapsed"
 )
-if keuze == "Data Check":
-    keuze = "Data Check"
-else:
-    keuze = "Visualisations"
-
-
 
 
 if keuze == "Data Check":
