@@ -22,10 +22,57 @@ from berekeningen_cleaned import (
 )
 
 from pathlib import Path
+import base64
 import streamlit as st
 import pandas as pd
 
+data_check_path = Path(__file__).parent / "data_check_icon.png"
+visualisations_path = Path(__file__).parent / "visualisations_icon.png"
 
+with open(data_check_path, "rb") as file:
+    data_check_icon = base64.b64encode(file.read()).decode()
+
+with open(visualisations_path, "rb") as file:
+    visualisations_icon = base64.b64encode(file.read()).decode()
+
+st.markdown(f"""
+<style>
+
+/* Data Check icon */
+[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(1) p::before {{
+    content: "";
+    display: inline-block;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin-right: 9px;
+    background-image: url("data:image/png;base64,{data_check_icon}");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}}
+
+/* Visualisations icon */
+[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(2) p::before {{
+    content: "";
+    display: inline-block;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin-right: 9px;
+    background-image: url("data:image/png;base64,{visualisations_icon}");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}}
+
+/* Remove Streamlit radio circles */
+[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {{
+    display: none !important;
+}}
+
+</style>
+""", unsafe_allow_html=True)
 
 st.markdown("""
 <style>
