@@ -94,10 +94,87 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+
+/* ========================================
+   SIDEBAR KLEUREN
+   ======================================== */
+
+/* Achtergrond sidebar */
+[data-testid="stSidebar"] {
+    background-color: #111820 !important;
+}
+
+/* Titel Main Menu */
+[data-testid="stSidebar"] .sidebar-title {
+    color: #F5F5F5 !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    margin-bottom: 10px !important;
+}
+
+/* Lijntje onder Main Menu */
+[data-testid="stSidebar"] .sidebar-line {
+    height: 1px !important;
+    background-color: #38404A !important;
+    margin-bottom: 18px !important;
+}
+
+
+/* ========================================
+   MENU OPTIES
+   ======================================== */
+
+/* Hele optie */
+[data-testid="stSidebar"] [data-testid="stRadioOption"] {
+    padding: 9px 12px !important;
+    border-radius: 6px !important;
+    margin-bottom: 5px !important;
+    transition: background-color 0.15s ease !important;
+}
+
+/* Normale tekst */
+[data-testid="stSidebar"]
+[data-testid="stRadioOption"]
+[data-testid="stMarkdownContainer"] p {
+    color: #AEB4BC !important;
+    font-size: 15px !important;
+}
+
+
+/* ========================================
+   GESELECTEERDE OPTIE
+   ======================================== */
+
+[data-testid="stSidebar"]
+[data-selected="true"] > [data-testid="stRadioOption"] {
+    background-color: #FF2D3F !important;
+    border-radius: 6px !important;
+}
+
+/* Geselecteerde tekst wit */
+[data-testid="stSidebar"]
+[data-selected="true"] > [data-testid="stRadioOption"]
+[data-testid="stMarkdownContainer"] p {
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
+
+
+/* ========================================
+   HOVER
+   ======================================== */
+
+[data-testid="stSidebar"]
+[data-testid="stRadioOption"]:hover {
+    background-color: #202832;
+}
+
+""", unsafe_allow_html=True)
 
 st.sidebar.markdown("""
 <div class="sidebar-title">
-    Main Menu
+    Menu
 </div>
 <div class="sidebar-line"></div>
 """, unsafe_allow_html=True)
