@@ -207,7 +207,7 @@ st.sidebar.markdown("""
 
 keuze = st.sidebar.radio(
     "Navigation",
-    ["Data Check", "Visualisations"],
+    [f"{data_check_path} Data Check", f"{visualisations_path} Visualisations"],
     label_visibility="collapsed"
 )
 
