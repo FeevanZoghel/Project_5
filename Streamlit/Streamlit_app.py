@@ -197,9 +197,36 @@ body,
 </style>
 """, unsafe_allow_html=True)
 
+st.sidebar.markdown("""
+<div class="sidebar-title">
+    Main Menu
+</div>
+<div class="sidebar-line"></div>
+""", unsafe_allow_html=True)
+
+
+keuze = st.sidebar.radio(
+    "Navigation",
+    ["Data Check", "Visualisations"],
+    label_visibility="collapsed"
+)
+
 st.markdown(f"""
 <style>
 
+/* Radio-balletjes volledig verbergen */
+[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child {{
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}}
+
+/* Ook het bolletje/stipje binnenin verwijderen */
+[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child::before,
+[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child::after {{
+    display: none !important;
+    content: none !important;
+}}
 
 /* ================================
    SIDEBAR
@@ -346,19 +373,6 @@ label:not(:has(input:checked)) p {{
 </style>
 """, unsafe_allow_html=True)
 
-st.sidebar.markdown("""
-<div class="sidebar-title">
-    Main Menu
-</div>
-<div class="sidebar-line"></div>
-""", unsafe_allow_html=True)
-
-
-keuze = st.sidebar.radio(
-    "Navigation",
-    ["Data Check", "Visualisations"],
-    label_visibility="collapsed"
-)
 
 if keuze == "Data Check":
 
