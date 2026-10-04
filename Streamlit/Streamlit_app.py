@@ -83,7 +83,7 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
 
 [data-testid="stSidebar"] {
     width: 160px !important;
-    min-width: 60px !important;
+    min-width: 160px !important;
     max-width: 160px !important;
 
     background: linear-gradient(
