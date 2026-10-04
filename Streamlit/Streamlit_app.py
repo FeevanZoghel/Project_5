@@ -201,23 +201,6 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
     margin: 0 !important;
 }
 
-
-
-/* VISUALISATIONS */
-[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(2) p::before {
-    content: "";
-    display: inline-block;
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    margin-right: 9px;
-
-    background-image: url("https://thumbs.wbm.im/pw/medium/f5246b1b05308060dfc0d9029d703380.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
