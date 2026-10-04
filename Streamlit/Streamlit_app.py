@@ -35,99 +35,174 @@ with open(data_check_path, "rb") as file:
 with open(visualisations_path, "rb") as file:
     visualisations_icon = base64.b64encode(file.read()).decode()
 
-st.markdown(f"""
-<style>
-
-/* De twee menu-items */
-[data-testid="stSidebar"] div[role="radiogroup"] label {{
-    position: relative !important;
-    padding-left: 42px !important;
-}}
-
-/* ALLES wat Streamlit vóór de tekst van de radio zet verbergen */
-[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {{
-    display: none !important;
-}}
-
-/* Extra zekerheid: radio-input zelf verbergen */
-[data-testid="stSidebar"] input[type="radio"] {{
-    display: none !important;
-}}
-
-/* Data Check */
-[data-testid="stSidebar"] div[role="radiogroup"] label:nth-of-type(1) {{
-    background-image: url("data:image/png;base64,{data_check_icon}") !important;
-    background-repeat: no-repeat !important;
-    background-size: 20px 20px !important;
-    background-position: 12px center !important;
-}}
-
-/* Visualisations */
-[data-testid="stSidebar"] div[role="radiogroup"] label:nth-of-type(2) {{
-    background-image: url("data:image/png;base64,{visualisations_icon}") !important;
-    background-repeat: no-repeat !important;
-    background-size: 20px 20px !important;
-    background-position: 12px center !important;
-}}
-
-</style>
-""", unsafe_allow_html=True)
-
 st.markdown("""
 <style>
 
 /* ===== FEASIBILITY ===== */
-.st-key-box_feasibility {background:white !important; border:3px solid #EA3323 !important; border-radius:14px !important; padding:10px !important;}
+.st-key-box_feasibility {
+    background: white !important;
+    border: 3px solid #EA3323 !important;
+    border-radius: 14px !important;
+    padding: 10px !important;
+}
 
-.st-key-box_feasibility h1, .st-key-box_feasibility h2, .st-key-box_feasibility h3, .st-key-box_feasibility p, .st-key-box_feasibility span {color:#222 !important;}
+.st-key-box_feasibility h1,
+.st-key-box_feasibility h2,
+.st-key-box_feasibility h3,
+.st-key-box_feasibility p,
+.st-key-box_feasibility span {
+    color: #222 !important;
+}
 
-.st-key-check_cards [data-testid="stColumn"] {background:white !important; border-top:5px solid #EA3323 !important; border-radius:12px !important; padding:18px 20px !important; box-shadow:0 4px 14px rgba(0,0,0,.12) !important;}
+.st-key-check_cards [data-testid="stColumn"] {
+    background: white !important;
+    border-top: 5px solid #EA3323 !important;
+    border-radius: 12px !important;
+    padding: 18px 20px !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,.12) !important;
+}
 
-.st-key-check_cards [data-testid="stHorizontalBlock"] {gap:28px !important;}
+.st-key-check_cards [data-testid="stHorizontalBlock"] {
+    gap: 28px !important;
+}
 
 
 /* ===== UPLOAD ===== */
-[data-testid="stFileUploaderDropzone"] {background:#F2F2F2 !important; border:3px solid #EA3323 !important; border-radius:14px !important;}
+[data-testid="stFileUploaderDropzone"] {
+    background: #F2F2F2 !important;
+    border: 3px solid #EA3323 !important;
+    border-radius: 14px !important;
+}
 
-[data-testid="stFileUploaderDropzone"] button {background:white !important; color:#222 !important; border:2px solid #EA3323 !important; border-radius:10px !important;}
+[data-testid="stFileUploaderDropzone"] button {
+    background: white !important;
+    color: #222 !important;
+    border: 2px solid #EA3323 !important;
+    border-radius: 10px !important;
+}
 
-[data-testid="stFileUploaderDropzone"] span, [data-testid="stFileUploaderDropzone"] small {color:#555 !important;}
+[data-testid="stFileUploaderDropzone"] span,
+[data-testid="stFileUploaderDropzone"] small {
+    color: #555 !important;
+}
 
-[data-testid="stFileUploaderFile"], [data-testid="stFileUploaderFile"] div {background:white !important; color:#222 !important;}
+[data-testid="stFileUploaderFile"],
+[data-testid="stFileUploaderFile"] div {
+    background: white !important;
+    color: #222 !important;
+}
 
-[data-testid="stFileUploaderFile"] span, [data-testid="stFileUploaderFile"] small, [data-testid="stFileUploaderFile"] p {color:#222 !important;}
+[data-testid="stFileUploaderFile"] span,
+[data-testid="stFileUploaderFile"] small,
+[data-testid="stFileUploaderFile"] p {
+    color: #222 !important;
+}
 
-[data-testid="stFileUploader"] button {border-color:#EA3323 !important;}
+[data-testid="stFileUploader"] button {
+    border-color: #EA3323 !important;
+}
 
 
-/* ===== ACHTERGROND ===== */
-html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-testid="stMain"], .main {background:radial-gradient(circle at 85% 10%, rgba(234,51,35,.30) 0%, rgba(234,51,35,.12) 20%, transparent 45%), linear-gradient(135deg,#0E1117 0%,#1A1D24 55%,#090B0F 100%) !important; background-attachment:fixed !important;}
+/* ===== BACKGROUND ===== */
+html,
+body,
+[data-testid="stApp"],
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+.main {
+    background:
+        radial-gradient(
+            circle at 85% 10%,
+            rgba(234,51,35,.30) 0%,
+            rgba(234,51,35,.12) 20%,
+            transparent 45%
+        ),
+        linear-gradient(
+            135deg,
+            #0E1117 0%,
+            #1A1D24 55%,
+            #090B0F 100%
+        ) !important;
+    background-attachment: fixed !important;
+}
 
 
 /* ===== ERROR + DETAILS ===== */
-[data-testid="stAlert"] {border:3px solid #EA3323 !important; border-radius:14px !important;}
+[data-testid="stAlert"] {
+    border: 3px solid #EA3323 !important;
+    border-radius: 14px !important;
+}
 
-[data-testid="stExpander"] {background:white !important; border:3px solid #EA3323 !important; border-radius:14px !important; overflow:hidden !important;}
+[data-testid="stExpander"] {
+    background: white !important;
+    border: 3px solid #EA3323 !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+}
 
-[data-testid="stExpander"] details, [data-testid="stExpander"] summary, [data-testid="stExpander"] summary:hover, [data-testid="stExpanderDetails"] {background:white !important;}
+[data-testid="stExpander"] details,
+[data-testid="stExpander"] summary,
+[data-testid="stExpander"] summary:hover,
+[data-testid="stExpanderDetails"] {
+    background: white !important;
+}
 
-[data-testid="stExpander"] summary, [data-testid="stExpander"] p, [data-testid="stExpander"] span {color:#222 !important;}
+[data-testid="stExpander"] summary,
+[data-testid="stExpander"] p,
+[data-testid="stExpander"] span {
+    color: #222 !important;
+}
 
-[data-testid="stExpander"] summary * {color:#222 !important; fill:#222 !important;}
+[data-testid="stExpander"] summary * {
+    color: #222 !important;
+    fill: #222 !important;
+}
 
 
-/* ===== TITELS ===== */
-.st-key-box_feasibility h3 {font-size:50px !important; font-weight:700 !important;}
+/* ===== TITLES ===== */
+.st-key-box_feasibility h3 {
+    font-size: 50px !important;
+    font-weight: 700 !important;
+}
 
-.column-title {font-size:20px; font-weight:700; color:#222; padding-bottom:12px; margin-bottom:18px; border-bottom:2px solid #E5E5E5; position:relative;}
+.column-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    border-bottom: 2px solid #E5E5E5;
+    position: relative;
+}
 
-.column-title::after {content:""; position:absolute; left:0; bottom:-2px; width:70px; height:3px; background:#EA3323; border-radius:3px;}
+.column-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 70px;
+    height: 3px;
+    background: #EA3323;
+    border-radius: 3px;
+}
 
-.feasibility-title {font-size:34px; font-weight:700; color:#222; padding-bottom:14px; margin-bottom:20px;}
+.feasibility-title {
+    font-size: 34px;
+    font-weight: 700;
+    color: #222;
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown(f"""
+<style>
 
 /* ===== SIDEBAR ===== */
 
-[data-testid="stSidebar"] {
+[data-testid="stSidebar"] {{
     width: 225px !important;
     min-width: 225px !important;
     max-width: 225px !important;
@@ -137,54 +212,84 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
         #171C23 55%,
         #0D1117 100%
     ) !important;
-}
+}}
 
-/* Inhoud sidebar */
-[data-testid="stSidebarContent"] {
+[data-testid="stSidebarContent"] {{
     padding: 12px 12px !important;
-}
+}}
 
-/* Menu titel */
-.menu-title {
+
+/* ===== MENU TITLE ===== */
+
+.menu-title {{
     color: #FFFFFF;
     font-size: 21px;
     font-weight: 700;
     margin: 18px 0 14px 0;
-}
+}}
 
-/* Menu */
-[data-testid="stSidebar"] div[role="radiogroup"] {
+
+/* ===== MENU ===== */
+
+[data-testid="stSidebar"] div[role="radiogroup"] {{
     gap: 4px;
-}
+}}
 
-/* Menu-item */
-[data-testid="stSidebar"] div[role="radiogroup"] label {
+[data-testid="stSidebar"] div[role="radiogroup"] label {{
     width: 100%;
     min-height: 40px;
     padding: 8px 10px 8px 42px !important;
     margin: 0 !important;
     border-radius: 7px;
     background-color: transparent;
+    background-repeat: no-repeat !important;
+    background-position: 12px center !important;
+    background-size: 20px 20px !important;
     cursor: pointer;
     transition: all 0.15s ease;
-}
+}}
 
 
-/* Tekst */
-[data-testid="stSidebar"] div[role="radiogroup"] label p {
+/* ===== HIDE STREAMLIT RADIO BUTTON ===== */
+
+[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {{
+    display: none !important;
+}}
+
+[data-testid="stSidebar"] input[type="radio"] {{
+    display: none !important;
+}}
+
+
+/* ===== DATA CHECK ICON ===== */
+
+[data-testid="stSidebar"] div[role="radiogroup"] label:nth-of-type(1) {{
+    background-image:
+        url("data:image/png;base64,{data_check_icon}") !important;
+}}
+
+
+/* ===== VISUALISATIONS ICON ===== */
+
+[data-testid="stSidebar"] div[role="radiogroup"] label:nth-of-type(2) {{
+    background-image:
+        url("data:image/png;base64,{visualisations_icon}") !important;
+}}
+
+
+/* ===== MENU TEXT ===== */
+
+[data-testid="stSidebar"] div[role="radiogroup"] label p {{
     display: flex;
     align-items: center;
     color: #AEB3BC !important;
     font-size: 16px !important;
     font-weight: 400 !important;
     margin: 0 !important;
-}
+}}
 
 </style>
 """, unsafe_allow_html=True)
-
-
-
 
 st.sidebar.markdown('<div class="menu-title">Menu</div>', unsafe_allow_html=True)
 
