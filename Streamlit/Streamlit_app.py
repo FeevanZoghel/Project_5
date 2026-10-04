@@ -298,8 +298,7 @@ st.markdown(f"""
 st.markdown("""
 <style>
 
-/* Hide Streamlit radio circles */
-[data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {
+[data-testid="stSidebar"] input[type="radio"] {
     display: none !important;
 }
 
