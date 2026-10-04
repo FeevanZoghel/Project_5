@@ -133,62 +133,7 @@ st.markdown(f'''
 </style>
 ''', unsafe_allow_html=True)
 
-st.markdown(f"""
-<style>
 
-/* PNG-container */
-[data-testid="stSidebar"] [data-testid="stRadioOption"] > div > div:first-child {{
-    width: 24px !important;
-    height: 24px !important;
-    min-width: 24px !important;
-    min-height: 24px !important;
-
-    border: none !important;
-    border-radius: 0 !important;
-
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-}}
-
-/* Verwijder het resterende radio-stipje */
-[data-testid="stSidebar"]
-[data-testid="stRadioOption"] > div > div:first-child > * {{
-    display: none !important;
-}}
-
-/* Data Check */
-[data-testid="stSidebar"]
-[data-testid="stRadioGroup"] > div:nth-child(1)
-[data-testid="stRadioOption"] > div > div:first-child {{
-    background-image: url("data:image/png;base64,{data_check_icon}") !important;
-}}
-
-/* Visualisations */
-[data-testid="stSidebar"]
-[data-testid="stRadioGroup"] > div:nth-child(2)
-[data-testid="stRadioOption"] > div > div:first-child {{
-    background-image: url("data:image/png;base64,{visualisations_icon}") !important;
-}}
-
-/* Geselecteerde menu-optie: rode balk */
-[data-testid="stSidebar"]
-[data-selected="true"] > [data-testid="stRadioOption"] {{
-    background-color: #ff4b4b !important;
-    border-radius: 5px !important;
-    padding: 8px 10px !important;
-}}
-
-/* Tekst wit wanneer geselecteerd */
-[data-testid="stSidebar"]
-[data-selected="true"] > [data-testid="stRadioOption"]
-[data-testid="stMarkdownContainer"] p {{
-    color: white !important;
-    font-weight: 600 !important;
-}}
-
-</style>
-""", unsafe_allow_html=True)
 
 
 st.sidebar.markdown("""
