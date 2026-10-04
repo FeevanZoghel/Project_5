@@ -130,11 +130,6 @@ st.markdown(f'''
         font-weight: 600 !important;
     }}
 
-    /* Sidebar iets smaller maken */
-    [data-testid="stSidebar"] {{
-        width: 250px !important;
-        min-width: 250px !important;
-    }}
 
 </style>
 ''', unsafe_allow_html=True)
