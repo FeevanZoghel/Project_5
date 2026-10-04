@@ -3,14 +3,9 @@ import streamlit as st
 st.markdown("""
 <style>
 
-/* Verberg het radio-icoon volledig */
-[data-testid="stRadio"] [role="radiogroup"] label > div:first-child {
+/* Alleen de radio-rondjes verbergen */
+[data-testid="stRadioOption"] > div:first-of-type {
     display: none !important;
-}
-
-/* Voor nieuwere Streamlit-versies */
-[data-testid="stRadio"] [role="radiogroup"] label [data-testid="stMarkdownContainer"] {
-    margin-left: 0 !important;
 }
 
 </style>
