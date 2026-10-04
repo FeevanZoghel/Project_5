@@ -60,8 +60,8 @@ keuze = st.sidebar.radio(
 st.markdown("""
 <style>
 
-/* Alleen de radio-rondjes verbergen */
-[data-testid="stRadioOption"] > div:first-of-type {
+/* Alleen het radio-rondje verbergen, tekst blijft staan */
+[data-testid="stRadioOption"] > div > div:first-child {
     display: none !important;
 }
 
