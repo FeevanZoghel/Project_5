@@ -82,6 +82,93 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+
+/* ===== VISUALISATIONS PAGE ===== */
+
+/* KPI cards */
+.st-key-kpi_left,
+.st-key-kpi_right {
+    background: white !important;
+    border-top: 5px solid #EA3323 !important;
+    border-radius: 14px !important;
+    padding: 22px 24px !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,.12) !important;
+}
+
+/* Alle tekst in KPI cards donker */
+.st-key-kpi_left *,
+.st-key-kpi_right * {
+    color: #222222 !important;
+}
+
+/* KPI titel */
+.kpi-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #222222;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    border-bottom: 2px solid #E5E5E5;
+    position: relative;
+}
+
+.kpi-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 70px;
+    height: 3px;
+    background: #EA3323;
+    border-radius: 3px;
+}
+
+/* KPI labels */
+.st-key-kpi_left [data-testid="stMetricLabel"],
+.st-key-kpi_right [data-testid="stMetricLabel"] {
+    font-weight: 600 !important;
+}
+
+/* KPI waarden */
+.st-key-kpi_left [data-testid="stMetricValue"],
+.st-key-kpi_right [data-testid="stMetricValue"] {
+    font-size: 30px !important;
+    font-weight: 700 !important;
+}
+
+/* Gantt chart card */
+.st-key-gantt_card {
+    background: white !important;
+    border-top: 5px solid #EA3323 !important;
+    border-radius: 14px !important;
+    padding: 22px 24px !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,.12) !important;
+}
+
+/* Tekst Gantt card */
+.st-key-gantt_card h1,
+.st-key-gantt_card h2,
+.st-key-gantt_card h3,
+.st-key-gantt_card p,
+.st-key-gantt_card span {
+    color: #222222 !important;
+}
+
+/* Afbeelding/grafiek netjes afronden */
+.st-key-gantt_card img {
+    border-radius: 10px !important;
+}
+
+/* Ruimte tussen de drie hoofdkolommen */
+.st-key-results_columns [data-testid="stHorizontalBlock"] {
+    gap: 28px !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 
 st.sidebar.title("Menu")
 # st.write('hello world')
@@ -264,34 +351,52 @@ elif keuze == "Visualisations":
         total_charging_time_min, total_charging_time_hours = calculate_charging_time_kpis(bp)
 
         total_consumption = calculate_energy_consumption_kpis(bp)
-        col1, col2, col3 = st.columns([5, 4, 9])
+with st.container(key="results_columns"):
 
-        with col1:
-            st.subheader("KPIs")
+    col1, col2, col3 = st.columns([5, 4, 10])
 
-            st.metric("Number of buses used 🚌",deployed_buses_count)
+    with col1:
+        with st.container(key="kpi_left"):
+            st.markdown('<div class="kpi-title">KPIs</div>', unsafe_allow_html=True)
 
-            st.metric('Average waiting time', f'{avg_waiting_time_per_bus:.2f} min/bus')
+            st.metric("Number of buses used 🚌", deployed_buses_count)
 
-            st.metric("Material trips 🛠️", f'{t_material_total} trips')
-
-            st.metric('Material trip distance', f'{d_material_total_km:.3f} km')
-
-        with col2 :
-
-            st.metric('Charging time', f'{total_charging_time_hours:.2f} hours')
-
-            st.metric('Energy consumption', f'{total_consumption:.2f} kWh')
-
-            st.metric("Total driving distance ↔️", f"{total_distance_km:.2f} km")
-
-        with col3:
-
-            st.image(
-            "https://www.transdev.com/uploads/2026/09/logo.png",
-            width=60
+            st.metric(
+                "Average waiting time",
+                f"{avg_waiting_time_per_bus:.2f} min/bus"
             )
 
-            st.subheader("Bus planning")
+            st.metric(
+                "Material trips 🛠️",
+                f"{t_material_total} trips"
+            )
+
+            st.metric(
+                "Material trip distance",
+                f"{d_material_total_km:.3f} km"
+            )
+
+    with col2:
+        with st.container(key="kpi_right"):
+            st.markdown('<div class="kpi-title">Performance</div>', unsafe_allow_html=True)
+
+            st.metric(
+                "Charging time",
+                f"{total_charging_time_hours:.2f} hours"
+            )
+
+            st.metric(
+                "Energy consumption",
+                f"{total_consumption:.2f} kWh"
+            )
+
+            st.metric(
+                "Total driving distance ↔️",
+                f"{total_distance_km:.2f} km"
+            )
+
+    with col3:
+        with st.container(key="gantt_card"):
+            st.markdown('<div class="kpi-title">Bus planning</div>', unsafe_allow_html=True)
 
             gantt_chart_bus(bp)
