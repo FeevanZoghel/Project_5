@@ -28,6 +28,35 @@ import pandas as pd
 
 base_path = Path(__file__).parent
 
+number_bus_used_path = Path(__file__).parent / "number_bus_used.png"
+waiting_time_path = Path(__file__).parent / "waiting_time.png"
+material_path = Path(__file__).parent / "Material.png"
+material_distance_path = Path(__file__).parent / "material_distance.png"
+charging_time_path = Path(__file__).parent / "charging_time.png"
+energy_consumption_path = Path(__file__).parent / "energy_consumption.png"
+driving_distance_path = Path(__file__).parent / "driving_distance.png"
+
+with open(number_bus_used_path, "rb") as file:
+    number_bus_used_icon = base64.b64encode(file.read()).decode()
+
+with open(waiting_time_path, "rb") as file:
+    waiting_time_icon = base64.b64encode(file.read()).decode()
+
+with open(material_path, "rb") as file:
+    material_icon = base64.b64encode(file.read()).decode()
+
+with open(material_distance_path, "rb") as file:
+    material_distance_icon = base64.b64encode(file.read()).decode()
+
+with open(charging_time_path, "rb") as file:
+    charging_time_icon = base64.b64encode(file.read()).decode()
+
+with open(energy_consumption_path, "rb") as file:
+    energy_consumption_icon = base64.b64encode(file.read()).decode()
+
+with open(driving_distance_path, "rb") as file:
+    driving_distance_icon = base64.b64encode(file.read()).decode()
+
 data_check_icon = base64.b64encode(
     (base_path / "Data_check_icon.png").read_bytes()
 ).decode()
@@ -544,6 +573,18 @@ elif keuze == "Visualisations":
         color: #171A21 !important;
     }
 
+    .kpi-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    }
+
+    .kpi-icon {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+    }
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -597,65 +638,83 @@ elif keuze == "Visualisations":
             # -------------------------
             # KPI CARD
             # -------------------------
-            with col_kpi:
+            with st.container(key="kpi_card"):
 
-                with st.container(key="kpi_card"):
+                st.markdown(
+                    '<div class="section-title">KPIs</div>',
+                    unsafe_allow_html=True
+                )
 
-                    st.markdown(
-                        '<div class="section-title">KPIs</div>',
-                        unsafe_allow_html=True
-                    )
-
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">🚌 Number of buses used</div>
-                        <div class="kpi-value">{deployed_buses_count}</div>
+                st.markdown(f"""
+                <div class="kpi-box">
+                    <div class="kpi-label">
+                        <img src="data:image/png;base64,{number_bus_used_icon}" class="kpi-icon">
+                        Number of buses used
                     </div>
-                    """, unsafe_allow_html=True)
+                    <div class="kpi-value">{deployed_buses_count}</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">🕐 Average waiting time</div>
-                        <div class="kpi-value">{avg_waiting_time_per_bus:.2f} min/bus</div>
+                st.markdown(f"""
+                <div class="kpi-box">
+                    <div class="kpi-label">
+                        <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
+                        Average waiting time
                     </div>
-                    """, unsafe_allow_html=True)
+                    <div class="kpi-value">{avg_waiting_time_per_bus:.2f} min/bus</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">🛠️ Material trips</div>
-                        <div class="kpi-value">{t_material_total} trips</div>
+                st.markdown(f"""
+                <div class="kpi-box">
+                    <div class="kpi-label">
+                        <img src="data:image/png;base64,{material_icon}" class="kpi-icon">
+                        Material trips
                     </div>
-                    """, unsafe_allow_html=True)
+                    <div class="kpi-value">{t_material_total} trips</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">📍 Material trip distance</div>
-                        <div class="kpi-value">{d_material_total_km:.3f} km</div>
+                st.markdown(f"""
+                <div class="kpi-box">
+                    <div class="kpi-label">
+                        <img src="data:image/png;base64,{material_distance_icon}" class="kpi-icon">
+                        Material trip distance
                     </div>
-                    """, unsafe_allow_html=True)
+                    <div class="kpi-value">{d_material_total_km:.3f} km</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">⚡ Charging time</div>
-                        <div class="kpi-value">{total_charging_time_hours:.2f} hours</div>
+                st.markdown(f"""
+                <div class="kpi-box">
+                    <div class="kpi-label">
+                        <img src="data:image/png;base64,{charging_time_icon}" class="kpi-icon">
+                        Charging time
                     </div>
-                    """, unsafe_allow_html=True)
+                    <div class="kpi-value">{total_charging_time_hours:.2f} hours</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">🔋 Energy consumption</div>
-                        <div class="kpi-value">{total_consumption:.2f} kWh</div>
+                st.markdown(f"""
+                <div class="kpi-box">
+                    <div class="kpi-label">
+                        <img src="data:image/png;base64,{energy_consumption_icon}" class="kpi-icon">
+                        Energy consumption
                     </div>
-                    """, unsafe_allow_html=True)
+                    <div class="kpi-value">{total_consumption:.2f} kWh</div>
+                </div>
+                """, unsafe_allow_html=True)
 
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">🛣️ Total driving distance</div>
-                        <div class="kpi-value">{total_distance_km:.2f} km</div>
+                st.markdown(f"""
+                <div class="kpi-box">
+                    <div class="kpi-label">
+                        <img src="data:image/png;base64,{driving_distance_icon}" class="kpi-icon">
+                        Total driving distance
                     </div>
-                    """, unsafe_allow_html=True)
-
-            # -------------------------
+                    <div class="kpi-value">{total_distance_km:.2f} km</div>
+                </div>
+                """, unsafe_allow_html=True)
+                        # -------------------------
             # GANTT CHART CARD
             # -------------------------
             with col_chart:
