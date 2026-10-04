@@ -201,20 +201,7 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
     margin: 0 !important;
 }
 
-/* DATA CHECK */
-[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(1) p::before {
-    content: "";
-    display: inline-block;
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    margin-right: 9px;
 
-    background-image: url("https://as2.ftcdn.net/v2/jpg/19/44/81/85/1000_F_1944818566_3KS9iBvwCQfpAAF8RywbIutN5wWQjLnV.jpg");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
 
 /* VISUALISATIONS */
 [data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(2) p::before {
