@@ -75,6 +75,22 @@ st.markdown(f"""
     background-image: url("data:image/png;base64,{visualisations_icon}") !important;
 }}
 
+/* Geselecteerde menu-optie: rode balk */
+[data-testid="stSidebar"]
+[data-selected="true"] > [data-testid="stRadioOption"] {{
+    background-color: #ff4b4b !important;
+    border-radius: 5px !important;
+    padding: 8px 10px !important;
+}}
+
+/* Tekst wit wanneer geselecteerd */
+[data-testid="stSidebar"]
+[data-selected="true"] > [data-testid="stRadioOption"]
+[data-testid="stMarkdownContainer"] p {{
+    color: white !important;
+    font-weight: 600 !important;
+}}
+
 </style>
 """, unsafe_allow_html=True)
 
