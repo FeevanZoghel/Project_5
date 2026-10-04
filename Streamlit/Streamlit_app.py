@@ -79,6 +79,85 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
 
 .feasibility-title {font-size:34px; font-weight:700; color:#222; padding-bottom:14px; margin-bottom:20px;}
 
+/* ===== SIDEBAR MENU ===== */
+
+[data-testid="stSidebar"] {
+    background: linear-gradient(
+        180deg,
+        #11151C 0%,
+        #171C23 55%,
+        #0D1117 100%
+    ) !important;
+    border-right: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Sidebar ruimte */
+[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+    padding-top: 1.5rem;
+}
+
+/* Menu titel */
+.menu-title {
+    color: white;
+    font-size: 26px;
+    font-weight: 700;
+    margin: 8px 0 18px 4px;
+}
+
+/* Ruimte tussen menu-items */
+[data-testid="stSidebar"] div[role="radiogroup"] {
+    gap: 8px;
+}
+
+/* Alle menu-items */
+[data-testid="stSidebar"] div[role="radiogroup"] label {
+    background: transparent;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin: 0;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+/* Tekst */
+[data-testid="stSidebar"] div[role="radiogroup"] label p {
+    color: #C8CDD5 !important;
+    font-size: 17px !important;
+    font-weight: 500 !important;
+}
+
+/* Radio-cirkeltje verbergen */
+[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {
+    display: none;
+}
+
+/* Hover */
+[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
+    background: rgba(255,255,255,0.07);
+}
+
+/* Geselecteerd menu-item */
+[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
+    background: linear-gradient(
+        135deg,
+        #EA3323 0%,
+        #FF344D 100%
+    ) !important;
+
+    box-shadow: 0 4px 12px rgba(234,51,35,0.25);
+}
+
+/* Tekst geselecteerd */
+[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) p {
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+/* Sidebar collapse-knop */
+[data-testid="stSidebarCollapseButton"] button {
+    color: white !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
