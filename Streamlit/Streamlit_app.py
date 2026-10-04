@@ -275,7 +275,7 @@ elif keuze == "Visualisations":
 
             st.metric("Material trips 🛠️", f'{t_material_total} trips')
 
-            st.metric('Material trip distance', f'{d_material_total_km:.3f} km')
+            st.metric('Material trip distance', f'{d_material_total:.3f} km')
 
         with col2 :
 
