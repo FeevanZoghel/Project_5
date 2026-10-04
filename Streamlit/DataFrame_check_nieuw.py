@@ -157,18 +157,24 @@ def validate_activity_times(df):
 
 
 def show_activity_time_errors(df):
-    """Displays activities where the end time is not after the start time."""
+    """Displays activities with invalid time durations."""
     start_times = pd.to_timedelta(df['start time'].astype(str))
     end_times = pd.to_timedelta(df['end time'].astype(str))
 
     for row_index in range(len(df)):
-        duration = end_times.iloc[row_index] - start_times.iloc[row_index]
+        start_time = start_times.iloc[row_index]
+        end_time = end_times.iloc[row_index]
 
-        if duration < pd.Timedelta(0):
-            st.error(f'Row {row_index + 2}: end time ({df.iloc[row_index]["end time"]}) must be after start time ({df.iloc[row_index]["start time"]}).')
-        elif end_time < start_time:
+        # If end time is earlier, the activity continues after midnight
+        if end_time < start_time:
             end_time += pd.Timedelta(days=1)
 
+        duration = end_time - start_time
+
+        if duration < pd.Timedelta(0):
+            st.error(f'Row {row_index + 2}: invalid activity duration.')
+
+            
 def validate_minimum_soc(df):
     """
     Checks whether every bus remains above the minimum allowed SOC.
