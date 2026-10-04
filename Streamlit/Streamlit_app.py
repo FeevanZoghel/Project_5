@@ -26,7 +26,7 @@ import base64
 import streamlit as st
 import pandas as pd
 
-data_check_path = Path(__file__).parent / "data_check_icon.png"
+data_check_path = Path(__file__).parent / "Data_check_icon.png"
 visualisations_path = Path(__file__).parent / "visualisations_icon.png"
 
 with open(data_check_path, "rb") as file:
