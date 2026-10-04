@@ -36,6 +36,102 @@ visualisations_icon = base64.b64encode(
     (base_path / "visualisations_icon.png").read_bytes()
 ).decode()
 
+st.markdown(f'''
+<style>
+
+    /* JOUW BESTAANDE CSS VOOR DE ICONEN */
+    
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] > div > div:first-child {{
+        width: 24px !important;
+        height: 24px !important;
+        min-width: 24px !important;
+        min-height: 24px !important;
+
+        border: none !important;
+        border-radius: 0 !important;
+
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+    }}
+
+    /* Stipje verwijderen */
+    [data-testid="stSidebar"]
+    [data-testid="stRadioOption"] > div > div:first-child > * {{
+        display: none !important;
+    }}
+
+    /* Data Check icoon */
+    [data-testid="stSidebar"]
+    [data-testid="stRadioGroup"] > div:nth-child(1)
+    [data-testid="stRadioOption"] > div > div:first-child {{
+        background-image: url("data:image/png;base64,{data_check_icon}") !important;
+    }}
+
+    /* Visualisations icoon */
+    [data-testid="stSidebar"]
+    [data-testid="stRadioGroup"] > div:nth-child(2)
+    [data-testid="stRadioOption"] > div > div:first-child {{
+        background-image: url("data:image/png;base64,{visualisations_icon}") !important;
+    }}
+
+
+    /* ========================================
+       HIERONDER KOMT DE NIEUWE STYLING
+       ======================================== */
+
+    /* Sidebar achtergrond */
+    [data-testid="stSidebar"] {{
+        background-color: #111820 !important;
+    }}
+
+    /* Main Menu */
+    [data-testid="stSidebar"] .sidebar-title {{
+        color: #F5F5F5 !important;
+        font-size: 22px !important;
+        font-weight: 700 !important;
+        margin-bottom: 10px !important;
+    }}
+
+    /* Lijntje */
+    [data-testid="stSidebar"] .sidebar-line {{
+        height: 1px !important;
+        background-color: #38404A !important;
+        margin-bottom: 18px !important;
+    }}
+
+    /* Menu-opties */
+    [data-testid="stSidebar"] [data-testid="stRadioOption"] {{
+        padding: 9px 12px !important;
+        border-radius: 6px !important;
+        margin-bottom: 5px !important;
+    }}
+
+    /* Niet geselecteerde tekst */
+    [data-testid="stSidebar"]
+    [data-testid="stRadioOption"]
+    [data-testid="stMarkdownContainer"] p {{
+        color: #AEB4BC !important;
+        font-size: 15px !important;
+    }}
+
+    /* Geselecteerde rode balk */
+    [data-testid="stSidebar"]
+    [data-selected="true"] > [data-testid="stRadioOption"] {{
+        background-color: #FF2D3F !important;
+        border-radius: 6px !important;
+    }}
+
+    /* Geselecteerde tekst wit */
+    [data-testid="stSidebar"]
+    [data-selected="true"] > [data-testid="stRadioOption"]
+    [data-testid="stMarkdownContainer"] p {{
+        color: white !important;
+        font-weight: 600 !important;
+    }}
+
+</style>
+''', unsafe_allow_html=True)
 
 st.markdown(f"""
 <style>
@@ -94,83 +190,6 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-
-/* ========================================
-   SIDEBAR KLEUREN
-   ======================================== */
-
-/* Achtergrond sidebar */
-[data-testid="stSidebar"] {
-    background-color: #111820 !important;
-}
-
-/* Titel Main Menu */
-[data-testid="stSidebar"] .sidebar-title {
-    color: #F5F5F5 !important;
-    font-size: 22px !important;
-    font-weight: 700 !important;
-    margin-bottom: 10px !important;
-}
-
-/* Lijntje onder Main Menu */
-[data-testid="stSidebar"] .sidebar-line {
-    height: 1px !important;
-    background-color: #38404A !important;
-    margin-bottom: 18px !important;
-}
-
-
-/* ========================================
-   MENU OPTIES
-   ======================================== */
-
-/* Hele optie */
-[data-testid="stSidebar"] [data-testid="stRadioOption"] {
-    padding: 9px 12px !important;
-    border-radius: 6px !important;
-    margin-bottom: 5px !important;
-    transition: background-color 0.15s ease !important;
-}
-
-/* Normale tekst */
-[data-testid="stSidebar"]
-[data-testid="stRadioOption"]
-[data-testid="stMarkdownContainer"] p {
-    color: #AEB4BC !important;
-    font-size: 15px !important;
-}
-
-
-/* ========================================
-   GESELECTEERDE OPTIE
-   ======================================== */
-
-[data-testid="stSidebar"]
-[data-selected="true"] > [data-testid="stRadioOption"] {
-    background-color: #FF2D3F !important;
-    border-radius: 6px !important;
-}
-
-/* Geselecteerde tekst wit */
-[data-testid="stSidebar"]
-[data-selected="true"] > [data-testid="stRadioOption"]
-[data-testid="stMarkdownContainer"] p {
-    color: #FFFFFF !important;
-    font-weight: 600 !important;
-}
-
-
-/* ========================================
-   HOVER
-   ======================================== */
-
-[data-testid="stSidebar"]
-[data-testid="stRadioOption"]:hover {
-    background-color: #202832;
-}
-
-""", unsafe_allow_html=True)
 
 st.sidebar.markdown("""
 <div class="sidebar-title">
