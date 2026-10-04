@@ -99,19 +99,19 @@ if keuze == "Data Check":
     st.write('Upload the planning files below to validate the schedule and view the feasibility results.')
 
     bestand1 = st.file_uploader(
-        'Upload een busplanning',
+        'Upload busplanning',
         type=['xlsx'],
         accept_multiple_files=False
     )
 
     bestand2 = st.file_uploader(
-        'Upload een timetable',
+        'Upload timetable',
         type=['xlsx'],
         accept_multiple_files=False
     )
 
     bestand3 = st.file_uploader(
-        'Upload de distance matrix',
+        'Upload distance matrix',
         type=['xlsx'],
         accept_multiple_files=False
     )
