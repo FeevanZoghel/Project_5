@@ -26,16 +26,6 @@ import streamlit as st
 import pandas as pd
 
 
-st.markdown("""
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-<style>
-
-/* hier staat de rest van jullie CSS */
-
-</style>
-""", unsafe_allow_html=True)
 
 st.markdown("""
 <style>
@@ -89,13 +79,12 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
 
 .feasibility-title {font-size:34px; font-weight:700; color:#222; padding-bottom:14px; margin-bottom:20px;}
 
-/* ===== SIDEBAR MENU ===== */
+/* ===== SIDEBAR ===== */
 
 [data-testid="stSidebar"] {
-    width:220px !important;
-    min-width: 220px !important;
-    max-width: 220px !important;
-
+    width: 225px !important;
+    min-width: 225px !important;
+    max-width: 225px !important;
     background: linear-gradient(
         180deg,
         #11151C 0%,
@@ -104,97 +93,96 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
     ) !important;
 }
 
-/* Ruimte voor icoon */
-[data-testid="stSidebar"] div[role="radiogroup"] label p {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-/* Basisinstellingen icoon */
-[data-testid="stSidebar"] div[role="radiogroup"] label p::before {
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    width: 22px;
-    text-align: center;
-    font-size: 19px;
-}
-
-/* Data Check: clipboard-check */
-[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(1) p::before {
-    content: "\f46c";
-}
-
-/* Visualisations: chart-column */
-[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(2) p::before {
-    content: "\e0e3";
-}
-
-/* Sidebar ruimte */
-[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
-    padding-top: 1.5rem;
+/* Inhoud sidebar */
+[data-testid="stSidebarContent"] {
+    padding: 12px 12px !important;
 }
 
 /* Menu titel */
 .menu-title {
-    color: white;
-    font-size: 26px;
+    color: #FFFFFF;
+    font-size: 21px;
     font-weight: 700;
-    margin: 8px 0 18px 4px;
+    margin: 18px 0 14px 0;
 }
 
-/* Ruimte tussen menu-items */
+/* Menu */
 [data-testid="stSidebar"] div[role="radiogroup"] {
-    gap: 8px;
+    gap: 4px;
 }
 
-/* Alle menu-items */
+/* Menu-item */
 [data-testid="stSidebar"] div[role="radiogroup"] label {
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 10px !important;
+    margin: 0 !important;
+    border-radius: 7px;
     background: transparent;
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin: 0;
-    transition: all 0.2s ease;
     cursor: pointer;
+    transition: all 0.15s ease;
 }
 
-/* Tekst */
-[data-testid="stSidebar"] div[role="radiogroup"] label p {
-    color: #C8CDD5 !important;
-    font-size: 17px !important;
-    font-weight: 500 !important;
-}
-
-/* Radio-cirkeltje verbergen */
+/* Verberg standaard radio button */
 [data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {
     display: none;
 }
 
+/* Tekst */
+[data-testid="stSidebar"] div[role="radiogroup"] label p {
+    display: flex;
+    align-items: center;
+    color: #AEB3BC !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    margin: 0 !important;
+}
+
+/* Icoon algemeen */
+[data-testid="stSidebar"] div[role="radiogroup"] label p::before {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    margin-right: 9px;
+    font-size: 18px;
+    color: #AEB3BC;
+}
+
+/* Data Check icoon */
+[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(1) p::before {
+    content: "☑";
+}
+
+/* Visualisations icoon */
+[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(2) p::before {
+    content: "▥";
+}
+
 /* Hover */
 [data-testid="stSidebar"] div[role="radiogroup"] label:hover {
-    background: rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.05);
 }
 
-/* Geselecteerd menu-item */
+/* Geselecteerde pagina */
 [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
     background: linear-gradient(
-        135deg,
-        #EA3323 0%,
-        #FF344D 100%
+        90deg,
+        #FF2D3D 0%,
+        #FF344E 100%
     ) !important;
-
-    box-shadow: 0 4px 12px rgba(234,51,35,0.25);
+    box-shadow: 0 3px 8px rgba(255,45,61,0.22);
 }
 
-/* Tekst geselecteerd */
+/* Geselecteerde tekst */
 [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) p {
-    color: white !important;
-    font-weight: 600 !important;
+    color: #FFFFFF !important;
+    font-weight: 500 !important;
 }
 
-/* Sidebar collapse-knop */
-[data-testid="stSidebarCollapseButton"] button {
-    color: white !important;
+/* Geselecteerd icoon */
+[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) p::before {
+    color: #FFFFFF !important;
 }
 
 </style>
@@ -210,7 +198,6 @@ keuze = st.sidebar.radio(
     ["Data Check", "Visualisations"],
     label_visibility="collapsed"
 )
-
 if keuze == "☑  Data Check":
     keuze = "Data Check"
 else:
