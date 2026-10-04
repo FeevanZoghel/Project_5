@@ -630,7 +630,7 @@ elif keuze == "Visualisations":
             with col_logo:
                 st.image(
                     "https://storage.googleapis.com/exenzo-jobboard/financenl/public/upload/transdev.png",
-                    width=80
+                    width=120
                 )
 
             # KPI + Gantt chart
