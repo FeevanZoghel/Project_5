@@ -164,7 +164,7 @@ def show_activity_time_errors(df):
     for row_index in range(len(df)):
         duration = end_times.iloc[row_index] - start_times.iloc[row_index]
 
-        if duration <= pd.Timedelta(0):
+        if duration < pd.Timedelta(0):
             st.error(f'Row {row_index + 2}: end time ({df.iloc[row_index]["end time"]}) must be after start time ({df.iloc[row_index]["start time"]}).')
 
 
