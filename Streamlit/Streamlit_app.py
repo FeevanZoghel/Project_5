@@ -163,7 +163,7 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
     height: 20px;
     margin-right: 9px;
 
-    background-image: url("https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/ui-actions/check-box-9eg7wf755rnlyhecj3byq.png/check-box-kwdm8b3h7xyp5uxnx8lt.png?_a=DATAiZAAZAA0");
+    background-image: url("https://as2.ftcdn.net/v2/jpg/19/44/81/85/1000_F_1944818566_3KS9iBvwCQfpAAF8RywbIutN5wWQjLnV.jpg");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -178,7 +178,7 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
     height: 20px;
     margin-right: 9px;
 
-    background-image: url("https://t3.ftcdn.net/jpg/20/16/27/88/360_F_2016278862_3B6pXVB6lUCykBGBi5PnGD3spWBJStgY.webp");
+    background-image: url("https://thumbs.wbm.im/pw/medium/f5246b1b05308060dfc0d9029d703380.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
