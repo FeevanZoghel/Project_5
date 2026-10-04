@@ -231,60 +231,83 @@ st.markdown(f"""
 
 /* ===== MENU ===== */
 
-[data-testid="stSidebar"] div[role="radiogroup"] {{
-    gap: 4px;
+[data-testid="stSidebar"] [role="radiogroup"] {{
+    gap: 4px !important;
 }}
 
-[data-testid="stSidebar"] div[role="radiogroup"] label {{
-    width: 100%;
-    min-height: 40px;
-    padding: 8px 10px 8px 42px !important;
+[data-testid="stSidebar"] [role="radiogroup"] label {{
+    width: 100% !important;
+    min-height: 40px !important;
+    padding: 8px 10px !important;
     margin: 0 !important;
-    border-radius: 7px;
-    background-color: transparent;
+    border-radius: 7px !important;
+    cursor: pointer !important;
+}}
+
+
+/* ===== REMOVE ORIGINAL RADIO CIRCLES ===== */
+
+[data-testid="stSidebar"] [role="radiogroup"] label [data-testid="stMarkdownContainer"] {{
+    margin-left: 0 !important;
+}}
+
+[data-testid="stSidebar"] [role="radiogroup"] label > div {{
+    gap: 10px !important;
+}}
+
+[data-testid="stSidebar"] [role="radiogroup"] label input + div {{
+    border: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    border-radius: 0 !important;
     background-repeat: no-repeat !important;
-    background-position: 12px center !important;
-    background-size: 20px 20px !important;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}}
-
-
-/* ===== HIDE STREAMLIT RADIO BUTTON ===== */
-
-[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {{
-    display: none !important;
-}}
-
-[data-testid="stSidebar"] input[type="radio"] {{
-    display: none !important;
+    background-position: center !important;
+    background-size: contain !important;
 }}
 
 
 /* ===== DATA CHECK ICON ===== */
 
-[data-testid="stSidebar"] div[role="radiogroup"] > label:nth-child(1) {{
+[data-testid="stSidebar"] [role="radiogroup"] label:has(p:nth-child(1)) {{
+}}
+
+/* First radio icon */
+[data-testid="stSidebar"] [role="radiogroup"] label:first-of-type input + div {{
     background-image: url("data:image/png;base64,{data_check_icon}") !important;
 }}
 
 
 /* ===== VISUALISATIONS ICON ===== */
 
-[data-testid="stSidebar"] div[role="radiogroup"] > label:nth-child(2) {{
+/* Second radio icon */
+[data-testid="stSidebar"] [role="radiogroup"] label:last-of-type input + div {{
     background-image: url("data:image/png;base64,{visualisations_icon}") !important;
 }}
 
 
+/* ===== TEXT ===== */
 
-/* ===== MENU TEXT ===== */
-
-[data-testid="stSidebar"] div[role="radiogroup"] label p {{
-    display: flex;
-    align-items: center;
+[data-testid="stSidebar"] [role="radiogroup"] label p {{
     color: #AEB3BC !important;
     font-size: 16px !important;
     font-weight: 400 !important;
     margin: 0 !important;
+}}
+
+
+/* ===== SELECTED ITEM ===== */
+
+[data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {{
+    background: #FF3045 !important;
+    box-shadow: 0 4px 12px rgba(255,48,69,.25) !important;
+}}
+
+[data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) p {{
+    color: white !important;
+    font-weight: 600 !important;
 }}
 
 </style>
