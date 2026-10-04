@@ -197,15 +197,167 @@ body,
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown(f"""
+<style>
 
-st.sidebar.markdown('<div class="menu-title">Menu</div>', unsafe_allow_html=True)
+/* ================================
+   SIDEBAR
+   ================================ */
+
+[data-testid="stSidebar"] {{
+    background: #F7F7F7 !important;
+    border-right: 1px solid #E0E0E0;
+}}
+
+
+/* Main Menu */
+.sidebar-title {{
+    color: #222222;
+    font-size: 22px;
+    font-weight: 600;
+    padding: 12px 8px 14px 8px;
+}}
+
+
+/* Lijn onder Main Menu */
+.sidebar-line {{
+    height: 2px;
+    background: #DDDDDD;
+    margin: 0 8px 18px 8px;
+}}
+
+
+/* ================================
+   RADIO MENU
+   ================================ */
+
+/* ruimte tussen menu-items */
+[data-testid="stSidebar"] [role="radiogroup"] {{
+    gap: 8px !important;
+}}
+
+
+/* Hele menu-item */
+[data-testid="stSidebar"] [role="radiogroup"] label {{
+    padding: 10px 12px !important;
+    border-radius: 6px !important;
+    margin: 0 !important;
+    cursor: pointer;
+}}
+
+
+/* Hover */
+[data-testid="stSidebar"] [role="radiogroup"] label:hover {{
+    background: #ECECEC !important;
+}}
+
+
+/* ================================
+   STANDAARD RADIO-CIRKELS WEG
+   ================================ */
+
+[data-testid="stSidebar"] [role="radio"] > div:first-child {{
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
+
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+
+    background-size: 20px 20px !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}}
+
+
+/* eventuele stip/cirkel verwijderen */
+[data-testid="stSidebar"] [role="radio"] > div:first-child::before,
+[data-testid="stSidebar"] [role="radio"] > div:first-child::after {{
+    display: none !important;
+    content: none !important;
+}}
+
+
+/* ================================
+   JOUW ICONEN
+   ================================ */
+
+/* Data Check */
+[data-testid="stSidebar"]
+[role="radiogroup"]
+label:nth-of-type(1)
+[role="radio"] > div:first-child {{
+
+    background-image:
+        url("data:image/png;base64,{data_check_icon}") !important;
+}}
+
+
+/* Visualisations */
+[data-testid="stSidebar"]
+[role="radiogroup"]
+label:nth-of-type(2)
+[role="radio"] > div:first-child {{
+
+    background-image:
+        url("data:image/png;base64,{visualisations_icon}") !important;
+}}
+
+
+/* ================================
+   GESELECTEERD ITEM
+   ================================ */
+
+[data-testid="stSidebar"]
+[role="radiogroup"]
+label:has(input:checked) {{
+
+    background: #EA3323 !important;
+}}
+
+
+/* tekst geselecteerd */
+[data-testid="stSidebar"]
+[role="radiogroup"]
+label:has(input:checked) p {{
+
+    color: white !important;
+    font-weight: 600 !important;
+}}
+
+
+/* normale tekst */
+[data-testid="stSidebar"]
+[role="radiogroup"]
+label:not(:has(input:checked)) p {{
+
+    color: #333333 !important;
+}}
+
+
+/* Streamlit Navigation label helemaal verbergen */
+[data-testid="stSidebar"] [data-testid="stWidgetLabel"] {{
+    display: none !important;
+}}
+
+</style>
+""", unsafe_allow_html=True)
+
+st.sidebar.markdown("""
+<div class="sidebar-title">
+    Main Menu
+</div>
+<div class="sidebar-line"></div>
+""", unsafe_allow_html=True)
+
 
 keuze = st.sidebar.radio(
     "Navigation",
     ["Data Check", "Visualisations"],
     label_visibility="collapsed"
 )
-
 
 if keuze == "Data Check":
 
