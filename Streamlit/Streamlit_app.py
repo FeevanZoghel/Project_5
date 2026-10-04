@@ -96,6 +96,7 @@ if keuze == "Data Check":
 
 
     st.title("Transdev Planning Checker")
+    st.subheader('Upload the planning files below to validate the schedule and view the feasibility results.')
 
     bestand1 = st.file_uploader(
         'Upload een busplanning',
