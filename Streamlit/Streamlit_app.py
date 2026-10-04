@@ -85,11 +85,18 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
 
 
 
-st.sidebar.title("Menu")
-# st.write('hello world')
+st.sidebar.markdown('<div class="menu-title">Menu</div>', unsafe_allow_html=True)
 
+keuze = st.sidebar.radio(
+    "Navigation",
+    ["☑  Data Check", "▥  Visualisations"],
+    label_visibility="collapsed"
+)
 
-keuze = st.sidebar.selectbox("Choose a page", ["Data Check", "Visualisations"])
+if keuze == "☑  Data Check":
+    keuze = "Data Check"
+else:
+    keuze = "Visualisations"
 
 
 
