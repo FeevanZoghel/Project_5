@@ -71,32 +71,6 @@ st.markdown("""
 st.markdown(f"""
 <style>
 
-/* ================================
-   RADIO BOLLETJES → EIGEN ICONEN
-   ================================ */
-
-/* Verwijder de standaard cirkel */
-[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child {{
-    width: 24px !important;
-    height: 24px !important;
-    min-width: 24px !important;
-    min-height: 24px !important;
-
-    border: none !important;
-    background: transparent !important;
-    box-shadow: none !important;
-
-    background-size: 20px 20px !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-}}
-
-/* Streamlit stip binnen de cirkel ook weg */
-[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child > div {{
-    display: none !important;
-}}
-
-
 /* DATA CHECK ICOON */
 [data-testid="stSidebar"] [data-testid="stRadio"]
 label:nth-of-type(1) [role="radio"] > div:first-child {{
