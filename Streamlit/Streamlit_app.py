@@ -580,8 +580,8 @@ elif keuze == "Visualisations":
     }
 
     .kpi-icon {
-        width: 20px;
-        height: 20px;
+        width: 28px;
+        height: 28px;
         object-fit: contain;
     }
 
