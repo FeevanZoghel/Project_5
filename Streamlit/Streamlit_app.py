@@ -87,7 +87,7 @@ st.sidebar.title("Menu")
 # st.write('hello world')
 
 
-keuze = st.sidebar.selectbox("Kies een pagina", ["Data Check", "Visualisaties"])
+keuze = st.sidebar.selectbox("Choose a page", ["Data Check", "Visualisations"])
 
 
 
@@ -165,9 +165,6 @@ if keuze == "Data Check":
 
                 col1, col2 = st.columns(2)
 
-                # -----------------------------
-                # BATTERY & CHARGING
-                # -----------------------------
                 with col1:
                     st.markdown("""
                     <div class="column-title">
@@ -195,10 +192,6 @@ if keuze == "Data Check":
                         validate_charging_speed(df1)
                     )
 
-
-                # -----------------------------
-                # PLANNING
-                # -----------------------------
                 with col2:
                     st.markdown("""
                     <div class="column-title">
@@ -235,7 +228,7 @@ if keuze == "Data Check":
         st.session_state['dm'] = pd.read_excel(bestand3)
         df3 = st.session_state['dm']
 
-elif keuze == "Visualisaties":
+elif keuze == "Visualisations":
 
     st.markdown("""
         <style>
