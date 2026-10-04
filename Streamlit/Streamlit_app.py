@@ -82,9 +82,9 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
 /* ===== SIDEBAR MENU ===== */
 
 [data-testid="stSidebar"] {
-    width:200px !important;
-    min-width: 200px !important;
-    max-width: 200px !important;
+    width:220px !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
 
     background: linear-gradient(
         180deg,
