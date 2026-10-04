@@ -339,7 +339,7 @@ def calculate_distances_and_kpis(bp, dm, tt):
 
     d_material_total_km = d_material_total / 1000 
 
-    return total_distance_m, total_distance_km, deployed_buses_count, t_material_total, d_material_total_km
+    return total_distance_m, total_distance_km, deployed_buses_count, t_material_total, d_material_total, d_material_total_km
 
 
 # calculate total waiting time and the average waiting time per bus

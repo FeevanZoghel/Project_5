@@ -253,7 +253,7 @@ elif keuze == "Visualisations":
         dm = st.session_state['dm']
 
         # KPI's berekenen
-        total_distance_m, total_distance_km, deployed_buses_count, t_material_total, d_material_total_km = calculate_distances_and_kpis(
+        total_distance_m, total_distance_km, deployed_buses_count, t_material_total,d_material_total,  d_material_total_km = calculate_distances_and_kpis(
             bp, dm, tt
         )
 
