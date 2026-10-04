@@ -200,115 +200,55 @@ body,
 st.markdown(f"""
 <style>
 
-/* ===== SIDEBAR ===== */
+/* ================================
+   SIDEBAR NAVIGATION
+   ================================ */
 
-[data-testid="stSidebar"] {{
-    width: 225px !important;
-    min-width: 225px !important;
-    max-width: 225px !important;
-    background: linear-gradient(
-        180deg,
-        #11151C 0%,
-        #171C23 55%,
-        #0D1117 100%
-    ) !important;
-}}
+/* Verwijder de standaard rode radio-cirkels */
+[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child {
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
 
-[data-testid="stSidebarContent"] {{
-    padding: 12px 12px !important;
-}}
-
-
-/* ===== MENU TITLE ===== */
-
-.menu-title {{
-    color: #FFFFFF;
-    font-size: 21px;
-    font-weight: 700;
-    margin: 18px 0 14px 0;
-}}
-
-
-/* ===== MENU ===== */
-
-[data-testid="stSidebar"] [role="radiogroup"] {{
-    gap: 4px !important;
-}}
-
-[data-testid="stSidebar"] [role="radiogroup"] label {{
-    width: 100% !important;
-    min-height: 40px !important;
-    padding: 8px 10px !important;
-    margin: 0 !important;
-    border-radius: 7px !important;
-    cursor: pointer !important;
-}}
-
-
-/* ===== REMOVE ORIGINAL RADIO CIRCLES ===== */
-
-[data-testid="stSidebar"] [role="radiogroup"] label [data-testid="stMarkdownContainer"] {{
-    margin-left: 0 !important;
-}}
-
-[data-testid="stSidebar"] [role="radiogroup"] label > div {{
-    gap: 10px !important;
-}}
-
-[data-testid="stSidebar"] [role="radiogroup"] label input + div {{
     border: none !important;
-    background-color: transparent !important;
+    background: transparent !important;
     box-shadow: none !important;
-    width: 22px !important;
-    height: 22px !important;
-    min-width: 22px !important;
-    border-radius: 0 !important;
+}
+
+/* Verwijder eventuele standaard radio styling */
+[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child::before,
+[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* DATA CHECK icoon */
+[data-testid="stSidebar"] [data-testid="stRadio"] label:nth-of-type(1) [role="radio"] > div:first-child {
+    background-image: url("data:image/png;base64,{data_check_icon}") !important;
+    background-size: contain !important;
     background-repeat: no-repeat !important;
     background-position: center !important;
-    background-size: contain !important;
-}}
+}
 
-
-/* ===== DATA CHECK ICON ===== */
-
-[data-testid="stSidebar"] [role="radiogroup"] label:has(p:nth-child(1)) {{
-}}
-
-/* First radio icon */
-[data-testid="stSidebar"] [role="radiogroup"] label:first-of-type input + div {{
-    background-image: url("data:image/png;base64,{data_check_icon}") !important;
-}}
-
-
-/* ===== VISUALISATIONS ICON ===== */
-
-/* Second radio icon */
-[data-testid="stSidebar"] [role="radiogroup"] label:last-of-type input + div {{
+/* VISUALISATIONS icoon */
+[data-testid="stSidebar"] [data-testid="stRadio"] label:nth-of-type(2) [role="radio"] > div:first-child {
     background-image: url("data:image/png;base64,{visualisations_icon}") !important;
-}}
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+}
 
+/* Tekst naast de iconen */
+[data-testid="stSidebar"] [data-testid="stRadio"] label {
+    gap: 10px !important;
+}
 
-/* ===== TEXT ===== */
-
-[data-testid="stSidebar"] [role="radiogroup"] label p {{
-    color: #AEB3BC !important;
-    font-size: 16px !important;
-    font-weight: 400 !important;
-    margin: 0 !important;
-}}
-
-
-/* ===== SELECTED ITEM ===== */
-
-[data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {{
-    background: #FF3045 !important;
-    box-shadow: 0 4px 12px rgba(255,48,69,.25) !important;
-}}
-
-[data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) p {{
-    color: white !important;
-    font-weight: 600 !important;
-}}
+/* Geen extra rode cirkel/rand bij geselecteerde optie */
+[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"][aria-checked="true"] > div:first-child {
+    border: none !important;
+    box-shadow: none !important;
+}
 
 </style>
 """, unsafe_allow_html=True)
