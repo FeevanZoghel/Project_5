@@ -157,7 +157,7 @@ if keuze == "Data Check":
 
             with col_logo:
                 st.image(
-                    "https://www.transdev.com/uploads/2026/09/logo.png",
+                   "https://www.transdev.com/uploads/2026/09/logo.png",
                     width=80
                 )
             # De echte cards
@@ -365,7 +365,7 @@ elif keuze == "Visualisaties":
 
             with col_logo:
                 st.image(
-                    "https://www.transdev.com/wp-content/themes/transdev/images/logo.svg",
+                    "https://www.transdev.com/uploads/2026/09/logo.png",
                     width=150
                 )
 
