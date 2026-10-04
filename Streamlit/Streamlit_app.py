@@ -58,6 +58,24 @@ keuze = st.sidebar.radio(
 )
 
 
+st.markdown(
+    """
+    <style>
+    /* Hides the radio button circle/dot */
+    div[data-testid="stRadio"] input[type="radio"] + div {
+        display: none !important;
+    }
+    
+    /* Optional: Adjusts spacing of the labels after removing the dots */
+    div[data-testid="stRadio"] label {
+        padding-left: 0px !important;
+        margin-right: 15px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.markdown(f"""
 <style>
 
