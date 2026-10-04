@@ -82,14 +82,19 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
 /* ===== SIDEBAR MENU ===== */
 
 [data-testid="stSidebar"] {
+    width: 160px !important;
+    min-width: 60px !important;
+    max-width: 160px !important;
+
     background: linear-gradient(
         180deg,
         #11151C 0%,
         #171C23 55%,
         #0D1117 100%
     ) !important;
-    border-right: 1px solid rgba(255,255,255,0.06);
 }
+
+
 
 /* Sidebar ruimte */
 [data-testid="stSidebar"] [data-testid="stSidebarContent"] {
