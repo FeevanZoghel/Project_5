@@ -8,10 +8,7 @@ st.markdown(
     <style>
     div[role="radiogroup"] label > div:first-child {
         display: none !important;
-    }
-    div[role="radiogroup"] label {
-        margin-right: 0px !important;
-    }
+
     </style>
     """,
     unsafe_allow_html=True,
