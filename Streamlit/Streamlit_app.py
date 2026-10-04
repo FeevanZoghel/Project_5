@@ -263,18 +263,17 @@ st.markdown(f"""
 
 /* ===== DATA CHECK ICON ===== */
 
-[data-testid="stSidebar"] div[role="radiogroup"] label:nth-of-type(1) {{
-    background-image:
-        url("data:image/png;base64,{data_check_icon}") !important;
+[data-testid="stSidebar"] div[role="radiogroup"] > label:nth-child(1) {{
+    background-image: url("data:image/png;base64,{data_check_icon}") !important;
 }}
 
 
 /* ===== VISUALISATIONS ICON ===== */
 
-[data-testid="stSidebar"] div[role="radiogroup"] label:nth-of-type(2) {{
-    background-image:
-        url("data:image/png;base64,{visualisations_icon}") !important;
+[data-testid="stSidebar"] div[role="radiogroup"] > label:nth-child(2) {{
+    background-image: url("data:image/png;base64,{visualisations_icon}") !important;
 }}
+
 
 
 /* ===== MENU TEXT ===== */
@@ -292,8 +291,6 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 st.sidebar.markdown('<div class="menu-title">Menu</div>', unsafe_allow_html=True)
-
-st.image(str(visualisations_path), width=100)
 
 keuze = st.sidebar.radio(
     "Navigation",
