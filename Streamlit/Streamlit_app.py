@@ -501,7 +501,7 @@ elif keuze == "Visualisations":
                     st.markdown(f"""
                     <div class="kpi-box">
                         <div class="kpi-label">📍 Material trip distance</div>
-                        <div class="kpi-value">{d_material_total:.3f} km</div>
+                        <div class="kpi-value">{d_material_total_km:.3f} km</div>
                     </div>
                     """, unsafe_allow_html=True)
 
