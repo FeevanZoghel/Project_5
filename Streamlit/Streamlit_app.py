@@ -28,13 +28,13 @@ import pandas as pd
 
 base_path = Path(__file__).parent
 
-number_bus_used_path = Path(__file__).parent / "number_bus_used.png"
-waiting_time_path = Path(__file__).parent / "waiting_time.png"
-material_path = Path(__file__).parent / "Material.png"
-material_distance_path = Path(__file__).parent / "material_distance.png"
-charging_time_path = Path(__file__).parent / "charging_time.png"
-energy_consumption_path = Path(__file__).parent / "energy_consumption.png"
-driving_distance_path = Path(__file__).parent / "driving_distance.png"
+number_bus_used_path = base_path / "number_bus_used.png"
+waiting_time_path = base_path / "waiting_time.png"
+material_path = base_path / "Material.png"
+material_distance_path = base_path / "material_distance.png"
+charging_time_path = base_path / "charging_time.png"
+energy_consumption_path = base_path / "energy_consumption.png"
+driving_distance_path = base_path / "driving_distance.png"
 
 with open(number_bus_used_path, "rb") as file:
     number_bus_used_icon = base64.b64encode(file.read()).decode()
@@ -633,7 +633,7 @@ elif keuze == "Visualisations":
                 )
 
             # KPI + Gantt chart
-            col_kpi, col_chart = st.columns([2.4, 7.6], gap="medium")
+            col_kpi, col_chart = st.columns([2, 10], gap="medium")
 
             # -------------------------
             # KPI CARD
