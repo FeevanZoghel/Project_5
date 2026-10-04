@@ -58,23 +58,50 @@ keuze = st.sidebar.radio(
 )
 
 
-st.markdown(
-    """
-    <style>
-    /* Hides the radio button circle/dot */
-    div[data-testid="stRadio"] input[type="radio"] + div {
-        display: none !important;
-    }
-    
-    /* Optional: Adjusts spacing of the labels after removing the dots */
-    div[data-testid="stRadio"] label {
-        padding-left: 0px !important;
-        margin-right: 15px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+st.markdown(f"""
+<style>
+
+/* ================================
+   RADIO BOLLETJES → EIGEN ICONEN
+   ================================ */
+
+/* Verwijder de standaard cirkel */
+[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child {{
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
+
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+
+    background-size: 20px 20px !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}}
+
+/* Streamlit stip binnen de cirkel ook weg */
+[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child > div {{
+    display: none !important;
+}}
+
+
+/* DATA CHECK ICOON */
+[data-testid="stSidebar"] [data-testid="stRadio"]
+label:nth-of-type(1) [role="radio"] > div:first-child {{
+    background-image: url("data:image/png;base64,{data_check_icon}") !important;
+}}
+
+
+/* VISUALISATIONS ICOON */
+[data-testid="stSidebar"] [data-testid="stRadio"]
+label:nth-of-type(2) [role="radio"] > div:first-child {{
+    background-image: url("data:image/png;base64,{visualisations_icon}") !important;
+}}
+
+</style>
+""", unsafe_allow_html=True)
 
 
 st.markdown("""
