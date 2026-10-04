@@ -188,9 +188,11 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
 
 st.sidebar.markdown('<div class="menu-title">Menu</div>', unsafe_allow_html=True)
 
+st.image(str(visualisations_path), width=100)
+
 keuze = st.sidebar.radio(
     "Navigation",
-    ["Data Check","Visualisations"],
+    ["Data Check", "Visualisations"],
     label_visibility="collapsed"
 )
 
