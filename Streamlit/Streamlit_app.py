@@ -37,37 +37,37 @@ with open(visualisations_path, "rb") as file:
 
 st.markdown(f"""
 <style>
-/* Visualisations icon */
-[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(2) p::before {{
+
+/* Data Check */
+[data-testid="stSidebar"] label:has(input[value="Data Check"]) p::before {{
     content: "";
     display: inline-block;
-    flex-shrink: 0;
     width: 20px;
     height: 20px;
-    margin-right: 9px;
-    background-image: url("data:image/png;base64,{visualisations_icon}");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}}
-/* Data Check icon */
-[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(1) p::before {{
-    content: "";
-    display: inline-block;
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
     margin-right: 9px;
-    background-image: url("data:image/png;base64,{data_check_icon}");
+    background-image: url("data:image/png;base64,{data_check_icon}") !important;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 }}
 
+/* Visualisations */
+[data-testid="stSidebar"] label:has(input[value="Visualisations"]) p::before {{
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-right: 9px;
+    background-image: url("data:image/png;base64,{visualisations_icon}") !important;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}}
 
-
-/* Remove Streamlit radio circles */
-[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {{
+/* Hide original Streamlit radio circle */
+[data-testid="stSidebar"] label:has(input[type="radio"]) > div:first-child {{
     display: none !important;
 }}
 
@@ -195,7 +195,7 @@ st.sidebar.markdown('<div class="menu-title">Menu</div>', unsafe_allow_html=True
 
 keuze = st.sidebar.radio(
     "Navigation",
-    ["Visualisations", "Data Check"],
+    ["Data Check","Visualisations"],
     label_visibility="collapsed"
 )
 
