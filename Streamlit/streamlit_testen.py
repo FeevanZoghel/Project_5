@@ -3,8 +3,8 @@ import streamlit as st
 st.markdown("""
 <style>
 
-/* Verberg alleen het daadwerkelijke radio-icoontje */
-[data-testid="stRadioOption"] [data-baseweb="radio"] {
+/* Alleen het radio-rondje verbergen, tekst blijft staan */
+[data-testid="stRadioOption"] > div > div:first-child {
     display: none !important;
 }
 
