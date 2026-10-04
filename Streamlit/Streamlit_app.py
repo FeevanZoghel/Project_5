@@ -2,16 +2,17 @@
 #https://project5-jmfoec4ruxwpczdw5mf76w.streamlit.app/
 
 from DataFrame_check import (
-    check_all,
-    check_min_SOC,
-    check_SOH,
-    check_end_begin_loc,
-    check_req_trips,
-    check_min_charging_time,
-    check_charging_speed,
-    check_overlapping_trips,
+    validate_bus_planning,
+    validate_minimum_soc,
+    validate_soh,
+    validate_location_continuity,
+    validate_required_trips,
+    validate_minimum_charging_time,
+    validate_charging_speed,
+    validate_no_overlapping_trips,
     status_check
 )
+
 from berekeningen_cleaned import (
     gantt_chart_bus,
     calculate_distances_and_kpis,
@@ -140,7 +141,7 @@ if keuze == "Data Check":
 
         df1 = st.session_state['bp']
 
-        check_all(df1)
+        validate_bus_planning(df1)
 
         with st.container(border=True, key="box_feasibility"):
 
@@ -167,7 +168,6 @@ if keuze == "Data Check":
                 # BATTERY & CHARGING
                 # -----------------------------
                 with col1:
-
                     st.markdown("""
                     <div class="column-title">
                         🔋 Battery & charging
@@ -176,22 +176,22 @@ if keuze == "Data Check":
 
                     status_check(
                         "Minimum SOC is maintained (10%)",
-                        check_min_SOC(df1)
+                        validate_minimum_soc(df1)
                     )
 
                     status_check(
                         "SOH is correct (between 85% and 95%)",
-                        check_SOH(85)
+                        validate_soh(85)
                     )
 
                     status_check(
                         "Minimum charging time (15 minutes)",
-                        check_min_charging_time(df1)
+                        validate_minimum_charging_time(df1)
                     )
 
                     status_check(
                         "Charging speed is correct",
-                        check_charging_speed(df1)
+                        validate_charging_speed(df1)
                     )
 
 
@@ -199,7 +199,6 @@ if keuze == "Data Check":
                 # PLANNING
                 # -----------------------------
                 with col2:
-
                     st.markdown("""
                     <div class="column-title">
                         📍 Planning
@@ -208,21 +207,20 @@ if keuze == "Data Check":
 
                     status_check(
                         "Start and end locations match",
-                        check_end_begin_loc(df1)
+                        validate_location_continuity(df1)
                     )
 
                     status_check(
                         "No overlapping trips",
-                        check_overlapping_trips(df1)
+                        validate_no_overlapping_trips(df1)
                     )
 
                     if "tt" in st.session_state:
-
                         df2 = st.session_state["tt"]
 
                         status_check(
                             "All required trips",
-                            check_req_trips(df1, df2)
+                            validate_required_trips(df1, df2)
                         )
 
                     else:
