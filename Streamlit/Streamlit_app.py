@@ -295,6 +295,17 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+
+/* Hide Streamlit radio circles */
+[data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {
+    display: none !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 st.sidebar.markdown('<div class="menu-title">Menu</div>', unsafe_allow_html=True)
 
 keuze = st.sidebar.radio(
