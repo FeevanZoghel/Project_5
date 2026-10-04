@@ -57,6 +57,16 @@ keuze = st.sidebar.radio(
     label_visibility="collapsed"
 )
 
+st.markdown("""
+<style>
+
+/* Alleen de radio-rondjes verbergen */
+[data-testid="stRadioOption"] > div:first-of-type {
+    display: none !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 st.markdown(f"""
 <style>
