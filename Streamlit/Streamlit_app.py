@@ -156,7 +156,16 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
 
 /* Visualisations icoon */
 [data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(2) p::before {
-    content: "▥";
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 9px;
+
+    background-image: url("https://t3.ftcdn.net/jpg/20/16/27/88/360_F_2016278862_3B6pXVB6lUCykBGBi5PnGD3spWBJStgY.webp");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 /* Hover */
@@ -183,6 +192,19 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
 /* Geselecteerd icoon */
 [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) p::before {
     color: #FFFFFF !important;
+}
+/* Verberg de echte radio buttons */
+[data-testid="stSidebar"] [data-testid="stRadio"] input[type="radio"] {
+    display: none !important;
+}
+
+[data-testid="stSidebar"] [data-testid="stRadio"] [data-testid="stMarkdownContainer"] {
+    margin-left: 0 !important;
+}
+
+/* Verberg Streamlit radio-cirkel */
+[data-testid="stSidebar"] [role="radio"] > div:first-child {
+    display: none !important;
 }
 
 </style>
