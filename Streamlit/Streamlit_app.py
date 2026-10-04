@@ -200,55 +200,97 @@ body,
 st.markdown(f"""
 <style>
 
-/* ================================
-   SIDEBAR NAVIGATION
-   ================================ */
+/* ===== SIDEBAR ===== */
 
-/* Verwijder de standaard rode radio-cirkels */
-[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child {
-    width: 24px !important;
-    height: 24px !important;
-    min-width: 24px !important;
-    min-height: 24px !important;
+[data-testid="stSidebar"] {{
+    width: 225px !important;
+    min-width: 225px !important;
+    max-width: 225px !important;
+    background: linear-gradient(180deg, #11151C 0%, #171C23 55%, #0D1117 100%) !important;
+}}
 
-    border: none !important;
-    background: transparent !important;
-    box-shadow: none !important;
-}
+[data-testid="stSidebarContent"] {{
+    padding: 12px !important;
+}}
 
-/* Verwijder eventuele standaard radio styling */
-[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child::before,
-[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"] > div:first-child::after {
+.menu-title {{
+    color: white;
+    font-size: 21px;
+    font-weight: 700;
+    margin: 18px 0 14px 0;
+}}
+
+
+/* ===== MENU ITEMS ===== */
+
+[data-testid="stSidebar"] [role="radiogroup"] {{
+    gap: 5px !important;
+}}
+
+[data-testid="stSidebar"] [role="radiogroup"] label {{
+    min-height: 42px !important;
+    padding: 8px 10px !important;
+    border-radius: 8px !important;
+}}
+
+
+/* ===== HIDE STREAMLIT RADIO ===== */
+
+[data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {{
     display: none !important;
-    content: none !important;
-}
+}}
 
-/* DATA CHECK icoon */
-[data-testid="stSidebar"] [data-testid="stRadio"] label:nth-of-type(1) [role="radio"] > div:first-child {
-    background-image: url("data:image/png;base64,{data_check_icon}") !important;
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-}
 
-/* VISUALISATIONS icoon */
-[data-testid="stSidebar"] [data-testid="stRadio"] label:nth-of-type(2) [role="radio"] > div:first-child {
-    background-image: url("data:image/png;base64,{visualisations_icon}") !important;
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-}
+/* ===== TEXT ===== */
 
-/* Tekst naast de iconen */
-[data-testid="stSidebar"] [data-testid="stRadio"] label {
-    gap: 10px !important;
-}
+[data-testid="stSidebar"] [role="radiogroup"] label p {{
+    color: #AEB3BC !important;
+    font-size: 16px !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+}}
 
-/* Geen extra rode cirkel/rand bij geselecteerde optie */
-[data-testid="stSidebar"] [data-testid="stRadio"] [role="radio"][aria-checked="true"] > div:first-child {
-    border: none !important;
-    box-shadow: none !important;
-}
+
+/* ===== ICON SPACE ===== */
+
+[data-testid="stSidebar"] [role="radiogroup"] label p::before {{
+    content: "";
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    display: inline-block;
+    margin-right: 10px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}}
+
+
+/* ===== DATA CHECK ===== */
+
+[data-testid="stSidebar"] [role="radiogroup"] label:nth-of-type(1) p::before {{
+    background-image: url("data:image/png;base64,{data_check_icon}");
+}}
+
+
+/* ===== VISUALISATIONS ===== */
+
+[data-testid="stSidebar"] [role="radiogroup"] label:nth-of-type(2) p::before {{
+    background-image: url("data:image/png;base64,{visualisations_icon}");
+}}
+
+
+/* ===== SELECTED PAGE ===== */
+
+[data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {{
+    background: #FF3045 !important;
+}}
+
+[data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) p {{
+    color: white !important;
+    font-weight: 600 !important;
+}}
 
 </style>
 """, unsafe_allow_html=True)
