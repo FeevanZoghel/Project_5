@@ -161,10 +161,10 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
 [data-testid="stSidebar"] div[role="radiogroup"] label {
     width: 100%;
     min-height: 40px;
-    padding: 8px 10px !important;
+    padding: 8px 10px 8px 42px !important;
     margin: 0 !important;
     border-radius: 7px;
-    background: transparent;
+    background-color: transparent;
     cursor: pointer;
     transition: all 0.15s ease;
 }
