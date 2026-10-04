@@ -185,22 +185,6 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
     margin: 0 !important;
 }
 
-/* ===== SIDEBAR ICONS ===== */
-
-/* Verberg Streamlit radio buttons */
-[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {
-    display: none !important;
-}
-
-/* Tekst + icoon netjes naast elkaar */
-[data-testid="stSidebar"] div[role="radiogroup"] label p {
-    display: flex !important;
-    align-items: center !important;
-    color: #AEB3BC !important;
-    font-size: 16px !important;
-    margin: 0 !important;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
