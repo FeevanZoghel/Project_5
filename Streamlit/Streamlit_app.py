@@ -138,21 +138,27 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
     margin: 0 !important;
 }
 
-/* Icoon algemeen */
-[data-testid="stSidebar"] div[role="radiogroup"] label p::before {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    margin-right: 9px;
-    font-size: 18px;
-    color: #AEB3BC;
+/* ===== SIDEBAR ICONS ===== */
+
+/* Verberg Streamlit radio buttons */
+[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child {
+    display: none !important;
 }
 
-/* Data Check icoon */
-[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(2) p::before {
+/* Tekst + icoon netjes naast elkaar */
+[data-testid="stSidebar"] div[role="radiogroup"] label p {
+    display: flex !important;
+    align-items: center !important;
+    color: #AEB3BC !important;
+    font-size: 16px !important;
+    margin: 0 !important;
+}
+
+/* DATA CHECK */
+[data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(1) p::before {
     content: "";
     display: inline-block;
+    flex-shrink: 0;
     width: 20px;
     height: 20px;
     margin-right: 9px;
@@ -163,10 +169,11 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
     background-position: center;
 }
 
-/* Visualisations icoon */
+/* VISUALISATIONS */
 [data-testid="stSidebar"] div[role="radiogroup"] label:nth-child(2) p::before {
     content: "";
     display: inline-block;
+    flex-shrink: 0;
     width: 20px;
     height: 20px;
     margin-right: 9px;
@@ -175,45 +182,6 @@ html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"], [data-tes
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-}
-
-/* Hover */
-[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
-    background: rgba(255,255,255,0.05);
-}
-
-/* Geselecteerde pagina */
-[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
-    background: linear-gradient(
-        90deg,
-        #FF2D3D 0%,
-        #FF344E 100%
-    ) !important;
-    box-shadow: 0 3px 8px rgba(255,45,61,0.22);
-}
-
-/* Geselecteerde tekst */
-[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) p {
-    color: #FFFFFF !important;
-    font-weight: 500 !important;
-}
-
-/* Geselecteerd icoon */
-[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) p::before {
-    color: #FFFFFF !important;
-}
-/* Verberg de echte radio buttons */
-[data-testid="stSidebar"] [data-testid="stRadio"] input[type="radio"] {
-    display: none !important;
-}
-
-[data-testid="stSidebar"] [data-testid="stRadio"] [data-testid="stMarkdownContainer"] {
-    margin-left: 0 !important;
-}
-
-/* Verberg Streamlit radio-cirkel */
-[data-testid="stSidebar"] [role="radio"] > div:first-child {
-    display: none !important;
 }
 
 </style>
