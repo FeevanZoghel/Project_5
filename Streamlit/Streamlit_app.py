@@ -630,7 +630,7 @@ elif keuze == "Visualisations":
             with col_logo:
                 st.image(
                     base_path / "Logo_Transdev.png",
-                    width=80
+                    width=500
                 )
 
             # KPI + Gantt chart
