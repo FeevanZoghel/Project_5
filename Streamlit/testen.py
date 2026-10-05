@@ -310,3 +310,6 @@ def gantt_chart_bus(bp):
         plt.tight_layout()
 
         st.pyplot(fig)
+
+
+
