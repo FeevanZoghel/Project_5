@@ -28,13 +28,13 @@ import pandas as pd
 
 base_path = Path(__file__).parent
 
-number_bus_used_path = base_path / "number_bus_used.png"
-waiting_time_path = base_path / "waiting_time.png"
-material_path = base_path / "Material.png"
-material_distance_path = base_path / "material_distance.png"
-charging_time_path = base_path / "charging_time.png"
-energy_consumption_path = base_path / "energy_consumption.png"
-driving_distance_path = base_path / "driving_distance.png"
+# number_bus_used_path = base_path / "number_bus_used.png"
+# waiting_time_path = base_path / "waiting_time.png"
+# material_path = base_path / "Material.png"
+# material_distance_path = base_path / "material_distance.png"
+# charging_time_path = base_path / "charging_time.png"
+# energy_consumption_path = base_path / "energy_consumption.png"
+# driving_distance_path = base_path / "driving_distance.png"
 
 with open(number_bus_used_path, "rb") as file:
     number_bus_used_icon = base64.b64encode(file.read()).decode()
@@ -629,8 +629,8 @@ elif keuze == "Visualisations":
 
             with col_logo:
                 st.image(
-                    "https://storage.googleapis.com/exenzo-jobboard/financenl/public/upload/transdev.png",
-                    width=500
+                    base_path / "Logo_Transdev.png",
+                    width=80
                 )
 
             # KPI + Gantt chart
