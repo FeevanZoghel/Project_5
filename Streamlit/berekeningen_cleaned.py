@@ -337,7 +337,9 @@ def calculate_distances_and_kpis(bp, dm, tt):
 
     print(f'The number of busses used: {deployed_buses_count}.')
 
-    return total_distance_m, total_distance_km, deployed_buses_count, t_material_total, d_material_total
+    d_material_total_km = d_material_total / 1000 
+
+    return total_distance_m, total_distance_km, deployed_buses_count, t_material_total, d_material_total, d_material_total_km
 
 
 # calculate total waiting time and the average waiting time per bus
@@ -413,7 +415,7 @@ def run_all_feasibility_checks(bp, tt):
 def run_all_kpi_calculations(bp, dm, tt):
     """Run all KPI calculations and return a summary dictionary."""
     total_energy = calculate_energy_consumption_kpis(bp)
-    total_dist_m, total_dist_km, deployed_buses, tot_material_trips, d_material_total = calculate_distances_and_kpis(bp, dm, tt)
+    total_dist_m, total_dist_km, deployed_buses, tot_material_trips, d_material_total, d_material_total_km = calculate_distances_and_kpis(bp, dm, tt)
     wait_min, wait_hours, avg_wait_per_bus = calculate_waiting_time_kpis(bp, deployed_buses)
     
     # All functions used for kpi's

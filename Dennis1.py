@@ -225,3 +225,20 @@ for i in range(max_aantal_bussen):
     bus_number += 1
 print(ibp)
 run_all_feasibility_checks(ibp, tt)
+
+driving_time_tt = float(filter123['max_travel_time'])
+driving_time_tt = str(driving_time_tt)
+driving_time_tt = (f'00:{driving_time_tt[0:2]}')
+drive_time = dt.datetime.strptime(driving_time_tt, '%H:%M')
+drive_time = drive_time.strftime('%H:%M')
+end_time = dep_time_tt + drive_time
+print(end_time, energy_consumption_tt)
+
+# Alles samenvoegen tot een gehele filterwijziging
+
+ibp.loc[index1, 'start location'] = start_loc_tt
+ibp.loc[index1, 'end location'] = end_loc_tt
+ibp.loc[index1, 'start time'] = dep_time_tt
+ibp.loc[index1, 'line'] = line_tt
+
+print(ibp)
