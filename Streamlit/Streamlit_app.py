@@ -698,7 +698,7 @@ elif keuze == "Visualisations":
                     st.markdown(f"""
                     <div class="kpi-box">
                         <div class="kpi-label">
-                            <img src="data:image/png;base64,{energy_consumption_icon}" class="kpi-icon">
+                            <img src="data:image/png;base64,{driving_distance_icon}" class="kpi-icon">
                             Energy consumption
                         </div>
                         <div class="kpi-value">{total_consumption:.2f} kWh</div>
@@ -708,7 +708,7 @@ elif keuze == "Visualisations":
                     st.markdown(f"""
                     <div class="kpi-box">
                         <div class="kpi-label">
-                            <img src="data:image/png;base64,{driving_distance_icon}" class="kpi-icon">
+                            <img src="data:image/png;base64,{energy_consumption_icon}" class="kpi-icon">
                             Total driving distance
                         </div>
                         <div class="kpi-value">{total_distance_km:.2f} km</div>
