@@ -194,14 +194,16 @@ print(gekozen_bus)
 
 
 
-
+# Loading functions from other file
 from Code_for_bus_cleaned import (run_all_feasibility_checks,run_all_kpi_calculations,export_results_to_excel)
+feasibility_results = run_all_feasibility_checks(ibp, tt)
+kpi_results = run_all_kpi_calculations(ibp, dm, tt)
 
 
 
-
-
-
+output_filename = 'Improved_plan_Feasibility_and_KPI_results.xlsx'
+output = export_results_to_excel(feasibility_results, kpi_results, filename=out_filename)
+output
 
 
 t_end = time.perf_counter()
