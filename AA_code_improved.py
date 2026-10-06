@@ -16,7 +16,7 @@ dm = pd.read_excel('DistanceMatrix.xlsx')
 tt = pd.read_excel('Timetable.xlsx')
 
 # Dataframe for improved bus plan
-ibp = pd.DataFrame(columns=['start location', 'end location','start time','end time','activity','line','energy consumption','bus'])
+ibp = pd.DataFrame(columns=['start location', 'end location','start time','end time','activity','line','energy consumption','total travel time','bus'])
 
 # Sort timetable, starting the day at 05:07 (dit stukje is met chat gemaakt)
 tt['sort_time'] = pd.to_datetime(tt['departure_time'], format='%H:%M')
@@ -52,28 +52,50 @@ if len(bussen) == 0:
     ibp.loc[0, 'bus'] = bussen[0]
     ibp.loc[0, 'activity'] = 'service trip'
     ibp.loc[0, 'energy consumption'] = energy_consumption
+    ibp.loc[0, 'total travel time']  = travel_time
     battery['bus1'] = 300-ibp.loc[0, 'energy consumption']
+    
 
 
 trip2 = tt.iloc[1, :]
 
-start_time_trip2 = pd.to_datetime(
-    trip2['departure_time'],
-    format='%H:%M'
-)
+start_time_trip2 = pd.to_datetime(trip2['departure_time'], format='%H:%M')
+energy_trip2 = bp[(bp['start location'] == trip2['start']) & (bp['end location'] == trip2['end']) & (bp['line'] == trip2['line']) & (bp['activity'] == 'service trip')]['energy consumption'].mode().iloc[0]
+
+benodigde_energy = energy_trip2
+
 
 beschikbare_bussen = []
-
 for bus in bussen:
     bus_planning = ibp[ibp['bus'] == bus]
     last_activity = bus_planning.iloc[-1, :]
 
-    if (last_activity['end time'] <= start_time_trip2 and last_activity['end location']== trip2['start']):
+    if (last_activity['end time'] <= start_time_trip2 and 
+        last_activity['end location']== trip2['start'] 
+        and battery[bus]>= energy_trip2):
         beschikbare_bussen.append(bus)
 
-print(beschikbare_bussen)
 
 
+
+
+
+# kiest de bus met de hoogste traveltijd
+
+gekozen_bus = None
+hoogste_travel_tijd = -1
+
+for bus in beschikbare_bussen:
+    bus_planning = ibp[ibp['bus'] == bus]
+    last_activity = bus_planning.iloc[-1, :]
+
+    total_travel_time = last_activity['total travel time']
+
+    if total_travel_time> hoogste_travel_tijd:
+        hoogste_travel_tijd = total_travel_time
+        gekozen_bus = bus
+
+print(gekozen_bus)
 
 
 
