@@ -195,6 +195,7 @@ print(gekozen_bus)
 
 
 
+from Code_for_bus_cleaned import (run_all_feasibility_checks,run_all_kpi_calculations,export_results_to_excel)
 
 
 
