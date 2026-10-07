@@ -27,14 +27,15 @@ import streamlit as st
 import pandas as pd
 
 base_path = Path(__file__).parent
+image_path = base_path / "images"
 
-number_bus_used_path = base_path / "number_bus_used.png"
-waiting_time_path = base_path / "waiting_time.png"
-material_path = base_path / "Material.png"
-material_distance_path = base_path / "material_distance.png"
-charging_time_path = base_path / "charging_time.png"
-energy_consumption_path = base_path / "energy_consumption.png"
-driving_distance_path = base_path / "driving_distance.png"
+number_bus_used_path = image_path / "number_bus_used.png"
+waiting_time_path = image_path / "waiting_time.png"
+material_path = image_path / "Material.png"
+material_distance_path = image_path / "material_distance.png"
+charging_time_path = image_path / "charging_time.png"
+energy_consumption_path = image_path / "energy_consumption.png"
+driving_distance_path = image_path / "driving_distance.png"
 
 with open(number_bus_used_path, "rb") as file:
     number_bus_used_icon = base64.b64encode(file.read()).decode()
@@ -58,11 +59,11 @@ with open(driving_distance_path, "rb") as file:
     driving_distance_icon = base64.b64encode(file.read()).decode()
 
 data_check_icon = base64.b64encode(
-    (base_path / "Data_check_icon.png").read_bytes()
+    (image_path / "Data_check_icon.png").read_bytes()
 ).decode()
 
 visualisations_icon = base64.b64encode(
-    (base_path / "visualisations_icon.png").read_bytes()
+    (image_path / "visualisations_icon.png").read_bytes()
 ).decode()
 
 st.markdown(f'''
@@ -629,7 +630,7 @@ elif keuze == "Visualisations":
 
             with col_logo:
                 st.image(
-                    base_path / "Logo_Transdev.png",
+                    image_path / "Logo_Transdev.png",
                     width=500
                 )
 
