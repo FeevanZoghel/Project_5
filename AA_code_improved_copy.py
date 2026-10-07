@@ -143,7 +143,7 @@ for i in range(len(tt)):
     # beginwaardes
     assumed_battery_value   = 85
     max_battery             = 300
-    charging_limit          = 0.9*max_battery
+    charging_limit          = 0.85*max_battery
     fast_charge_per_min     = 450 / 60   # 7.5 kWh per minuut
     slow_charge_per_min     = 60 / 60    # 1 kWh per minuut
     min_battery_value       = (300 / assumed_battery_value * 100) * 0.1
@@ -190,20 +190,17 @@ for i in range(len(tt)):
         gekozen_bus = nieuwe_bus
         nieuwe_bus_aangemaakt = True
 
-    # kiest de bus met de hoogste traveltijd
+# GREEDY RULE: Kies de bus die het VROEGST weer beschikbaar is geworden
     else:
-        gekozen_bus = None
-        hoogste_travel_tijd = -1
+        gekozen_bus = min(
+            beschikbare_bussen,
+            key=lambda b: ibp[ibp['bus'] == b].iloc[-1]['end time']
+        )
+        nieuwe_bus_aangemaakt = False
+        
+        # Haal de huidige totale reistijd van de gekozen bus op
+        hoogste_travel_tijd = ibp[ibp['bus'] == gekozen_bus].iloc[-1]['total travel time']
 
-        for bus in beschikbare_bussen:
-            bus_planning = ibp[ibp['bus'] == bus]
-            last_activity = bus_planning.iloc[-1, :]
-
-            total_travel_time = last_activity['total travel time']
-
-            if total_travel_time> hoogste_travel_tijd:
-                hoogste_travel_tijd = total_travel_time
-                gekozen_bus = bus
     new_index = len(ibp)
     ibp.loc[new_index, 'start location']        = trip['start']
     ibp.loc[new_index, 'end location']          = trip['end']
