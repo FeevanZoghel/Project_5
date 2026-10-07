@@ -247,7 +247,7 @@ kpi_results = run_all_kpi_calculations(ibp, dm, tt)
 
 
 output_filename = 'Improved_plan_Feasibility_and_KPI_results.xlsx'
-output = export_results_to_excel(feasibility_results, kpi_results, filename=out_filename)
+output = export_results_to_excel(feasibility_results, kpi_results, filename=output_filename)
 output
 
 
