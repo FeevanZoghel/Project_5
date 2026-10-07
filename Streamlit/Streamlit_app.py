@@ -1,8 +1,10 @@
 #URL:
 #https://project5-jmfoec4ruxwpczdw5mf76w.streamlit.app/
 
-from DataFrame_check_nieuw import (
-    validate_bus_planning,
+from DataFrame_check_nieuw import validate_bus_planning
+
+from feasibility_checks import (
+    ASSUMED_SOH,
     validate_minimum_soc,
     validate_soh,
     validate_location_continuity,
@@ -13,19 +15,19 @@ from DataFrame_check_nieuw import (
     status_check
 )
 
-from berekeningen_cleaned import (
-    gantt_chart_bus,
+from calculations import (
     calculate_distances_and_kpis,
     calculate_waiting_time_kpis,
     calculate_energy_consumption_kpis,
     calculate_charging_time_kpis
 )
 
+from visualisations import gantt_chart_bus
+
 from pathlib import Path
 import base64
 import streamlit as st
 import pandas as pd
-
 base_path = Path(__file__).parent
 image_path = base_path / "images"
 
