@@ -201,6 +201,7 @@ for i in range(len(tt)):
         # Haal de huidige totale reistijd van de gekozen bus op
         hoogste_travel_tijd = ibp[ibp['bus'] == gekozen_bus].iloc[-1]['total travel time']
 
+
     new_index = len(ibp)
     ibp.loc[new_index, 'start location']        = trip['start']
     ibp.loc[new_index, 'end location']          = trip['end']
