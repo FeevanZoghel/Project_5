@@ -92,11 +92,16 @@ def show_energy_consumption_errors(df):
             st.error(f'Row {row_index + 2}: "{activity}" has an invalid energy consumption of {energy} kWh. Energy consumption must be positive.')
 
 def validate_activity_times(df):
-    """Checks whether the end time of each activity occurs after its start time."""
+    """Checks whether all activity durations are valid, including activities crossing midnight."""
     start_times = pd.to_timedelta(df['start time'].astype(str))
     end_times = pd.to_timedelta(df['end time'].astype(str))
-    durations = end_times - start_times
-    return (durations > pd.Timedelta(0)).all()
+    for start_time, end_time in zip(start_times, end_times):
+        if end_time < start_time:
+            end_time += pd.Timedelta(days=1)
+        duration = end_time - start_time
+        if duration < pd.Timedelta(0):
+            return False
+    return True
 
 def show_activity_time_errors(df):
     """Displays activities with invalid time durations."""
