@@ -146,7 +146,7 @@ for i in range(len(tt)):
     charging_limit          = 0.90*max_battery
     fast_charge_per_min     = 450 / 60   # 7.5 kWh per minuut
     slow_charge_per_min     = 60 / 60    # 1 kWh per minuut
-    min_battery_value       = (300 / assumed_battery_value * 100) * 0.1
+    min_battery_value       = 30 #(300 / assumed_battery_value * 100) * 0.1
     material_energy         = bp[(bp['start location'] == trip['end']) & (bp['end location'] == 'ehvgar') & (bp['activity'] == 'material trip')]['energy consumption'].mode().iloc[0]
 
     
