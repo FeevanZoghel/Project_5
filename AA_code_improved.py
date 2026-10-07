@@ -38,6 +38,7 @@ def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_tim
         bus_planning = ibp[ibp['bus'] == bus]
         last_activity = bus_planning.iloc[-1, :]
 
+        # bus staat al bij de garage
         if last_activity['end location'] == 'ehvgar':
 
             if bus not in charging_start:
@@ -61,9 +62,24 @@ def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_tim
 
                 battery_after_charging = min(max_battery, battery_start + charged_energy)
 
-                if charging_time >= 15 and battery_after_charging >= benodigde_energy:
+                if (charging_time >= 15 and battery_after_charging >= benodigde_energy):
                     battery[bus] = battery_after_charging
-                    beschikbare_bussen.append(bus)
+                    # Charging activity toevoegen aan de planning
+                    new_index = len(ibp)
+
+                    ibp.loc[new_index, 'start location'] = 'ehvgar'
+                    ibp.loc[new_index, 'end location'] = 'ehvgar'
+                    ibp.loc[new_index, 'start time'] = charging_start[bus]
+                    ibp.loc[new_index, 'end time'] = start_time
+                    ibp.loc[new_index, 'activity'] = 'charging'
+                    ibp.loc[new_index, 'line'] = None
+                    ibp.loc[new_index, 'energy consumption'] = -charged_energy
+                    ibp.loc[new_index, 'bus'] = bus
+                    ibp.loc[new_index, 'total battery bus'] = battery[bus]
+                    ibp.loc[new_index, 'total travel time'] = last_activity['total travel time']
+
+                    if last_activity['end location'] == trip['start']:
+                        beschikbare_bussen.append(bus)
                     del charging_start[bus]
         else:
             
@@ -223,96 +239,15 @@ print(ibp)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Loading functions from other file
+#Loading functions from other file
 from Code_for_bus_cleaned import (run_all_feasibility_checks,run_all_kpi_calculations,export_results_to_excel)
 feasibility_results = run_all_feasibility_checks(ibp, tt)
 kpi_results = run_all_kpi_calculations(ibp, dm, tt)
-print(run_all_feasibility_checks)
+
 
 
 output_filename = 'Improved_plan_Feasibility_and_KPI_results.xlsx'
-output = export_results_to_excel(feasibility_results, kpi_results, filename=output_filename)
+output = export_results_to_excel(feasibility_results, kpi_results, filename=out_filename)
 output
 
 

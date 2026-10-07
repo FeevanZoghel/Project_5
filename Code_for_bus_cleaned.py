@@ -103,8 +103,8 @@ def check_location_continuity(bp):
 # calculates charging session count and duration (>=15 min)
 def check_valid_charging_duration(bp):
     """Check and summarize charging sessions that meet the 15-minute threshold."""
-    bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
-    bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
+    bp['start_dt'] = pd.to_datetime(bp['start time'])
+    bp['end_dt'] = pd.to_datetime(bp['end time'])
     bp['charging_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
 
     # categorize charging trips/periods into valid charging sessions and not valid charging sessions 
@@ -129,8 +129,9 @@ def check_valid_charging_duration(bp):
 # calculate the energy usage of busses (takes the quick recharge speed and slow recharge speed into account)
 def check_charging_constraint_and_speeds(bp, start_battery=300):
     """Simulate battery levels throughout the day considering quick and slow charging speeds."""
-    bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
-    bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
+    bp['start_dt'] = pd.to_datetime(bp['start time'])
+    bp['end_dt'] = pd.to_datetime(bp['end time'])
+
     bp['charging_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
 
     planning_sor = bp.sort_values(['bus', 'start time'])
@@ -298,8 +299,8 @@ def calculate_distances_and_kpis(bp, dm, tt):
 # calculate total waiting time and the average waiting time per bus
 def calculate_waiting_time_kpis(bp, deployed_buses_count):
     """Calculate total fleet charging time and average waiting time per deployed bus."""
-    bp['start_dt'] = pd.to_datetime('2026-01-01 ' + bp['start time'].astype(str))
-    bp['end_dt'] = pd.to_datetime('2026-01-01 ' + bp['end time'].astype(str))
+    bp['start_dt'] = pd.to_datetime(bp['start time'])
+    bp['end_dt'] = pd.to_datetime(bp['end time'])
     # select charging and calculate waiting time
     charging = bp[bp['activity'] == 'charging']
     tot_waiting_time_min = (charging['end_dt'] - charging['start_dt']).dt.total_seconds().sum() / 60
