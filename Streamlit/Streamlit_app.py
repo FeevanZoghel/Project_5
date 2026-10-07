@@ -36,6 +36,7 @@ material_distance_path = image_path / "material_distance.png"
 charging_time_path = image_path / "charging_time.png"
 energy_consumption_path = image_path / "energy_consumption.png"
 driving_distance_path = image_path / "driving_distance.png"
+logo_path = image_path / "Logo_Transdev.png"
 
 with open(number_bus_used_path, "rb") as file:
     number_bus_used_icon = base64.b64encode(file.read()).decode()
@@ -59,7 +60,7 @@ with open(driving_distance_path, "rb") as file:
     driving_distance_icon = base64.b64encode(file.read()).decode()
 
 data_check_icon = base64.b64encode(
-    (image_path / "Data_check_icon.png").read_bytes()
+    (image_path / "data_check_icon.png").read_bytes()
 ).decode()
 
 visualisations_icon = base64.b64encode(
@@ -630,7 +631,7 @@ elif keuze == "Visualisations":
 
             with col_logo:
                 st.image(
-                    image_path / "Logo_Transdev.png",
+                    logo_path / "Logo_Transdev.png",
                     width=500
                 )
 
