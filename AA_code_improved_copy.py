@@ -143,7 +143,7 @@ for i in range(len(tt)):
     # beginwaardes
     assumed_battery_value   = 85
     max_battery             = 300
-    charging_limit          = 0.85*max_battery
+    charging_limit          = 0.90*max_battery
     fast_charge_per_min     = 450 / 60   # 7.5 kWh per minuut
     slow_charge_per_min     = 60 / 60    # 1 kWh per minuut
     min_battery_value       = (300 / assumed_battery_value * 100) * 0.1
