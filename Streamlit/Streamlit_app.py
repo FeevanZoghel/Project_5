@@ -601,6 +601,8 @@ elif keuze == "Visualisations":
         tt = st.session_state['tt']
         dm = st.session_state['dm']
 
+        st.write("Timetable columns:", tt.columns.tolist())
+        st.dataframe(tt.head())
 
         # KPI calculations
         total_distance_m, total_distance_km, deployed_buses_count, t_material_total, d_material_total, d_material_total_km = calculate_distances_and_kpis(
