@@ -14,6 +14,14 @@ def calculate_energy_consumption_kpis(bp):
 
 def calculate_distances_and_kpis(bp, dm, tt):
     """Calculates distance and material trip KPIs."""
+    required_dm = ['line', 'start', 'end', 'distance_m']
+    required_tt = ['line', 'start', 'end']
+    for column in required_dm:
+        if column not in dm.columns:
+            raise ValueError(f'Distance Matrix is missing column "{column}". Available columns: {dm.columns.tolist()}')
+    for column in required_tt:
+        if column not in tt.columns:
+            raise ValueError(f'Timetable is missing column "{column}". Available columns: {tt.columns.tolist()}')
     lines = dm['line'].dropna().unique()
     material_dm = dm[dm['line'].isna()]
     material_trips = bp[bp['activity'] == 'material trip']
@@ -24,28 +32,24 @@ def calculate_distances_and_kpis(bp, dm, tt):
     d_material_total = 0
     t_material_total = 0
     for i in lines:
-        line = dm[dm['line'] == i]
-        for _, trip in line.iterrows():
+        line_data = dm[dm['line'] == i]
+        for _, trip in line_data.iterrows():
             start = trip['start']
             end = trip['end']
             distance = trip['distance_m']
             distances[(i, start, end)] = distance
     for _, trip in tt.iterrows():
-        line = trip['line']
-        start = trip['start']
-        end = trip['end']
-        distance = distances[(line, start, end)]
-        d_service_total_m += distance
+        key = (trip['line'], trip['start'], trip['end'])
+        if key not in distances:
+            raise ValueError(f'No service trip distance found for {key}.')
+        d_service_total_m += distances[key]
     for _, trip in material_dm.iterrows():
-        start = trip['start']
-        end = trip['end']
-        distance = trip['distance_m']
-        material_distances[(start, end)] = distance
+        material_distances[(trip['start'], trip['end'])] = trip['distance_m']
     for _, trip in material_trips.iterrows():
-        start = trip['start location']
-        end = trip['end location']
-        distance = material_distances[(start, end)]
-        d_material_total += distance
+        key = (trip['start location'], trip['end location'])
+        if key not in material_distances:
+            raise ValueError(f'No material trip distance found for {key}.')
+        d_material_total += material_distances[key]
         t_material_total += 1
     total_distance_m = d_service_total_m + d_material_total
     total_distance_km = total_distance_m / 1000
