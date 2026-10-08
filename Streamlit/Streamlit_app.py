@@ -397,6 +397,11 @@ if keuze == "Data Check":
             padding-left: 2rem;
             padding-right: 2rem;
         }
+
+        .st-key-error_details {
+            max-height: 360px;
+            overflow-y: auto;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -497,7 +502,7 @@ if keuze == "Data Check":
             if not all(feasibility_results.values()):
                 st.error("The bus planning is not feasible.")
                 with st.expander("Click here for details"):
-                    with st.container(height="content", max_height=360):
+                    with st.container(key="error_details"):
                         if not feasibility_results["Minimum SOC"]:
                             show_minimum_soc_errors(df1)
                         if not feasibility_results["SOH"]:
