@@ -50,8 +50,6 @@ def validate_location_continuity(df):
 
 def show_location_continuity_errors(df):
     """Displays every location mismatch between consecutive activities."""
-    end_location = str(bus_data['end location'][i]).strip().lower()
-    next_start_location = str(bus_data['start location'][i + 1]).strip().lower()
     planning = df.sort_values(['bus', 'start time']).reset_index(drop=True)
     for bus, bus_data in planning.groupby('bus'):
         bus_data = bus_data.reset_index(drop=True)
