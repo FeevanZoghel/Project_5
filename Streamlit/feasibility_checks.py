@@ -48,12 +48,12 @@ def validate_location_continuity(df):
                 return False
     return True
 
-def show_location_continuity_errors(df,tt):
+def show_location_continuity_errors(df):
     """Displays every location mismatch between consecutive activities."""
     tt['sort_time'] = pd.to_datetime(tt['departure_time'], format='%H:%M')
     tt.loc[tt['sort_time'].dt.time < pd.Timestamp('05:07').time(), 'sort_time'] += pd.Timedelta(days=1)
     tt = tt.sort_values(by='sort_time').reset_index(drop=True)
-    for bus, bus_data in planning.groupby('bus'):
+    for bus, bus_data in tt.groupby('bus'):
         bus_data = bus_data.reset_index(drop=True)
         for i in range(len(bus_data) - 1):
             end_location = bus_data['end location'][i]
