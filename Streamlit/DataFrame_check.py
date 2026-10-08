@@ -120,7 +120,7 @@ def validate_bus_planning(df):
     """Runs all data checks for the bus planning."""
     columns_valid = validate_columns(df)
     if not columns_valid:
-        st.error("The bus planning contains errors.")
+        st.error("The bus planning data contains errors.")
         with st.expander("Click here for details"):
             show_column_errors(df)
         return False
