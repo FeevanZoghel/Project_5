@@ -153,7 +153,7 @@ def show_overlapping_trip_errors(df):
         for i in range(len(bus_data)):
             for j in range(i + 1, len(bus_data)):
                 if bus_data['end time'][i] > bus_data['start time'][j]:
-                    st.error(f'Bus {bus}: activities overlap ({bus_data['end_time'][i]} → {bus_data['next_start_time'][j]}).')
+                    st.error(f'Bus {bus}: activities overlap ({bus_data['end time'][i]} → {bus_data['start time'][j]}).')
 
 def status_check(text, is_valid):
     """Displays a green check mark when a validation passes and a red cross when it fails."""
