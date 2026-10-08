@@ -3,7 +3,7 @@ import pandas as pd
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.stats as st
+import scipy.stats as sp
 import math
 import time
 
@@ -33,6 +33,9 @@ charging_start = {}
 def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_time,
                          benodigde_energy, charging_limit, fast_charge_per_min,
                          slow_charge_per_min, max_battery, beschikbare_bussen, dm, bp, trip):
+    '''
+    De functie controleert of bussen met onvoldoende batterij kunnen worden opgeladen en eventueel opnieuw ingezet.
+    '''
 
     for bus in bussen_opladen:
         bus_planning = ibp[ibp['bus'] == bus]
@@ -151,9 +154,9 @@ for i in range(len(tt)):
 
     
     if trip['end'] =='ehvgar':
-        benodigde_energy = energy_consumption +min_battery_value
+        benodigde_energy = energy_consumption + min_battery_value
     else: 
-         benodigde_energy = energy_consumption +material_energy+min_battery_value
+         benodigde_energy = energy_consumption + material_energy + min_battery_value
     
     beschikbare_bussen = []
     bussen_opladen = []
@@ -211,7 +214,7 @@ for i in range(len(tt)):
     ibp.loc[new_index, 'bus']                   = gekozen_bus
     ibp.loc[new_index, 'activity']              = 'service trip'
     ibp.loc[new_index, 'energy consumption']    = energy_consumption
-    battery[gekozen_bus]                = battery[gekozen_bus]-energy_consumption
+    battery[gekozen_bus]                        = battery[gekozen_bus]-energy_consumption
     ibp.loc[new_index, 'total battery bus']     = battery[gekozen_bus] 
     if nieuwe_bus_aangemaakt: 
         ibp.loc[new_index, 'total travel time'] = travel_time
