@@ -381,6 +381,9 @@ if keuze == "Data Check":
     if bestand3 is not None:
         st.session_state['dm'] = pd.read_excel(bestand3)
 
+    st.write("Distance Matrix columns:", dm.columns.tolist())
+    st.write("Distance Matrix shape:", dm.shape)
+    st.dataframe(dm.head())
 
     # Alleen uitvoeren als busplanning aanwezig is
     if 'bp' in st.session_state:
