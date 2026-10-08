@@ -132,7 +132,7 @@ def validate_bus_planning(df):
         activity_times_valid = False
     all_checks_passed = columns_valid and time_format_valid and energy_valid and activity_times_valid
     if all_checks_passed:
-        st.success("The bus planning is valid.")
+        st.success("The bus planning data is valid.")
     else:
         st.error("The bus planning contains errors.")
         with st.expander("Click here for details"):
