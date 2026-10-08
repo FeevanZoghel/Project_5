@@ -1,8 +1,10 @@
 #URL:
 #https://project5-jmfoec4ruxwpczdw5mf76w.streamlit.app/
 
-from DataFrame_check_nieuw import (
-    validate_bus_planning,
+from DataFrame_check import validate_bus_planning
+
+from feasibility_checks import (
+    ASSUMED_SOH,
     validate_minimum_soc,
     validate_soh,
     validate_location_continuity,
@@ -10,31 +12,39 @@ from DataFrame_check_nieuw import (
     validate_minimum_charging_time,
     validate_charging_speed,
     validate_no_overlapping_trips,
+    show_minimum_soc_errors,
+    show_location_continuity_errors,
+    show_required_trip_errors,
+    show_minimum_charging_time_errors,
+    show_charging_speed_errors,
+    show_overlapping_trip_errors,
     status_check
 )
 
-from berekeningen_cleaned import (
-    gantt_chart_bus,
+from calculations import (
     calculate_distances_and_kpis,
     calculate_waiting_time_kpis,
     calculate_energy_consumption_kpis,
     calculate_charging_time_kpis
 )
 
+from visualisations import gantt_chart_bus
+
 from pathlib import Path
 import base64
 import streamlit as st
 import pandas as pd
-
 base_path = Path(__file__).parent
+image_path = base_path / "images"
 
-number_bus_used_path = base_path / "number_bus_used.png"
-waiting_time_path = base_path / "waiting_time.png"
-material_path = base_path / "Material.png"
-material_distance_path = base_path / "material_distance.png"
-charging_time_path = base_path / "charging_time.png"
-energy_consumption_path = base_path / "energy_consumption.png"
-driving_distance_path = base_path / "driving_distance.png"
+number_bus_used_path = image_path / "number_bus_used.png"
+waiting_time_path = image_path / "waiting_time.png"
+material_path = image_path / "Material.png"
+material_distance_path = image_path / "material_distance.png"
+charging_time_path = image_path / "charging_time.png"
+energy_consumption_path = image_path / "energy_consumption.png"
+driving_distance_path = image_path / "driving_distance.png"
+logo_path = image_path / "Logo_Transdev.png"
 
 with open(number_bus_used_path, "rb") as file:
     number_bus_used_icon = base64.b64encode(file.read()).decode()
@@ -58,11 +68,11 @@ with open(driving_distance_path, "rb") as file:
     driving_distance_icon = base64.b64encode(file.read()).decode()
 
 data_check_icon = base64.b64encode(
-    (base_path / "Data_check_icon.png").read_bytes()
+    (image_path / "data_check_icon.png").read_bytes()
 ).decode()
 
 visualisations_icon = base64.b64encode(
-    (base_path / "visualisations_icon.png").read_bytes()
+    (image_path / "visualisations_icon.png").read_bytes()
 ).decode()
 
 st.markdown(f'''
@@ -377,7 +387,6 @@ if keuze == "Data Check":
     if bestand3 is not None:
         st.session_state['dm'] = pd.read_excel(bestand3)
 
-
     # Alleen uitvoeren als busplanning aanwezig is
     if 'bp' in st.session_state:
 
@@ -387,6 +396,11 @@ if keuze == "Data Check":
             max-width: 80%;
             padding-left: 2rem;
             padding-right: 2rem;
+        }
+
+        .st-key-error_details {
+            max-height: 360px;
+            overflow-y: auto;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -470,6 +484,39 @@ if keuze == "Data Check":
 
                     else:
                         st.info("Upload the timetable to check all required trips.")
+
+                                # Feasibility error messages
+            feasibility_results = {
+                "Minimum SOC": validate_minimum_soc(df1),
+                "SOH": validate_soh(ASSUMED_SOH),
+                "Minimum charging time": validate_minimum_charging_time(df1),
+                "Charging speed": validate_charging_speed(df1),
+                "Location continuity": validate_location_continuity(df1),
+                "Overlapping trips": validate_no_overlapping_trips(df1)
+            }
+
+            if "tt" in st.session_state:
+                df2 = st.session_state["tt"]
+                feasibility_results["Required trips"] = validate_required_trips(df1, df2)
+
+            if not all(feasibility_results.values()):
+                st.error("The bus planning is not feasible.")
+                with st.expander("Click here for details"):
+                    with st.container(key="error_details"):
+                        if not feasibility_results["Minimum SOC"]:
+                            show_minimum_soc_errors(df1)
+                        if not feasibility_results["SOH"]:
+                            st.error("SOH must be between 85% and 95%.")
+                        if not feasibility_results["Minimum charging time"]:
+                            show_minimum_charging_time_errors(df1)
+                        if not feasibility_results["Charging speed"]:
+                            show_charging_speed_errors(df1)
+                        if not feasibility_results["Location continuity"]:
+                            show_location_continuity_errors(df1)
+                        if not feasibility_results["Overlapping trips"]:
+                            show_overlapping_trip_errors(df1)
+                        if "Required trips" in feasibility_results and not feasibility_results["Required trips"]:
+                            show_required_trip_errors(df1, df2)
 
     if bestand2 is not None:
         st.session_state['tt'] = pd.read_excel(bestand2)
@@ -628,10 +675,7 @@ elif keuze == "Visualisations":
                 )
 
             with col_logo:
-                st.image(
-                    base_path / "Logo_Transdev.png",
-                    width=500
-                )
+                st.image(logo_path, width=500)      
 
             # KPI + Gantt chart
             col_kpi, col_chart = st.columns([2.4, 7.6], gap="medium")
@@ -715,16 +759,18 @@ elif keuze == "Visualisations":
                     </div>
                     """, unsafe_allow_html=True)
 
-            # GANTT CHART CARD
             with col_chart:
                 with st.container(key="chart_card"):
-
-                    st.markdown(
-                        '<div class="section-title">Bus planning</div>',
-                        unsafe_allow_html=True
+                    st.markdown('<div class="section-title">Bus planning</div>', unsafe_allow_html=True)
+                    all_buses = sorted(bp['bus'].dropna().unique().tolist())
+                    selected_buses = st.session_state.get("selected_buses", all_buses)
+                    gantt_chart_bus(bp, selected_buses)
+                    st.multiselect(
+                        "Select buses to display",
+                        options=all_buses,
+                        default=all_buses,
+                        key="selected_buses"
                     )
-
-                    gantt_chart_bus(bp)
 
     else:
         st.warning(
