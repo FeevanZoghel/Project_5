@@ -32,7 +32,7 @@ def show_minimum_soc_errors(df):
             if battery < minimum_battery:
                 minimum_battery = battery
         if minimum_battery < minimum_battery_value:
-            st.error(f'Bus {bus}: battery below minimum.')
+            st.error(f'Bus {bus}: battery dropped to {battery:.1f} kWh (minimum: {minimum_battery:.1f} kWh).')
 
 def validate_soh(assumed_soh):
     """Checks whether the assumed State of Health is between 85% and 95%."""
@@ -57,7 +57,7 @@ def show_location_continuity_errors(df):
             end_location = bus_data['end location'][i]
             next_start_location = bus_data['start location'][i + 1]
             if end_location != next_start_location:
-                st.error(f'Bus {bus}: location mismatch.')
+                st.error(f'Bus {bus}: location mismatch ({end_location} → {next_start_location}).')
 
 def validate_required_trips(df, timetable):
     """Checks whether all required service trips are included in the schedule."""
@@ -74,9 +74,9 @@ def show_required_trip_errors(df, timetable):
     if number_of_required_trips != num_planned_trips:
         difference = number_of_required_trips - num_planned_trips
         if difference > 0:
-            st.error(f'{difference} required service trip(s) are missing.')
+            st.error(f'{difference} required service trip(s) missing ({num_planned_trips}/{number_of_required_trips} planned).')
         else:
-            st.error(f'There are {abs(difference)} too many service trips.')
+            st.error(f'{difference} extra service trip(s) planned ({num_planned_trips}/{number_of_required_trips} required).')
 
 def validate_minimum_charging_time(df):
     """Checks whether every charging activity lasts at least 15 minutes."""
@@ -97,7 +97,7 @@ def show_minimum_charging_time_errors(df):
         if row['activity'] == 'charging':
             duration = charging_duration_min.loc[idx]
             if duration < MINIMUM_CHARGING_TIME:
-                st.error(f'Bus {row['bus']}: charging time too short.')
+                st.error(f'Bus {row['bus']}: charging lasted {duration:.1f} min (minimum: 15 min).')
 
 def validate_charging_speed(df):
     """Checks whether each charging activity uses the correct charging speed."""
@@ -131,7 +131,7 @@ def show_charging_speed_errors(df):
                 else:
                     required_speed = SLOW_CHARGING_SPEED
                 if charging_speed != required_speed:
-                    st.error(f'Bus {bus}: incorrect charging speed.')
+                    st.error(f'Bus {bus}: charging speed is {charging_speed:.2f} kWh/min (expected: {required_speed:.2f}).')
             battery -= row['energy consumption']
 
 def validate_no_overlapping_trips(df):
@@ -153,7 +153,7 @@ def show_overlapping_trip_errors(df):
         for i in range(len(bus_data)):
             for j in range(i + 1, len(bus_data)):
                 if bus_data['end time'][i] > bus_data['start time'][j]:
-                    st.error(f'Bus {bus}: overlapping trips')
+                    st.error(f'Bus {bus}: activities overlap ({bus_data['end_time'][i]} → {bus_data['next_start_time'][j]}).')
 
 def status_check(text, is_valid):
     """Displays a green check mark when a validation passes and a red cross when it fails."""

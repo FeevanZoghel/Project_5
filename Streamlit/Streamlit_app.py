@@ -501,7 +501,7 @@ if keuze == "Data Check":
                         if not feasibility_results["Minimum SOC"]:
                             show_minimum_soc_errors(df1)
                         if not feasibility_results["SOH"]:
-                            st.error("SOH must be between 85% and 95%.")
+                            st.error(f"SOH must be between 85% and 95%.")
                         if not feasibility_results["Minimum charging time"]:
                             show_minimum_charging_time_errors(df1)
                         if not feasibility_results["Charging speed"]:
