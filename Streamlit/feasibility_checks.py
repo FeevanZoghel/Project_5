@@ -39,9 +39,8 @@ def validate_soh(assumed_soh):
     return 85 <= assumed_soh <= 95
 
 def validate_location_continuity(df):
-    """Checks whether consecutive activities for the same bus have matching locations."""
-    planning = df.sort_values(['bus', 'start time']).reset_index(drop=True)
-    for bus, bus_data in planning.groupby('bus'):
+    """Checks whether consecutive activities have matching locations."""
+    for bus, bus_data in df.groupby('bus', sort=False):
         bus_data = bus_data.reset_index(drop=True)
         for i in range(len(bus_data) - 1):
             if bus_data['end location'][i] != bus_data['start location'][i + 1]:
@@ -49,17 +48,14 @@ def validate_location_continuity(df):
     return True
 
 def show_location_continuity_errors(df):
-    """Displays every location mismatch between consecutive activities."""
-    tt['sort_time'] = pd.to_datetime(tt['departure_time'], format='%H:%M')
-    tt.loc[tt['sort_time'].dt.time < pd.Timestamp('05:07').time(), 'sort_time'] += pd.Timedelta(days=1)
-    tt = tt.sort_values(by='sort_time').reset_index(drop=True)
-    for bus, bus_data in tt.groupby('bus'):
+    """Displays every location mismatch."""
+    for bus, bus_data in df.groupby('bus', sort=False):
         bus_data = bus_data.reset_index(drop=True)
         for i in range(len(bus_data) - 1):
             end_location = bus_data['end location'][i]
             next_start_location = bus_data['start location'][i + 1]
             if end_location != next_start_location:
-                st.error(f'Bus {bus}: location mismatch ({end_location} → {next_start_location}).')
+                st.error(f"Bus {bus}: location mismatch ({end_location} → {next_start_location}).")
 
 def validate_required_trips(df, timetable):
     """Checks whether all required service trips are included in the schedule."""
