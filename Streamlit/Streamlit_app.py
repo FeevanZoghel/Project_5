@@ -12,6 +12,12 @@ from feasibility_checks import (
     validate_minimum_charging_time,
     validate_charging_speed,
     validate_no_overlapping_trips,
+    show_minimum_soc_errors,
+    show_location_continuity_errors,
+    show_required_trip_errors,
+    show_minimum_charging_time_errors,
+    show_charging_speed_errors,
+    show_overlapping_trip_errors,
     status_check
 )
 
@@ -473,6 +479,38 @@ if keuze == "Data Check":
 
                     else:
                         st.info("Upload the timetable to check all required trips.")
+
+                                # Feasibility error messages
+            feasibility_results = {
+                "Minimum SOC": validate_minimum_soc(df1),
+                "SOH": validate_soh(ASSUMED_SOH),
+                "Minimum charging time": validate_minimum_charging_time(df1),
+                "Charging speed": validate_charging_speed(df1),
+                "Location continuity": validate_location_continuity(df1),
+                "Overlapping trips": validate_no_overlapping_trips(df1)
+            }
+
+            if "tt" in st.session_state:
+                df2 = st.session_state["tt"]
+                feasibility_results["Required trips"] = validate_required_trips(df1, df2)
+
+            if not all(feasibility_results.values()):
+                st.error("The bus planning is not feasible.")
+                with st.expander("Click here for details"):
+                    if not feasibility_results["Minimum SOC"]:
+                        show_minimum_soc_errors(df1)
+                    if not feasibility_results["SOH"]:
+                        st.error("SOH must be between 85% and 95%.")
+                    if not feasibility_results["Minimum charging time"]:
+                        show_minimum_charging_time_errors(df1)
+                    if not feasibility_results["Charging speed"]:
+                        show_charging_speed_errors(df1)
+                    if not feasibility_results["Location continuity"]:
+                        show_location_continuity_errors(df1)
+                    if not feasibility_results["Overlapping trips"]:
+                        show_overlapping_trip_errors(df1)
+                    if "Required trips" in feasibility_results and not feasibility_results["Required trips"]:
+                        show_required_trip_errors(df1, df2)
 
     if bestand2 is not None:
         st.session_state['tt'] = pd.read_excel(bestand2)
