@@ -1,7 +1,7 @@
 #URL:
 #https://project5-jmfoec4ruxwpczdw5mf76w.streamlit.app/
 
-from dataFrame_check import validate_bus_planning
+from dataframe_check import validate_bus_planning
 
 from feasibility_checks import (
     ASSUMED_SOH,
