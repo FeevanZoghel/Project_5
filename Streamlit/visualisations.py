@@ -2,8 +2,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 
-def gantt_chart_bus(bp):
+def gantt_chart_bus(bp, selected_buses=None):
     """Creates Gantt charts of the bus planning."""
+
+    if selected_buses is not None:
+        bp = bp[bp['bus'].isin(selected_buses)]
+    if bp.empty:
+        st.info("Select at least one bus to display the Gantt chart.")
+        return
+    
     planning = bp.sort_values(['bus', 'start time'])
     start_times = pd.to_timedelta(planning['start time'].astype(str))
     end_times = pd.to_timedelta(planning['end time'].astype(str))

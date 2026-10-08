@@ -715,16 +715,18 @@ elif keuze == "Visualisations":
                     </div>
                     """, unsafe_allow_html=True)
 
-            # GANTT CHART CARD
             with col_chart:
                 with st.container(key="chart_card"):
-
-                    st.markdown(
-                        '<div class="section-title">Bus planning</div>',
-                        unsafe_allow_html=True
+                    st.markdown('<div class="section-title">Bus planning</div>', unsafe_allow_html=True)
+                    all_buses = sorted(bp['bus'].dropna().unique().tolist())
+                    selected_buses = st.session_state.get("selected_buses", all_buses)
+                    gantt_chart_bus(bp, selected_buses)
+                    st.multiselect(
+                        "Select buses to display",
+                        options=all_buses,
+                        default=all_buses,
+                        key="selected_buses"
                     )
-
-                    gantt_chart_bus(bp)
 
     else:
         st.warning(
