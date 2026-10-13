@@ -163,11 +163,11 @@ for i in range(len(tt)):
 
     # beginwaardes
     assumed_battery_value   = 85
-    max_battery             = 300
+    max_battery             = 300*assumed_battery_value / 100
     charging_limit          = 0.9*max_battery
     fast_charge_per_min     = 450 / 60   # 7.5 kWh per minuut
     slow_charge_per_min     = 60 / 60    # 1 kWh per minuut
-    min_battery_value       = (300 / assumed_battery_value * 100) * 0.1
+    min_battery_value       = max_battery * 0.1
     material_energy         = bp[(bp['start location'] == trip['end']) & (bp['end location'] == 'ehvgar') & (bp['activity'] == 'material trip')]['energy consumption'].mean()
 
     
@@ -266,7 +266,7 @@ print('na import')
 feasibility_results = run_all_feasibility_checks(ibp, tt)
 kpi_results = run_all_kpi_calculations(ibp, dm, tt)
 
-
+ibp[['start location', 'end location', 'start time', 'end time', 'activity', 'line', 'energy consumption', 'bus']].to_excel('AA_improved_bus_planning.xlsx', index = False)
 
 output_filename = 'Improved_plan_Feasibility_and_KPI_results.xlsx'
 output = export_results_to_excel(feasibility_results, kpi_results, filename=output_filename)
