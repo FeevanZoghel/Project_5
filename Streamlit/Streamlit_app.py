@@ -420,6 +420,7 @@ if keuze == "Data Check":
             'start location', 'end location', 'start time', 'end time',
             'activity', 'line', 'energy consumption', 'bus'
         ]].copy()
+        improved_bp['bus'] = improved_bp['bus'].astype(int)
 
         for col in ['start time', 'end time']:
             improved_bp[col] = pd.to_datetime(
