@@ -461,7 +461,7 @@ if keuze == "Data Check":
         </style>
     """, unsafe_allow_html=True)
 
-        df1 = st.session_state['bp']
+        df1 = st.session_state['improved_bp']
 
         validate_bus_planning(df1)
 

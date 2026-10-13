@@ -273,3 +273,5 @@ def solve_bus_planning(bp, dm, tt):
     computation_time = t_end - t_start
 
     print(f'Computation time: {computation_time:.2f} seconds.')
+
+    return ibp
