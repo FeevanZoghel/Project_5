@@ -5,6 +5,10 @@
 #balkje links met assumed_battery aanpassen
 #min/max/gemiddelde bustijd pakken aanvinken
 #   gewoon/beter/uitstekend vakjes aankruizen.
+#Solve knop?
+
+from solver import solve_bus_planning
+from io import BytesIO
 
 from DataFrame_check import validate_bus_planning
 
@@ -392,8 +396,55 @@ if keuze == "Data Check":
     if bestand3 is not None:
         st.session_state['dm'] = pd.read_excel(bestand3)
 
-    # Alleen uitvoeren als busplanning aanwezig is
-    if 'bp' in st.session_state:
+    st.markdown("### Improve bus planning")
+
+    files_ready = all(
+        key in st.session_state for key in ['bp', 'tt', 'dm']
+    )
+
+    if st.button("Solve", type="primary", disabled=not files_ready):
+        with st.spinner("Optimizing bus planning..."):
+            try:
+                improved_bp = solve_bus_planning(
+                    st.session_state['bp'],
+                    st.session_state['dm'],
+                    st.session_state['tt']
+                )
+                st.session_state['improved_bp'] = improved_bp
+                st.success("Improved bus planning generated successfully!")
+            except Exception as e:
+                st.error(f"Solver failed: {e}")
+
+    if 'improved_bp' in st.session_state:
+        improved_bp = st.session_state['improved_bp']
+
+        st.markdown("### Improved bus planning")
+        st.dataframe(improved_bp, use_container_width=True)
+
+        export_bp = improved_bp.copy()
+
+        for col in ['start time', 'end time']:
+            export_bp[col] = pd.to_datetime(
+                export_bp[col]
+            ).dt.strftime('%H:%M:%S')
+
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            export_bp.to_excel(
+                writer,
+                sheet_name='Improved Planning',
+                index=False
+            )
+
+        st.download_button(
+            label="Download improved bus planning",
+            data=output.getvalue(),
+            file_name="Improved_Bus_Planning.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
+    if 'improved_bp' in st.session_state:
+        st.markdown("### Improved planning feasibility")
 
         st.markdown("""
         <style>

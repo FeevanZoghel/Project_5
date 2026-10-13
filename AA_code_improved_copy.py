@@ -269,21 +269,6 @@ ibp = ibp.sort_values(['bus', 'start time']).reset_index(drop=True)
 
 print(ibp)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #Loading functions from other file
 print('voor import')
 from Code_for_bus_cleaned import (run_all_feasibility_checks,run_all_kpi_calculations,export_results_to_excel)
