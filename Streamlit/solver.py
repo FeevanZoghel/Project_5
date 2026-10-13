@@ -33,7 +33,6 @@ def solve_bus_planning(bp, dm, tt):
     charging_start = {}
 
     # Beginwaardes
-    assumed_battery_value = 85
     max_battery = 300 * assumed_battery_value / 100
     charging_limit = 0.9 * max_battery
     fast_charge_per_min = 450 / 60

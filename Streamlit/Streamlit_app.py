@@ -196,7 +196,15 @@ keuze = st.sidebar.radio(
     label_visibility="collapsed"
 )
 
+st.sidebar.divider()
 
+assumed_battery = st.sidebar.slider(
+    "Assumed battery capacity (kWh)",
+    min_value=200,
+    max_value=400,
+    value=300,
+    step=10
+)
 
 
 st.markdown("""
