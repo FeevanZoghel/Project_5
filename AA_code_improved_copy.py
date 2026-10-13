@@ -3,7 +3,7 @@ import pandas as pd
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.stats as sp
+import scipy.stats as st
 import math
 import time
 
@@ -33,9 +33,6 @@ charging_start = {}
 def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_time,
                          benodigde_energy, charging_limit, fast_charge_per_min,
                          slow_charge_per_min, max_battery, beschikbare_bussen, dm, bp, trip):
-    '''
-    De functie controleert of bussen met onvoldoende batterij kunnen worden opgeladen en eventueel opnieuw ingezet.
-    '''
 
     for bus in bussen_opladen:
         bus_planning = ibp[ibp['bus'] == bus]
@@ -90,7 +87,7 @@ def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_tim
             dm_material = dm[(dm['start'] == material_start) & (dm['end'] == 'ehvgar')]
 
             material_travel_time = dm_material['max_travel_time'].iloc[0]
-            material_energy = bp[(bp['start location'] == material_start) & (bp['end location'] == 'ehvgar') &(bp['activity'] == 'material trip')]['energy consumption'].mode().iloc[0]
+            material_energy = bp[(bp['start location'] == material_start) & (bp['end location'] == 'ehvgar') &(bp['activity'] == 'material trip')]['energy consumption'].mean()
             material_start_time = last_activity['end time']
             material_end_time = material_start_time + pd.Timedelta(minutes=material_travel_time)
 
@@ -118,7 +115,7 @@ for i in range(len(tt)):
     trip = tt.iloc[i,:]
     
     dm_trip = dm[(dm['start'] == trip['start']) &(dm['end'] == trip['end']) &(dm['line'] == trip['line'])]
-    energy_consumption = bp[(bp['start location'] == trip['start']) & (bp['end location'] == trip['end']) & (bp['line'] == trip['line']) &(bp['activity'] == 'service trip')]['energy consumption'].mode().iloc[0]
+    energy_consumption = bp[(bp['start location'] == trip['start']) & (bp['end location'] == trip['end']) & (bp['line'] == trip['line']) &(bp['activity'] == 'service trip')]['energy consumption'].mean()
 
 
     start_time = trip['sort_time']
@@ -146,17 +143,17 @@ for i in range(len(tt)):
     # beginwaardes
     assumed_battery_value   = 85
     max_battery             = 300
-    charging_limit          = 0.90*max_battery
+    charging_limit          = 0.9*max_battery
     fast_charge_per_min     = 450 / 60   # 7.5 kWh per minuut
     slow_charge_per_min     = 60 / 60    # 1 kWh per minuut
-    min_battery_value       = 30 #(300 / assumed_battery_value * 100) * 0.1
-    material_energy         = bp[(bp['start location'] == trip['end']) & (bp['end location'] == 'ehvgar') & (bp['activity'] == 'material trip')]['energy consumption'].mode().iloc[0]
+    min_battery_value       = (300 / assumed_battery_value * 100) * 0.1
+    material_energy         = bp[(bp['start location'] == trip['end']) & (bp['end location'] == 'ehvgar') & (bp['activity'] == 'material trip')]['energy consumption'].mean()
 
     
     if trip['end'] =='ehvgar':
-        benodigde_energy = energy_consumption + min_battery_value
+        benodigde_energy = energy_consumption +min_battery_value
     else: 
-         benodigde_energy = energy_consumption + material_energy + min_battery_value
+         benodigde_energy = energy_consumption +material_energy+min_battery_value
     
     beschikbare_bussen = []
     bussen_opladen = []
@@ -193,18 +190,18 @@ for i in range(len(tt)):
         gekozen_bus = nieuwe_bus
         nieuwe_bus_aangemaakt = True
 
-# GREEDY RULE: Kies de bus die het VROEGST weer beschikbaar is geworden
+    # kiest de bus met de hoogste traveltijd
     else:
-        gekozen_bus = min(
-            beschikbare_bussen,
-            key=lambda b: ibp[ibp['bus'] == b].iloc[-1]['end time']
-        )
-        nieuwe_bus_aangemaakt = False
-        
-        # Haal de huidige totale reistijd van de gekozen bus op
-        hoogste_travel_tijd = ibp[ibp['bus'] == gekozen_bus].iloc[-1]['total travel time']
+            gekozen_bus = min(
+                beschikbare_bussen,
+                key=lambda b: ibp[ibp['bus'] == b].iloc[-1]['end time']
+            )
+            nieuwe_bus_aangemaakt = False
+            
+            # Haal de huidige totale reistijd van de gekozen bus op
+            hoogste_travel_tijd = ibp[ibp['bus'] == gekozen_bus].iloc[-1]['total travel time']
 
-
+    
     new_index = len(ibp)
     ibp.loc[new_index, 'start location']        = trip['start']
     ibp.loc[new_index, 'end location']          = trip['end']
@@ -214,7 +211,7 @@ for i in range(len(tt)):
     ibp.loc[new_index, 'bus']                   = gekozen_bus
     ibp.loc[new_index, 'activity']              = 'service trip'
     ibp.loc[new_index, 'energy consumption']    = energy_consumption
-    battery[gekozen_bus]                        = battery[gekozen_bus]-energy_consumption
+    battery[gekozen_bus]                = battery[gekozen_bus]-energy_consumption
     ibp.loc[new_index, 'total battery bus']     = battery[gekozen_bus] 
     if nieuwe_bus_aangemaakt: 
         ibp.loc[new_index, 'total travel time'] = travel_time
@@ -225,16 +222,8 @@ for i in range(len(tt)):
 
 print(ibp)
 
-# # Define column names
-# excel_columns = ['start location', 'end location', 'start time', 'end time', 'activity', 'line', 'energy consumption', 'bus']
 
-# # Create a dataframe with these column names and export to Excel
-# df_improved_plan = ibp[excel_columns]
-# df_improved_plan['start time'] = pd.to_datetime(df_improved_plan['start time']).dt.strftime('%H:%M:%S')
-# df_improved_plan['end time'] = pd.to_datetime(df_improved_plan['end time']).dt.strftime('%H:%M:%S')
-# df_improved_plan.to_excel('Improved_Bus_Planning_version_B.xlsx', index=False)
 
-# print("The improved bus plan has succesfully been saved in Excel format!")
 
 
 
@@ -249,7 +238,9 @@ print(ibp)
 
 
 #Loading functions from other file
+print('voor import')
 from Code_for_bus_cleaned import (run_all_feasibility_checks,run_all_kpi_calculations,export_results_to_excel)
+print('na import')
 feasibility_results = run_all_feasibility_checks(ibp, tt)
 kpi_results = run_all_kpi_calculations(ibp, dm, tt)
 
