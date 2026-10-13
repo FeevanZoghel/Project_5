@@ -241,7 +241,30 @@ for i in range(len(tt)):
 
     add_activity(ibp, gekozen_bus, trip['start'], trip['end'], start_time, end_time, 'service trip', trip['line'], energy_consumption, battery[gekozen_bus], total_travel_time)
 
-
+for bus in ibp['bus'].unique():
+    bus_planning = ibp[ibp['bus'] == bus].sort_values('start time').copy()
+    for i in range(len(bus_planning) - 1):
+        current = bus_planning.iloc[i]
+        next_activity = bus_planning.iloc[i + 1]
+        idle_start = current['end time']
+        idle_end = next_activity['start time']
+        if idle_end > idle_start:
+            idle_hours = (idle_end - idle_start).total_seconds() / 3600
+            idle_energy = idle_hours * 5
+            new_index = len(ibp)
+            ibp.loc[new_index] = {
+                'start location': current['end location'],
+                'end location': current['end location'],
+                'start time': idle_start,
+                'end time': idle_end,
+                'activity': 'idle',
+                'line': None,
+                'energy consumption': idle_energy,
+                'total battery bus': current['total battery bus'] - idle_energy,
+                'total travel time': current['total travel time'],
+                'bus': bus
+            }
+ibp = ibp.sort_values(['bus', 'start time']).reset_index(drop=True)
 
 print(ibp)
 

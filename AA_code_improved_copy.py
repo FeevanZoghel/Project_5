@@ -29,6 +29,17 @@ bussen = []
 battery = {}
 charging_start = {}
 
+# Beginwaardes
+assumed_battery_value = 85
+max_battery = 300 * assumed_battery_value / 100
+charging_limit = 0.9 * max_battery
+fast_charge_per_min = 450 / 60
+slow_charge_per_min = 60 / 60
+min_battery_value = max_battery * 0.1
+
+
+
+
 def add_activity(ibp, bus, start_location, end_location, start_time, end_time,
                  activity, line, energy, battery_value, total_travel_time):
 
@@ -124,9 +135,6 @@ def check_material_trip(bus, last_activity, trip, ibp, battery, dm, bp, toevoege
 
     
 
-
-
-
         
 for i in range(len(tt)):
     trip = tt.iloc[i,:]
@@ -141,7 +149,7 @@ for i in range(len(tt)):
     # als er geen bussen maakt het een nieuwe bus aan
     if len(bussen) == 0:
         bussen.append('bus1')
-        battery['bus1'] = 300
+        battery['bus1'] = max_battery
         #laat de bus beginnen bij garage en zo nodig naar trip locatie rijden
         garage_to_trip('bus1', trip, start_time, ibp, battery, dm, bp)
         
@@ -161,13 +169,6 @@ for i in range(len(tt)):
           
         continue
 
-    # beginwaardes
-    assumed_battery_value   = 85
-    max_battery             = 300
-    charging_limit          = 0.9*max_battery
-    fast_charge_per_min     = 450 / 60   # 7.5 kWh per minuut
-    slow_charge_per_min     = 60 / 60    # 1 kWh per minuut
-    min_battery_value       = (300 / assumed_battery_value * 100) * 0.1
     material_energy         = bp[(bp['start location'] == trip['end']) & (bp['end location'] == 'ehvgar') & (bp['activity'] == 'material trip')]['energy consumption'].mean()
 
     
@@ -209,7 +210,7 @@ for i in range(len(tt)):
 
         nieuwe_bus = 'bus' + str(len(bussen) + 1)
         bussen.append(nieuwe_bus)
-        battery[nieuwe_bus] = 300
+        battery[nieuwe_bus] = max_battery
 
         #laat de bus beginnen bij garage en zo nodig naar trip locatie rijden
         garage_to_trip(nieuwe_bus, trip, start_time, ibp, battery, dm, bp)
@@ -240,7 +241,30 @@ for i in range(len(tt)):
 
     add_activity(ibp, gekozen_bus, trip['start'], trip['end'], start_time, end_time, 'service trip', trip['line'], energy_consumption, battery[gekozen_bus], total_travel_time)
 
-
+for bus in ibp['bus'].unique():
+    bus_planning = ibp[ibp['bus'] == bus].sort_values('start time').copy()
+    for i in range(len(bus_planning) - 1):
+        current = bus_planning.iloc[i]
+        next_activity = bus_planning.iloc[i + 1]
+        idle_start = current['end time']
+        idle_end = next_activity['start time']
+        if idle_end > idle_start:
+            idle_hours = (idle_end - idle_start).total_seconds() / 3600
+            idle_energy = idle_hours * 5
+            new_index = len(ibp)
+            ibp.loc[new_index] = {
+                'start location': current['end location'],
+                'end location': current['end location'],
+                'start time': idle_start,
+                'end time': idle_end,
+                'activity': 'idle',
+                'line': None,
+                'energy consumption': idle_energy,
+                'total battery bus': current['total battery bus'] - idle_energy,
+                'total travel time': current['total travel time'],
+                'bus': bus
+            }
+ibp = ibp.sort_values(['bus', 'start time']).reset_index(drop=True)
 
 print(ibp)
 
@@ -266,9 +290,12 @@ print('na import')
 feasibility_results = run_all_feasibility_checks(ibp, tt)
 kpi_results = run_all_kpi_calculations(ibp, dm, tt)
 
+export_bp = ibp[['start location', 'end location', 'start time', 'end time', 'activity', 'line', 'energy consumption', 'bus']].copy()
+export_bp['start time'] = pd.to_datetime(export_bp['start time']).dt.strftime('%H:%M:%S')
+export_bp['end time'] = pd.to_datetime(export_bp['end time']).dt.strftime('%H:%M:%S')
+export_bp.to_excel('AA_improved_bus_planning.xlsx', index=False)
 
-
-output_filename = 'Improved_plan_Feasibility_and_KPI_results1.xlsx'
+output_filename = 'Improved_plan_Feasibility_and_KPI_results.xlsx'
 output = export_results_to_excel(feasibility_results, kpi_results, filename=output_filename)
 output
 

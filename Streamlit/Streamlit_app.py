@@ -1,6 +1,11 @@
 #URL:
 #https://project5-jmfoec4ruxwpczdw5mf76w.streamlit.app/
 
+#AANPASSEN
+#balkje links met assumed_battery aanpassen
+#min/max/gemiddelde bustijd pakken aanvinken
+#   gewoon/beter/uitstekend vakjes aankruizen.
+
 from DataFrame_check import validate_bus_planning
 
 from feasibility_checks import (
