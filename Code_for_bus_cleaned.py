@@ -405,10 +405,10 @@ def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibil
         pd.DataFrame(list(kpi_results.items()), columns=['KPI', 'KPI-value']).to_excel(writer, sheet_name='KPI_values', index=False)  
     print(f"Results saved a file named {filename}, which is on the same folder as this .py-file.")
 
-# Using above functions in practice 
-feasibility_results = run_all_feasibility_checks(bp, tt)
-kpi_results = run_all_kpi_calculations(bp, dm, tt)
-export_results_to_excel(feasibility_results, kpi_results)
+# # Using above functions in practice 
+# feasibility_results = run_all_feasibility_checks(bp, tt)
+# kpi_results = run_all_kpi_calculations(bp, dm, tt)
+# export_results_to_excel(feasibility_results, kpi_results)
 
 # Calculating computation time of this code
 t_end = time.perf_counter()

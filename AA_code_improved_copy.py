@@ -225,16 +225,16 @@ for i in range(len(tt)):
 
 print(ibp)
 
-# Define column names
-excel_columns = ['start location', 'end location', 'start time', 'end time', 'activity', 'line', 'energy consumption', 'bus']
+# # Define column names
+# excel_columns = ['start location', 'end location', 'start time', 'end time', 'activity', 'line', 'energy consumption', 'bus']
 
-# Create a dataframe with these column names and export to Excel
-df_improved_plan = ibp[excel_columns]
-df_improved_plan['start time'] = pd.to_datetime(df_improved_plan['start time']).dt.strftime('%H:%M:%S')
-df_improved_plan['end time'] = pd.to_datetime(df_improved_plan['end time']).dt.strftime('%H:%M:%S')
-df_improved_plan.to_excel('Improved_Bus_Planning_version_B.xlsx', index=False)
+# # Create a dataframe with these column names and export to Excel
+# df_improved_plan = ibp[excel_columns]
+# df_improved_plan['start time'] = pd.to_datetime(df_improved_plan['start time']).dt.strftime('%H:%M:%S')
+# df_improved_plan['end time'] = pd.to_datetime(df_improved_plan['end time']).dt.strftime('%H:%M:%S')
+# df_improved_plan.to_excel('Improved_Bus_Planning_version_B.xlsx', index=False)
 
-print("The improved bus plan has succesfully been saved in Excel format!")
+# print("The improved bus plan has succesfully been saved in Excel format!")
 
 
 

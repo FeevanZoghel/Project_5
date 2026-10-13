@@ -238,7 +238,9 @@ print(ibp)
 
 
 #Loading functions from other file
+print('voor import')
 from Code_for_bus_cleaned import (run_all_feasibility_checks,run_all_kpi_calculations,export_results_to_excel)
+print('na import')
 feasibility_results = run_all_feasibility_checks(ibp, tt)
 kpi_results = run_all_kpi_calculations(ibp, dm, tt)
 
