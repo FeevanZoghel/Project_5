@@ -47,6 +47,22 @@ def add_activity(ibp, bus, start_location, end_location, start_time, end_time,
 
     ibp.loc[new_index] = [start_location, end_location, start_time, end_time, activity, line, energy, battery_value, total_travel_time, bus]
 
+IDLE_CONSUMPTION_PER_HOUR = 5
+
+def add_idle_activity(ibp, bus, idle_end, battery):
+    bus_planning = ibp[ibp['bus'] == bus]
+    last_activity = bus_planning.iloc[-1]
+
+    idle_start = last_activity['end time']
+    idle_minutes = (idle_end - idle_start).total_seconds() / 60
+
+    if idle_minutes <= 0:
+        return
+
+    idle_energy = idle_minutes / 60 * IDLE_CONSUMPTION_PER_HOUR
+    battery[bus] -= idle_energy
+
+    add_activity(ibp, bus, last_activity['end location'], last_activity['end location'], idle_start, idle_end, 'idle', None, idle_energy, battery[bus], last_activity['total travel time'])
 
 def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_time,
                          benodigde_energy, charging_limit, fast_charge_per_min,
@@ -78,7 +94,8 @@ def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_tim
                 else:
                     charged_energy = charging_time * slow_charge_per_min
 
-                battery_after_charging = min(max_battery, battery_start + charged_energy)
+                charged_energy = min(charged_energy, max_battery - battery_start)
+                battery_after_charging = battery_start + charged_energy
 
                 if (charging_time >= 15 and battery_after_charging >= benodigde_energy):
                     battery[bus] = battery_after_charging
@@ -191,8 +208,13 @@ for i in range(len(tt)):
 
         material_travel_time, material_energy = check_material_trip(bus, last_activity, trip, ibp, battery, dm, bp)
 
-        if (last_activity['end time'] + pd.Timedelta(minutes=material_travel_time) <= start_time):
-            if battery[bus] >= benodigde_energy + material_energy:
+        arrival_time = last_activity['end time'] + pd.Timedelta(minutes=material_travel_time)
+
+        if arrival_time <= start_time:
+            idle_minutes = (start_time - arrival_time).total_seconds() / 60
+            idle_energy = idle_minutes / 60 * IDLE_CONSUMPTION_PER_HOUR
+
+            if battery[bus] >= benodigde_energy + material_energy + idle_energy:
                 beschikbare_bussen.append(bus)
             else:
                 if bus not in bussen_opladen:
@@ -228,6 +250,7 @@ for i in range(len(tt)):
 
             last_activity = ibp[ibp['bus'] == gekozen_bus].iloc[-1, :]
             check_material_trip(gekozen_bus, last_activity, trip, ibp, battery, dm, bp, toevoegen=True)
+            add_idle_activity(ibp, gekozen_bus, start_time, battery)
             
             # Haal de huidige totale reistijd van de gekozen bus op
             hoogste_travel_tijd = ibp[ibp['bus'] == gekozen_bus].iloc[-1]['total travel time']
@@ -241,29 +264,7 @@ for i in range(len(tt)):
 
     add_activity(ibp, gekozen_bus, trip['start'], trip['end'], start_time, end_time, 'service trip', trip['line'], energy_consumption, battery[gekozen_bus], total_travel_time)
 
-for bus in ibp['bus'].unique():
-    bus_planning = ibp[ibp['bus'] == bus].sort_values('start time').copy()
-    for i in range(len(bus_planning) - 1):
-        current = bus_planning.iloc[i]
-        next_activity = bus_planning.iloc[i + 1]
-        idle_start = current['end time']
-        idle_end = next_activity['start time']
-        if idle_end > idle_start:
-            idle_hours = (idle_end - idle_start).total_seconds() / 3600
-            idle_energy = idle_hours * 5
-            new_index = len(ibp)
-            ibp.loc[new_index] = {
-                'start location': current['end location'],
-                'end location': current['end location'],
-                'start time': idle_start,
-                'end time': idle_end,
-                'activity': 'idle',
-                'line': None,
-                'energy consumption': idle_energy,
-                'total battery bus': current['total battery bus'] - idle_energy,
-                'total travel time': current['total travel time'],
-                'bus': bus
-            }
+
 ibp = ibp.sort_values(['bus', 'start time']).reset_index(drop=True)
 
 print(ibp)
