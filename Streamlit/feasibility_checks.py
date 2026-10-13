@@ -97,40 +97,59 @@ def show_minimum_charging_time_errors(df):
             if duration < MINIMUM_CHARGING_TIME:
                 st.error(f'Bus {row['bus']}: charging lasted {duration:.1f} min (minimum: 15 min).')
 
-def validate_charging_speed(df):
-    """Checks whether each charging activity uses the correct charging speed."""
-    planning = df.sort_values(['bus', 'start time'])
-    for bus, bus_data in planning.groupby('bus'):
-        battery = INITIAL_BATTERY_CAPACITY
-        for idx, row in bus_data.iterrows():
+def get_charging_speed_errors(df):
+    """Checks charging energy using fast and slow charging phases."""
+    errors = []
+    max_battery = INITIAL_BATTERY_CAPACITY * ASSUMED_SOH / 100
+    charging_limit = 0.9 * max_battery
+
+    for bus, bus_data in df.groupby('bus', sort=False):
+        bus_data = bus_data.sort_values('start time')
+        battery = max_battery
+
+        for _, row in bus_data.iterrows():
+            energy = row['energy consumption']
+
             if row['activity'] == 'charging':
-                charging_duration = (pd.to_timedelta(str(row['end time'])) - pd.to_timedelta(str(row['start time']))).total_seconds() / 60
-                charging_speed = abs(row['energy consumption']) / charging_duration
-                if battery < 270:
-                    if charging_speed != QUICK_CHARGING_SPEED:
-                        return False
-                else:
-                    if charging_speed != SLOW_CHARGING_SPEED:
-                        return False
-            battery -= row['energy consumption']
-    return True
+                start = pd.to_timedelta(str(row['start time']))
+                end = pd.to_timedelta(str(row['end time']))
+                duration = (end - start).total_seconds() / 60
+
+                if duration <= 0:
+                    errors.append(f"Bus {bus}: invalid charging duration.")
+                    continue
+
+                fast_minutes = min(
+                    duration,
+                    max(0, charging_limit - battery) / QUICK_CHARGING_SPEED
+                )
+                slow_minutes = duration - fast_minutes
+
+                expected_energy = min(
+                    max_battery - battery,
+                    fast_minutes * QUICK_CHARGING_SPEED
+                    + slow_minutes * SLOW_CHARGING_SPEED
+                )
+                actual_energy = abs(energy)
+
+                if abs(actual_energy - expected_energy) > 0.1:
+                    errors.append(
+                        f"Bus {bus}: charged {actual_energy:.2f} kWh "
+                        f"(expected: {expected_energy:.2f} kWh)."
+                    )
+
+            battery = min(max_battery, battery - energy)
+
+    return errors
+
+
+def validate_charging_speed(df):
+    return len(get_charging_speed_errors(df)) == 0
+
 
 def show_charging_speed_errors(df):
-    """Displays every charging activity with an incorrect charging speed."""
-    planning = df.sort_values(['bus', 'start time'])
-    for bus, bus_data in planning.groupby('bus'):
-        battery = INITIAL_BATTERY_CAPACITY
-        for idx, row in bus_data.iterrows():
-            if row['activity'] == 'charging':
-                charging_duration = (pd.to_timedelta(str(row['end time'])) - pd.to_timedelta(str(row['start time']))).total_seconds() / 60
-                charging_speed = abs(row['energy consumption']) / charging_duration
-                if battery < 270:
-                    required_speed = QUICK_CHARGING_SPEED
-                else:
-                    required_speed = SLOW_CHARGING_SPEED
-                if charging_speed != required_speed:
-                    st.error(f'Bus {bus}: charging speed is {charging_speed:.2f} kWh/min (expected: {required_speed:.2f}).')
-            battery -= row['energy consumption']
+    for error in get_charging_speed_errors(df):
+        st.error(error)
 
 def validate_no_overlapping_trips(df):
     """Checks whether activities assigned to the same bus overlap."""

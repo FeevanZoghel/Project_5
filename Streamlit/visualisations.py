@@ -74,7 +74,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         ax.set_xticks(hours)
         ax.set_xticklabels([f'{hour % 24:02d}:00' for hour in hours])
         ax.set_yticks(range(len(group)))
-        ax.set_yticklabels([f'{bus}' for bus in group])
+        ax.set_yticklabels([f'Bus {bus}' for bus in group])
         ax.invert_yaxis()
         ax.xaxis.tick_top()
         ax.xaxis.set_label_position('top')

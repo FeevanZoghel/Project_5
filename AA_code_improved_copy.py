@@ -148,10 +148,10 @@ for i in range(len(tt)):
     end_time = start_time + pd.Timedelta(minutes=travel_time)
     # als er geen bussen maakt het een nieuwe bus aan
     if len(bussen) == 0:
-        bussen.append('bus1')
-        battery['bus1'] = max_battery
+        bussen.append(1)
+        battery[1] = max_battery
         #laat de bus beginnen bij garage en zo nodig naar trip locatie rijden
-        garage_to_trip('bus1', trip, start_time, ibp, battery, dm, bp)
+        garage_to_trip(1, trip, start_time, ibp, battery, dm, bp)
         
         
         new_index = len(ibp)
@@ -164,8 +164,8 @@ for i in range(len(tt)):
         ibp.loc[new_index, 'activity']              = 'service trip'
         ibp.loc[new_index, 'energy consumption']    = energy_consumption
         ibp.loc[new_index, 'total travel time']     = travel_time
-        battery['bus1']                             -= energy_consumption
-        ibp.loc[new_index, 'total battery bus']     = battery['bus1']
+        battery[1]                                  -= energy_consumption
+        ibp.loc[new_index, 'total battery bus']     = battery[1]
           
         continue
 
@@ -208,7 +208,7 @@ for i in range(len(tt)):
 
     if len(beschikbare_bussen)==0:
 
-        nieuwe_bus = 'bus' + str(len(bussen) + 1)
+        nieuwe_bus = len(bussen) + 1
         bussen.append(nieuwe_bus)
         battery[nieuwe_bus] = max_battery
 
