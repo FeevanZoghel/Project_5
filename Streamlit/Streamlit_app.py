@@ -416,7 +416,10 @@ if keuze == "Data Check":
                 st.error(f"Solver failed: {e}")
 
     if 'improved_bp' in st.session_state:
-        improved_bp = st.session_state['improved_bp']
+        improved_bp = st.session_state['improved_bp'][[
+            'start location', 'end location', 'start time', 'end time',
+            'activity', 'line', 'energy consumption', 'bus'
+        ]].copy()
 
         st.markdown("### Improved bus planning")
         st.dataframe(improved_bp, use_container_width=True)
