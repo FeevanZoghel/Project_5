@@ -29,6 +29,17 @@ bussen = []
 battery = {}
 charging_start = {}
 
+# Beginwaardes
+assumed_battery_value = 85
+max_battery = 300 * assumed_battery_value / 100
+charging_limit = 0.9 * max_battery
+fast_charge_per_min = 450 / 60
+slow_charge_per_min = 60 / 60
+min_battery_value = max_battery * 0.1
+
+
+
+
 def add_activity(ibp, bus, start_location, end_location, start_time, end_time,
                  activity, line, energy, battery_value, total_travel_time):
 
@@ -124,9 +135,6 @@ def check_material_trip(bus, last_activity, trip, ibp, battery, dm, bp, toevoege
 
     
 
-
-
-
         
 for i in range(len(tt)):
     trip = tt.iloc[i,:]
@@ -141,7 +149,7 @@ for i in range(len(tt)):
     # als er geen bussen maakt het een nieuwe bus aan
     if len(bussen) == 0:
         bussen.append('bus1')
-        battery['bus1'] = 300
+        battery['bus1'] = max_battery
         #laat de bus beginnen bij garage en zo nodig naar trip locatie rijden
         garage_to_trip('bus1', trip, start_time, ibp, battery, dm, bp)
         
@@ -161,13 +169,6 @@ for i in range(len(tt)):
           
         continue
 
-    # beginwaardes
-    assumed_battery_value   = 85
-    max_battery             = 300*assumed_battery_value / 100
-    charging_limit          = 0.9*max_battery
-    fast_charge_per_min     = 450 / 60   # 7.5 kWh per minuut
-    slow_charge_per_min     = 60 / 60    # 1 kWh per minuut
-    min_battery_value       = max_battery * 0.1
     material_energy         = bp[(bp['start location'] == trip['end']) & (bp['end location'] == 'ehvgar') & (bp['activity'] == 'material trip')]['energy consumption'].mean()
 
     
@@ -209,7 +210,7 @@ for i in range(len(tt)):
 
         nieuwe_bus = 'bus' + str(len(bussen) + 1)
         bussen.append(nieuwe_bus)
-        battery[nieuwe_bus] = 300
+        battery[nieuwe_bus] = max_battery
 
         #laat de bus beginnen bij garage en zo nodig naar trip locatie rijden
         garage_to_trip(nieuwe_bus, trip, start_time, ibp, battery, dm, bp)
