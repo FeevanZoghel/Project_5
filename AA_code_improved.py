@@ -87,7 +87,7 @@ def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_tim
             dm_material = dm[(dm['start'] == material_start) & (dm['end'] == 'ehvgar')]
 
             material_travel_time = dm_material['max_travel_time'].iloc[0]
-            material_energy = bp[(bp['start location'] == material_start) & (bp['end location'] == 'ehvgar') &(bp['activity'] == 'material trip')]['energy consumption'].mode().iloc[0]
+            material_energy = bp[(bp['start location'] == material_start) & (bp['end location'] == 'ehvgar') &(bp['activity'] == 'material trip')]['energy consumption'].mean()
             material_start_time = last_activity['end time']
             material_end_time = material_start_time + pd.Timedelta(minutes=material_travel_time)
 
@@ -115,7 +115,7 @@ for i in range(len(tt)):
     trip = tt.iloc[i,:]
     
     dm_trip = dm[(dm['start'] == trip['start']) &(dm['end'] == trip['end']) &(dm['line'] == trip['line'])]
-    energy_consumption = bp[(bp['start location'] == trip['start']) & (bp['end location'] == trip['end']) & (bp['line'] == trip['line']) &(bp['activity'] == 'service trip')]['energy consumption'].mode().iloc[0]
+    energy_consumption = bp[(bp['start location'] == trip['start']) & (bp['end location'] == trip['end']) & (bp['line'] == trip['line']) &(bp['activity'] == 'service trip')]['energy consumption'].mean()
 
 
     start_time = trip['sort_time']
@@ -147,7 +147,7 @@ for i in range(len(tt)):
     fast_charge_per_min     = 450 / 60   # 7.5 kWh per minuut
     slow_charge_per_min     = 60 / 60    # 1 kWh per minuut
     min_battery_value       = (300 / assumed_battery_value * 100) * 0.1
-    material_energy         = bp[(bp['start location'] == trip['end']) & (bp['end location'] == 'ehvgar') & (bp['activity'] == 'material trip')]['energy consumption'].mode().iloc[0]
+    material_energy         = bp[(bp['start location'] == trip['end']) & (bp['end location'] == 'ehvgar') & (bp['activity'] == 'material trip')]['energy consumption'].mean()
 
     
     if trip['end'] =='ehvgar':
