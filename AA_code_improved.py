@@ -160,7 +160,7 @@ for i in range(len(tt)):
         ibp.loc[new_index, 'activity']              = 'service trip'
         ibp.loc[new_index, 'energy consumption']    = energy_consumption
         ibp.loc[new_index, 'total travel time']     = travel_time
-        battery['bus1']                             = 300-energy_consumption
+        battery['bus1']                             -= energy_consumption
         ibp.loc[new_index, 'total battery bus']     = battery['bus1']
           
         continue
@@ -215,8 +215,8 @@ for i in range(len(tt)):
         battery[nieuwe_bus] = 300
 
         #laat de bus beginnen bij garage en zo nodig naar trip locatie rijden
-        garage_to_trip('bus1', trip, start_time, ibp, battery, dm, bp)
-        
+        garage_to_trip(nieuwe_bus, trip, start_time, ibp, battery, dm, bp)
+
         gekozen_bus = nieuwe_bus
         nieuwe_bus_aangemaakt = True
 
@@ -241,7 +241,7 @@ for i in range(len(tt)):
     ibp.loc[new_index, 'bus']                   = gekozen_bus
     ibp.loc[new_index, 'activity']              = 'service trip'
     ibp.loc[new_index, 'energy consumption']    = energy_consumption
-    battery[gekozen_bus]                = battery[gekozen_bus]-energy_consumption
+    battery[gekozen_bus]                        = battery[gekozen_bus]-energy_consumption
     ibp.loc[new_index, 'total battery bus']     = battery[gekozen_bus] 
     if nieuwe_bus_aangemaakt: 
         ibp.loc[new_index, 'total travel time'] = travel_time
