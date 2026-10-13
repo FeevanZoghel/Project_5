@@ -107,7 +107,28 @@ def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_tim
             ibp.loc[new_index, 'total travel time'] = material_travel_time
             charging_start[bus] = material_end_time
 
-
+def garage_to_trip(bus, trip, start_time, ibp, battery, dm, bp):
+    if trip['start'] == 'ehvgar':
+            return
+    dm_material = dm[(dm['start']=='ehvgar') & (dm['end'] == trip['start'])]
+    material_travel_time = dm_material['max_travel_time'].iloc[0]
+    material_start_time = start_time - pd.Timedelta(minutes = material_travel_time)
+    material_end_time = material_start_time+pd.Timedelta(minutes = material_travel_time)
+    material_energy = bp[(bp['start location'] == 'ehvgar') & (bp['end location'] == trip['start']) & (bp['activity'] == 'material trip')]['energy consumption'].mean()
+    battery[bus] -= material_energy
+    
+    new_index = len(ibp)
+    ibp.loc[new_index, 'start location'] = 'ehvgar'
+    ibp.loc[new_index, 'end location'] = trip['start']
+    ibp.loc[new_index, 'start time'] = material_start_time
+    ibp.loc[new_index, 'end time'] = material_end_time
+    ibp.loc[new_index, 'activity'] = 'material trip'
+    ibp.loc[new_index, 'line'] = trip['line']
+    ibp.loc[new_index, 'bus'] = bus
+    ibp.loc[new_index, 'energy consumption'] = material_energy
+    ibp.loc[new_index, 'total travel time'] = material_travel_time
+    ibp.loc[new_index, 'total battery bus'] = battery[bus]
+    
 
 
 
@@ -125,6 +146,10 @@ for i in range(len(tt)):
     if len(bussen) == 0:
         bussen.append('bus1')
         battery['bus1'] = 300
+        #laat de bus beginnen bij garage en zo nodig naar trip locatie rijden
+        garage_to_trip('bus1', trip, start_time, ibp, battery, dm, bp)
+        
+        
         new_index = len(ibp)
         ibp.loc[new_index, 'start location']        = trip['start']
         ibp.loc[new_index, 'end location']          = trip['end']
@@ -135,7 +160,7 @@ for i in range(len(tt)):
         ibp.loc[new_index, 'activity']              = 'service trip'
         ibp.loc[new_index, 'energy consumption']    = energy_consumption
         ibp.loc[new_index, 'total travel time']     = travel_time
-        battery['bus1']                             = 300-ibp.loc[new_index, 'energy consumption']
+        battery['bus1']                             = 300-energy_consumption
         ibp.loc[new_index, 'total battery bus']     = battery['bus1']
           
         continue
@@ -184,9 +209,14 @@ for i in range(len(tt)):
     # als er geen bus beschikbaar is dan een nieuwe bus toevoegen
     nieuwe_bus_aangemaakt = False
     if len(beschikbare_bussen)==0:
+
         nieuwe_bus = 'bus' + str(len(bussen) + 1)
         bussen.append(nieuwe_bus)
         battery[nieuwe_bus] = 300
+
+        #laat de bus beginnen bij garage en zo nodig naar trip locatie rijden
+        garage_to_trip('bus1', trip, start_time, ibp, battery, dm, bp)
+        
         gekozen_bus = nieuwe_bus
         nieuwe_bus_aangemaakt = True
 
