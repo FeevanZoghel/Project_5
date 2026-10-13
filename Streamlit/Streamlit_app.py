@@ -705,11 +705,22 @@ elif keuze == "Visualisations":
         and 'tt' in st.session_state
         and 'dm' in st.session_state
     ):
+        if 'improved_bp' in st.session_state:
+            planning_choice = st.radio(
+                "Select bus planning",
+                ["Original planning", "Improved planning"],
+                horizontal=True
+            )
 
-        bp = st.session_state['bp']
+            if planning_choice == "Improved planning":
+                bp = st.session_state['improved_bp']
+            else:
+                bp = st.session_state['bp']
+        else:
+            bp = st.session_state['bp']
+
         tt = st.session_state['tt']
         dm = st.session_state['dm']
-
         # KPI calculations
         total_distance_m, total_distance_km, deployed_buses_count, t_material_total, d_material_total, d_material_total_km = calculate_distances_and_kpis(
             bp, dm, tt
@@ -828,14 +839,15 @@ elif keuze == "Visualisations":
                 with st.container(key="chart_card"):
                     st.markdown('<div class="section-title">Bus planning</div>', unsafe_allow_html=True)
                     all_buses = sorted(bp['bus'].dropna().unique().tolist())
-                    selected_buses = st.session_state.get("selected_buses", all_buses)
-                    gantt_chart_bus(bp, selected_buses)
-                    st.multiselect(
+
+                    selected_buses = st.multiselect(
                         "Select buses to display",
                         options=all_buses,
                         default=all_buses,
-                        key="selected_buses"
+                        key=f"selected_buses_{planning_choice}" if 'improved_bp' in st.session_state else "selected_buses_original"
                     )
+
+                    gantt_chart_bus(bp, selected_buses)
 
     else:
         st.warning(
