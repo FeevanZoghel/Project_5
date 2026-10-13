@@ -86,7 +86,7 @@ def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_tim
             material_start = last_activity['end location']
             dm_material = dm[(dm['start'] == material_start) & (dm['end'] == 'ehvgar')]
 
-            material_travel_time = dm_material['max_travel_time'].iloc[0]
+            material_travel_time = (dm_material['min_travel_time'].iloc[0]+dm_material['max_travel_time'].iloc[0])/2
             material_energy = bp[(bp['start location'] == material_start) & (bp['end location'] == 'ehvgar') &(bp['activity'] == 'material trip')]['energy consumption'].mean()
             material_start_time = last_activity['end time']
             material_end_time = material_start_time + pd.Timedelta(minutes=material_travel_time)
@@ -111,7 +111,7 @@ def garage_to_trip(bus, trip, start_time, ibp, battery, dm, bp):
     if trip['start'] == 'ehvgar':
             return
     dm_material = dm[(dm['start']=='ehvgar') & (dm['end'] == trip['start'])]
-    material_travel_time = dm_material['max_travel_time'].iloc[0]
+    material_travel_time = (dm_material['min_travel_time'].iloc[0]+dm_material['max_travel_time'].iloc[0])/2
     material_start_time = start_time - pd.Timedelta(minutes = material_travel_time)
     material_end_time = material_start_time+pd.Timedelta(minutes = material_travel_time)
     material_energy = bp[(bp['start location'] == 'ehvgar') & (bp['end location'] == trip['start']) & (bp['activity'] == 'material trip')]['energy consumption'].mean()
@@ -140,7 +140,7 @@ for i in range(len(tt)):
 
 
     start_time = trip['sort_time']
-    travel_time = dm_trip['max_travel_time'].iloc[0]
+    travel_time = (dm_trip['min_travel_time'].iloc[0]+dm_trip['max_travel_time'].iloc[0])/2
     end_time = start_time + pd.Timedelta(minutes=travel_time)
     # als er geen bussen maakt het een nieuwe bus aan
     if len(bussen) == 0:
