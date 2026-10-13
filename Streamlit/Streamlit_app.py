@@ -421,6 +421,12 @@ if keuze == "Data Check":
             'activity', 'line', 'energy consumption', 'bus'
         ]].copy()
 
+        for col in ['start time', 'end time']:
+            improved_bp[col] = pd.to_datetime(
+                improved_bp[col]
+            ).dt.strftime('%H:%M:%S')
+
+        st.session_state['improved_bp'] = improved_bp
         st.markdown("### Improved bus planning")
         st.dataframe(improved_bp, use_container_width=True)
 
