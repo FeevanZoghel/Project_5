@@ -16,7 +16,7 @@ def solve_bus_planning(bp, dm, tt):
     tt = tt.copy()
 
     # Dataframe for improved bus plan
-    ibp = pd.DataFrame(columns=['start location', 'end location','start time','end time','activity','line','energy consumption','total battery bus' ,'total travel time','bus'])
+    ibp = pd.DataFrame(columns=['start location', 'end location','start time','end time','activity','line','energy consumption','bus'])
 
     # Sort timetable, starting the day at 05:07 (dit stukje is met chat gemaakt)
     tt['sort_time'] = pd.to_datetime(tt['departure_time'], format='%H:%M')
