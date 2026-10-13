@@ -436,8 +436,6 @@ if keuze == "Data Check":
             ).dt.strftime('%H:%M:%S')
 
         st.session_state['improved_bp'] = improved_bp
-        st.markdown("### Improved bus planning")
-        st.dataframe(improved_bp, use_container_width=True)
 
         export_bp = improved_bp.copy()
 
