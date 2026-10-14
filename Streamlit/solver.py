@@ -245,7 +245,7 @@ def solve_bus_planning(bp, dm, tt):
 
         # kiest de bus met de hoogste traveltijd (deze is gefabriceerd met chat)
         else:
-                gekozen_bus = min(
+                gekozen_bus = max(
                     beschikbare_bussen,
                     key=lambda b: ibp[ibp['bus'] == b].iloc[-1]['end time']
                 )
