@@ -164,7 +164,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         # X-axis
         hours = range(5, 30)
 
-        ax.set_xlim(5, 29)
+        ax.set_xlim(3.5, 29)
         ax.set_xticks(hours)
 
         ax.set_xticklabels([
@@ -185,7 +185,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         # Draw bus labels manually using data coordinates
         for i, bus in enumerate(group):
             ax.text(
-                4.8,
+                4.7,
                 i,
                 f"Bus {bus}",
                 ha='left',
@@ -200,6 +200,13 @@ def gantt_chart_bus(bp, selected_buses=None):
                     pad=1
                 )
             )
+            
+        ax.axvline(
+            x=5,
+            color='black',
+            linewidth=1,
+            zorder=2
+        )   
 
         # Grid styling
         ax.set_axisbelow(True)
