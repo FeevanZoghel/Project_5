@@ -649,7 +649,8 @@ elif keuze == "Visualisations":
 
     /* KPI and chart cards */
     .st-key-kpi_card,
-    .st-key-chart_card {
+    .st-key-chart_card,
+    .st-key-kpi_difference {
         background: #FAFAFA !important;
         border: 1px solid #E5E7EB !important;
         border-radius: 12px !important;
@@ -664,7 +665,7 @@ elif keuze == "Visualisations":
         color: #1F1F1F;
         padding-bottom: 12px;
         margin-bottom: 15px;
-        border-bottom: 2px solid #E5E5E5;
+        border-bottom: 2px solid #FFFFFF;
         position: relative;
     }
 
@@ -764,7 +765,7 @@ elif keuze == "Visualisations":
             improved_energy = calculate_energy_consumption_kpis(improved_bp)
 
             buses_diff = original_buses - improved_buses
-            waiting_diff = original_waiting - improved_waiting 
+            waiting_diff =  original_waiting - improved_waiting 
             material_diff = original_material - improved_material
             material_km_diff = original_material_km - improved_material_km 
             charging_diff = original_charging - improved_charging
@@ -790,12 +791,12 @@ elif keuze == "Visualisations":
                 st.image(logo_path, width=500)      
 
             # KPI + Gantt chart
-            col_kpi, col_chart = st.columns([3.4, 6.6], gap="medium")
+            col_kpi, col_chart = st.columns([4, 7], gap="medium")
 
             # KPI CARD
             with col_kpi:
                 with st.container(key="kpi_selection"):
-                    col_kpi, col_diff = st.columns([1.9,1.5])
+                    col_kpi, col_diff = st.columns([2,2])
                     with col_kpi:
                         with st.container(key = 'kpi_card'):
 
