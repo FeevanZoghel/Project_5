@@ -904,30 +904,50 @@ elif keuze == "Visualisations":
     
                                 st.markdown(f"""
                                 <div class="kpi-box">
+                                    <div class="kpi-label">
+                                        <img src="data:image/png;base64,{material_icon}" class="kpi-icon">
+                                        Material trips
+                                    </div>
                                     <div class="kpi-value">{material_diff} trips</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
                                 st.markdown(f"""
                                 <div class="kpi-box">
-                                    <div class="kpi-value">{material_diff:.3f} km</div>
+                                    <div class="kpi-label">
+                                        <img src="data:image/png;base64,{material_distance_icon}" class="kpi-icon">
+                                        Material trip distance
+                                    </div>
+                                    <div class="kpi-value">{material_km_diff:.3f} km</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
                                 st.markdown(f"""
                                 <div class="kpi-box">
+                                    <div class="kpi-label">
+                                        <img src="data:image/png;base64,{charging_time_icon}" class="kpi-icon">
+                                        Charging time
+                                    </div>
                                     <div class="kpi-value">{charging_diff:.2f} hours</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
                                 st.markdown(f"""
                                 <div class="kpi-box">
+                                    <div class="kpi-label">
+                                        <img src="data:image/png;base64,{driving_distance_icon}" class="kpi-icon">
+                                        Energy consumption
+                                    </div>
                                     <div class="kpi-value">{energy_diff:.2f} kWh</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
                                 st.markdown(f"""
                                 <div class="kpi-box">
+                                    <div class="kpi-label">
+                                        <img src="data:image/png;base64,{energy_consumption_icon}" class="kpi-icon">
+                                        Total driving distance
+                                    </div>
                                     <div class="kpi-value">{distance_diff:.2f} km</div>
                                 </div>
                                 """, unsafe_allow_html=True)
