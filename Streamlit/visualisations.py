@@ -44,7 +44,7 @@ def gantt_chart_bus(bp, selected_buses=None):
 
     for group in groups:
 
-        fig, ax = plt.subplots(figsize=(18, 8))
+        fig, ax = plt.subplots(figsize=(14, 7))
 
         group_planning = planning[planning['bus'].isin(group)]
 
@@ -156,16 +156,22 @@ def gantt_chart_bus(bp, selected_buses=None):
         ax.xaxis.tick_top()
         ax.xaxis.set_label_position('top')
 
+        ax.set_axisbelow(True)
         ax.grid(
             axis='x',
-            linestyle='-',
-            alpha=0.4
+            color='#E5E7EB',
+            linewidth=0.6,
+            alpha=0.35
         )
 
         ax.set_axisbelow(True)
 
         ax.set_xlabel('Time')
-        ax.set_ylabel('Bus')
+
+        ax.set_yticks(range(len(group)))
+        ax.set_yticklabels([f'Bus {bus}' for bus in group])
+        ax.set_ylim(len(group) - 0.5, -0.5)
+
         ax.set_title('Improved bus plan')
 
         ax.legend(
@@ -179,11 +185,10 @@ def gantt_chart_bus(bp, selected_buses=None):
         # Convert to interactive HTML
         html = mpld3.fig_to_html(fig)
 
-        # Display in Streamlit
         components.html(
             html,
-            height=650,
-            scrolling=True
+            height=850,
+            scrolling=False
         )
 
         plt.close(fig)
