@@ -18,6 +18,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         st.info("Select at least one bus to display the Gantt chart.")
         return
 
+    # Prepare planning
     planning = bp.sort_values(['bus', 'start time']).copy()
 
     start_times = pd.to_timedelta(
@@ -31,6 +32,7 @@ def gantt_chart_bus(bp, selected_buses=None):
     planning['start_hour'] = start_times.dt.total_seconds() / 3600
     planning['end_hour'] = end_times.dt.total_seconds() / 3600
 
+    # Handle times after midnight
     planning.loc[
         planning['start_hour'] < 5, 'start_hour'
     ] += 24
@@ -39,6 +41,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         planning['end_hour'] <= 5, 'end_hour'
     ] += 24
 
+    # Activity colors
     colors = {
         'service trip': 'skyblue',
         'material trip': 'orange',
@@ -46,6 +49,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         'charging': 'yellowgreen'
     }
 
+    # Split buses into groups of maximum 20
     buses = sorted(planning['bus'].unique())
 
     groups = [
@@ -72,6 +76,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         hover_y = []
         hover_labels = []
 
+        # Draw activities
         for _, trip in group_planning.iterrows():
 
             bus = trip['bus']
@@ -105,7 +110,7 @@ def gantt_chart_bus(bp, selected_buses=None):
                 label=label
             )
 
-            # Hover point in the centre of the bar
+            # Hover point in the middle of the bar
             hover_x.append(start + duration / 2)
             hover_y.append(y)
 
@@ -121,7 +126,7 @@ def gantt_chart_bus(bp, selected_buses=None):
                 f"{escape(str(trip['end time']))}"
             )
 
-            # Show line numbers inside service trips
+            # Line numbers inside service trips
             if (
                 activity == 'service trip'
                 and pd.notna(trip['line'])
@@ -146,6 +151,7 @@ def gantt_chart_bus(bp, selected_buses=None):
             zorder=10
         )
 
+        # Add tooltip
         tooltip = plugins.PointHTMLTooltip(
             points,
             labels=hover_labels,
@@ -160,6 +166,7 @@ def gantt_chart_bus(bp, selected_buses=None):
 
         ax.set_xlim(5, 29)
         ax.set_xticks(hours)
+
         ax.set_xticklabels([
             f'{hour % 24:02d}:00'
             for hour in hours
@@ -170,12 +177,30 @@ def gantt_chart_bus(bp, selected_buses=None):
 
         # Y-axis
         ax.set_yticks(range(len(group)))
-
-        # Hide default tick labels
         ax.set_yticklabels([])
 
-        # Put Bus 1 at the top
+        # Bus 1 at the top
         ax.set_ylim(len(group) - 0.5, -0.5)
+
+        # Draw bus labels manually using data coordinates
+        for i, bus in enumerate(group):
+            ax.text(
+                5.1,
+                i,
+                f"Bus {bus}",
+                ha='left',
+                va='center',
+                fontsize=10,
+                color='black',
+                zorder=20,
+                bbox=dict(
+                    facecolor='white',
+                    edgecolor='none',
+                    alpha=0.85,
+                    pad=1
+                )
+            )
+
         # Grid styling
         ax.set_axisbelow(True)
 
@@ -186,9 +211,11 @@ def gantt_chart_bus(bp, selected_buses=None):
             alpha=0.35
         )
 
+        # Titles
         ax.set_xlabel('Time')
         ax.set_title('Improved bus plan')
 
+        # Legend
         ax.legend(
             loc='upper center',
             bbox_to_anchor=(0.5, -0.08),
@@ -205,8 +232,6 @@ def gantt_chart_bus(bp, selected_buses=None):
 
         # Convert Matplotlib to interactive HTML
         html = mpld3.fig_to_html(fig)
-        # Bus labels and positions for HTML
-        bus_labels = [f"Bus {bus}" for bus in group]        
 
         # Fullscreen functionality
         fullscreen_html = f"""
@@ -218,6 +243,7 @@ def gantt_chart_bus(bp, selected_buses=None):
             height: 100%;
             box-sizing: border-box;
         ">
+
             <button onclick="toggleFullscreen()" style="
                 float: left;
                 padding: 7px 12px;
@@ -234,19 +260,7 @@ def gantt_chart_bus(bp, selected_buses=None):
             <div style="clear: both;"></div>
 
             {html}
-            <script>
-            function addBusLabels() {
-                const svg = document.querySelector("#gantt-container svg");
-                if (!svg) return;
 
-                const plot = svg.querySelector(".mpld3-axes");
-                if (!plot) return;
-
-                const bars = plot.querySelectorAll("path");
-
-                // Bus labels are added independently of Matplotlib tick labels.
-            }
-            </script>
         </div>
 
         <script>
