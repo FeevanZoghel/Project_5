@@ -106,7 +106,7 @@ def gantt_chart_bus(bp, selected_buses=None):
                 height=0.8,
                 color=colors[activity],
                 edgecolor='grey',
-                linewidth=1,
+                linewidth=2,
                 label=label
             )
 
@@ -191,7 +191,6 @@ def gantt_chart_bus(bp, selected_buses=None):
                 ha='left',
                 va='center',
                 fontsize=10,
-                linewidth = 10,
                 color='black',
                 zorder=20,
                 bbox=dict(
