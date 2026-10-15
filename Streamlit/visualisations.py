@@ -1,5 +1,5 @@
-import matplotlib.pyplot as plt
 import pandas as pd
+import matplotlib.pyplot as plt
 import streamlit as st
 
 def gantt_chart_bus(bp, selected_buses=None):
@@ -43,17 +43,13 @@ def gantt_chart_bus(bp, selected_buses=None):
             start = trip['start_hour']
             end = trip['end_hour']
             duration = end - start
-            if duration < 0:
-                duration += 24
             y = bus_positions[bus]
             if activity not in activities_in_legend:
                 label = activity
                 activities_in_legend.append(activity)
             else:
                 label = None
-
-
-            bars = ax.barh(
+            ax.barh(
                 y,
                 duration,
                 left=start,
@@ -63,24 +59,7 @@ def gantt_chart_bus(bp, selected_buses=None):
                 linewidth=1,
                 label=label
             )
-
-            bar = bars[0]
-
-            bar.tooltip_text = (
-                f"Bus: {bus}\n"
-                f"Activity: {activity}\n"
-                f"Start: {trip['start time']}\n"
-                f"End: {trip['end time']}\n"
-                f"From: {trip['start location']}\n"
-                f"To: {trip['end location']}\n"
-                f"Energy: {trip['energy consumption']:.2f} kWh"
-            )
-
-            if activity == 'service trip' and pd.notna(trip['line']):
-                bar.tooltip_text += f"\nLine: {int(trip['line'])}"
-
-
-            if activity == 'service trip' and pd.notna(trip['line']):
+            if activity == 'service trip':
                 line = trip['line']
                 ax.text(
                     start + duration / 2,
@@ -90,8 +69,6 @@ def gantt_chart_bus(bp, selected_buses=None):
                     va='center',
                     fontsize=8
                 )
-
-        
         hours = range(5, 30)
         ax.set_xlim(5, 29)
         ax.set_xticks(hours)
@@ -107,20 +84,6 @@ def gantt_chart_bus(bp, selected_buses=None):
         ax.set_ylabel('Bus')
         ax.set_title('Improved bus plan')
         ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=4)
-
-        cursor = mplcursors.cursor(
-        ax.patches,
-        hover=mplcursors.HoverMode.Transient
-        )
-
-        @cursor.connect("add")
-        def show_tooltip(sel):
-            sel.annotation.set_text(sel.artist.tooltip_text)
-            sel.annotation.get_bbox_patch().set(
-                facecolor="white",
-                edgecolor="grey",
-                alpha=0.95
-            )
         plt.tight_layout()
         st.pyplot(fig)
         plt.close(fig)
