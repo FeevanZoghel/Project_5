@@ -57,7 +57,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         for i in range(0, len(buses), 20)
     ]
 
-    for group in groups:
+    for group_index, group in enumerate(groups):
 
         fig, ax = plt.subplots(figsize=(14, 7))
 
@@ -104,7 +104,7 @@ def gantt_chart_bus(bp, selected_buses=None):
                 duration,
                 left=start,
                 height=0.8,
-                color=colors[activity],
+                color=colors.get(activity, 'lightgrey'),
                 edgecolor='#000000',
                 linewidth=1.5,
                 label=label
@@ -141,7 +141,7 @@ def gantt_chart_bus(bp, selected_buses=None):
                     color='black'
                 )
 
-        # Hover points
+        # Invisible hover points
         points = ax.scatter(
             hover_x,
             hover_y,
@@ -161,25 +161,29 @@ def gantt_chart_bus(bp, selected_buses=None):
 
         plugins.connect(fig, tooltip)
 
-
         # X-axis
-        hours = range(5, 30)
+        hours = list(range(5, 30))
 
         ax.set_xlim(4.2, 29)
-        ax.set_xticks(list(hours))
+        ax.set_xticks(hours)
 
-        # Hide default time labels
+        # Keep ticks for vertical grid lines
+        # Hide automatically generated labels
         ax.set_xticklabels([])
+        ax.tick_params(
+            axis='x',
+            which='both',
+            labeltop=False,
+            labelbottom=False,
+            length=0
+        )
 
-        # Keep x-axis at the top
-        ax.xaxis.tick_top()
-        ax.tick_params(axis='x', length=0)
-
-        # Draw time labels manually
+        # Custom time labels
+        # More negative y = higher above chart
         for hour in hours:
             ax.text(
                 hour,
-                -0.85,                        # Vertical position
+                -1.15,
                 f'{hour % 24:02d}:00',
                 ha='center',
                 va='center',
@@ -189,7 +193,6 @@ def gantt_chart_bus(bp, selected_buses=None):
                 clip_on=False
             )
 
-
         # Y-axis
         ax.set_yticks(range(len(group)))
         ax.set_yticklabels([])
@@ -197,7 +200,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         # Bus 1 at the top
         ax.set_ylim(len(group) - 0.5, -0.5)
 
-        # Draw bus labels manually using data coordinates
+        # Draw bus labels manually
         for i, bus in enumerate(group):
             ax.text(
                 4.22,
@@ -227,10 +230,10 @@ def gantt_chart_bus(bp, selected_buses=None):
         )
 
         ax.grid(
-            axis = 'y',
-            color = '#E5E7EB',
-            linewidth = 0.6,
-            alpha = 0.05
+            axis='y',
+            color='#E5E7EB',
+            linewidth=0.6,
+            alpha=0.05
         )
 
         # Titles
@@ -248,19 +251,22 @@ def gantt_chart_bus(bp, selected_buses=None):
         fig.subplots_adjust(
             left=0.12,
             right=0.98,
-            top=0.88,
+            top=0.80,
             bottom=0.15
         )
 
         # Convert Matplotlib to interactive HTML
         html = mpld3.fig_to_html(fig)
 
-        # Fullscreen functionality
-        
-        # Fullscreen functionality
+        # Unique ID for each group
+        container_id = f"gantt-container-{group_index}"
+        chart_id = f"gantt-chart-{group_index}"
+        button_id = f"fullscreen-button-{group_index}"
+
+        # Fullscreen functionality and styling
         fullscreen_html = f"""
         <style>
-            #gantt-container {{
+            #{container_id} {{
                 background: white;
                 padding: 10px;
                 width: 100%;
@@ -270,14 +276,21 @@ def gantt_chart_bus(bp, selected_buses=None):
                 overflow: visible;
             }}
 
-            #gantt-container:fullscreen {{
+            #{container_id}:fullscreen {{
                 background: white;
                 width: 100vw;
                 height: 100vh;
                 overflow: auto;
             }}
 
-            #gantt-container .mpld3-tooltip {{
+            /* Hide mpld3 automatic x-axis labels */
+            #{chart_id} .mpld3-xaxis .tick text,
+            #{chart_id} .mpld3-xaxis text {{
+                display: none !important;
+            }}
+
+            /* Tooltip styling */
+            #{container_id} .mpld3-tooltip {{
                 background-color: #F3F4F6 !important;
                 color: #222222 !important;
                 border: 2px solid #555555 !important;
@@ -290,7 +303,8 @@ def gantt_chart_bus(bp, selected_buses=None):
                 pointer-events: none;
             }}
 
-            #fullscreen-button {{
+            /* Fullscreen button */
+            #{button_id} {{
                 padding: 7px 12px;
                 margin-bottom: 10px;
                 background: #EA3323;
@@ -301,21 +315,26 @@ def gantt_chart_bus(bp, selected_buses=None):
             }}
         </style>
 
-        <div id="gantt-container">
+        <div id="{container_id}">
 
-            <button id="fullscreen-button" onclick="toggleFullscreen()">
+            <button
+                id="{button_id}"
+                onclick="toggleFullscreen_{group_index}()"
+            >
                 ⛶ Fullscreen
             </button>
 
-            <div id="gantt-chart">
+            <div id="{chart_id}">
                 {html}
             </div>
 
         </div>
 
         <script>
-        function toggleFullscreen() {{
-            const container = document.getElementById("gantt-container");
+        function toggleFullscreen_{group_index}() {{
+            const container = document.getElementById(
+                "{container_id}"
+            );
 
             if (!document.fullscreenElement) {{
                 container.requestFullscreen();
@@ -324,28 +343,35 @@ def gantt_chart_bus(bp, selected_buses=None):
             }}
         }}
 
-        // Move mpld3 tooltips into the fullscreen container
-        function moveTooltips() {{
-            const container = document.getElementById("gantt-container");
+        // Move mpld3 tooltips into fullscreen container
+        function moveTooltips_{group_index}() {{
+            const container = document.getElementById(
+                "{container_id}"
+            );
 
-            document.querySelectorAll("body > .mpld3-tooltip").forEach(function(tooltip) {{
+            document.querySelectorAll(
+                "body > .mpld3-tooltip"
+            ).forEach(function(tooltip) {{
                 container.appendChild(tooltip);
             }});
         }}
 
-        // mpld3 creates its tooltip elements asynchronously
-        const tooltipObserver = new MutationObserver(function() {{
-            moveTooltips();
-        }});
+        // Watch for new tooltip elements
+        const tooltipObserver_{group_index} =
+            new MutationObserver(function() {{
+                moveTooltips_{group_index}();
+            }});
 
-        tooltipObserver.observe(document.body, {{
-            childList: true
-        }});
+        tooltipObserver_{group_index}.observe(
+            document.body,
+            {{
+                childList: true
+            }}
+        );
 
-        moveTooltips();
+        moveTooltips_{group_index}();
         </script>
         """
-
 
         # Display in Streamlit
         components.html(
