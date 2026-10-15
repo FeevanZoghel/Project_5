@@ -173,8 +173,8 @@ def gantt_chart_bus(bp, selected_buses=None):
             color='#222222',       # Tekstkleur
             fontweight='bold'      # Dikkere tekst
         )
-        
-        ax.tick_params(axis='x', pad=6, length=0)
+
+        ax.tick_params(axis='x', pad=15, length=0)
 
         ax.xaxis.tick_top()
         ax.xaxis.set_label_position('top')
