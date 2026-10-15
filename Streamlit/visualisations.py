@@ -167,6 +167,8 @@ def gantt_chart_bus(bp, selected_buses=None):
         ax.set_xlim(4.2, 29)
         ax.set_xticks(hours)
 
+        ax.set_ylim(5,20)
+
         ax.set_xticklabels(
             [f'{hour % 24:02d}:00' for hour in hours],
             fontsize=11,           # Tekstgrootte
