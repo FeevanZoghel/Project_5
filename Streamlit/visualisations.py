@@ -196,7 +196,7 @@ def gantt_chart_bus(bp, selected_buses=None):
                 bbox=dict(
                     facecolor='white',
                     edgecolor='none',
-                    linewidth = 4,
+                    linewidth = 10,
                     alpha=0.85,
                     pad=1
                 )
