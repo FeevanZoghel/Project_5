@@ -185,7 +185,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         # Draw bus labels manually using data coordinates
         for i, bus in enumerate(group):
             ax.text(
-                4.7,
+                4.4,
                 i,
                 f"Bus {bus}",
                 ha='left',
@@ -201,13 +201,6 @@ def gantt_chart_bus(bp, selected_buses=None):
                 )
             )
 
-        ax.axvline(
-            x=5,
-            color='black',
-            linewidth=1,
-            zorder=2
-        )   
-
         # Grid styling
         ax.set_axisbelow(True)
 
@@ -216,6 +209,13 @@ def gantt_chart_bus(bp, selected_buses=None):
             color='#E5E7EB',
             linewidth=0.6,
             alpha=0.35
+        )
+
+        ax.grid(
+            axis = 'y',
+            color = '#E5E7EB',
+            linewidth = 0.6,
+            alpha = 0.7
         )
 
         # Titles
