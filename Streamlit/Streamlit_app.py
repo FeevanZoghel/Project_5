@@ -714,6 +714,27 @@ elif keuze == "Visualisations":
         object-fit: contain;
     }
 
+    /* Bus selection dropdown */
+    .st-key-chart_card [data-testid="stPopover"] button {
+        background-color: #F3F4F6 !important;
+        color: #222222 !important;
+        border: 1px solid #EA3323 !important;
+        border-radius: 10px !important;
+    }
+
+    /* Text and icons always dark */
+    .st-key-chart_card [data-testid="stPopover"] button *,
+    .st-key-chart_card [data-testid="stPopover"] button svg {
+        color: #222222 !important;
+        fill: #222222 !important;
+        stroke: #222222 !important;
+    }
+
+    /* Hover effect */
+    .st-key-chart_card [data-testid="stPopover"] button:hover {
+        background-color: #E5E7EB !important;
+        color: #222222 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
