@@ -125,7 +125,7 @@ def gantt_chart_bus(bp, selected_buses=None):
             hover_y,
             s=25,
             color='red',
-            alpha=5,
+            alpha=0.6,
             zorder=10
         )
 
