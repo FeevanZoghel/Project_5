@@ -483,10 +483,12 @@ if keuze == "Data Check":
             ["Original planning", "Improved planning"],
             horizontal=True)
 
+#------------------------------------------------------------------
         if planning_choice == 'Original planning':
             df1 = st.session_state['improved_bp']
         else:
             df1 = st.session_state['bp']
+#------------------------------------------------------------------
 
         validate_bus_planning(df1)
 
@@ -730,8 +732,14 @@ elif keuze == "Visualisations":
 
             if planning_choice == "Improved planning":
                 bp = st.session_state['improved_bp']
+                _, total_distance_km_imp, deployed_buses_count_imp, t_material_total_imp, d_material_total_imp, d_material_total_km_imp = calculate_distances_and_kpis(bp, dm, tt)
+                _, tot_waiting_time_hours_imp, avg_waiting_time_per_bus_imp = calculate_waiting_time_kpis(bp, deployed_buses_count)
+                _, total_charging_time_hours_imp = calculate_energy_consumption_kpis(bp)
             else:
                 bp = st.session_state['bp']
+                _, total_distance_km, deployed_buses_count, t_material_total, d_material_total, d_material_total_km = calculate_distances_and_kpis(bp, dm, tt)
+                _, tot_waiting_time_hours, avg_waiting_time_per_bus = calculate_waiting_time_kpis(bp, deployed_buses_count)
+                _, total_charging_time_hours = calculate_energy_consumption_kpis(bp)
         else:
             bp = st.session_state['bp']
 
@@ -775,81 +783,134 @@ elif keuze == "Visualisations":
             # KPI CARD
             with col_kpi:
                 with st.container(key="kpi_card"):
+                    col_kpi, col_diff = st.columns([1.5,0.9], gap = 'small')
+                    with col_kpi:
+                        with st.container(key = 'kpi_card'):
 
-                    st.markdown(
-                        '<div class="section-title">KPIs</div>',
-                        unsafe_allow_html=True
-                    )
+                            st.markdown(
+                                '<div class="section-title">KPIs</div>',
+                                unsafe_allow_html=True
+                            )
 
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">
-                            <img src="data:image/png;base64,{number_bus_used_icon}" class="kpi-icon">
-                            Number of buses used
-                        </div>
-                        <div class="kpi-value">{deployed_buses_count}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                            st.markdown(f"""
+                            <div class="kpi-box">
+                                <div class="kpi-label">
+                                    <img src="data:image/png;base64,{number_bus_used_icon}" class="kpi-icon">
+                                    Number of buses used
+                                </div>
+                                <div class="kpi-value">{deployed_buses_count}</div>
+                            </div>
+                            """, unsafe_allow_html=True)
 
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">
-                            <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
-                            Average waiting time
-                        </div>
-                        <div class="kpi-value">{avg_waiting_time_per_bus:.2f} min/bus</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                            st.markdown(f"""
+                            <div class="kpi-box">
+                                <div class="kpi-label">
+                                    <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
+                                    Average waiting time
+                                </div>
+                                <div class="kpi-value">{avg_waiting_time_per_bus:.2f} min/bus</div>
+                            </div>
+                            """, unsafe_allow_html=True)
 
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">
-                            <img src="data:image/png;base64,{material_icon}" class="kpi-icon">
-                            Material trips
-                        </div>
-                        <div class="kpi-value">{t_material_total} trips</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                            st.markdown(f"""
+                            <div class="kpi-box">
+                                <div class="kpi-label">
+                                    <img src="data:image/png;base64,{material_icon}" class="kpi-icon">
+                                    Material trips
+                                </div>
+                                <div class="kpi-value">{t_material_total} trips</div>
+                            </div>
+                            """, unsafe_allow_html=True)
 
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">
-                            <img src="data:image/png;base64,{material_distance_icon}" class="kpi-icon">
-                            Material trip distance
-                        </div>
-                        <div class="kpi-value">{d_material_total_km:.3f} km</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                            st.markdown(f"""
+                            <div class="kpi-box">
+                                <div class="kpi-label">
+                                    <img src="data:image/png;base64,{material_distance_icon}" class="kpi-icon">
+                                    Material trip distance
+                                </div>
+                                <div class="kpi-value">{d_material_total_km:.3f} km</div>
+                            </div>
+                            """, unsafe_allow_html=True)
 
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">
-                            <img src="data:image/png;base64,{charging_time_icon}" class="kpi-icon">
-                            Charging time
-                        </div>
-                        <div class="kpi-value">{total_charging_time_hours:.2f} hours</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                            st.markdown(f"""
+                            <div class="kpi-box">
+                                <div class="kpi-label">
+                                    <img src="data:image/png;base64,{charging_time_icon}" class="kpi-icon">
+                                    Charging time
+                                </div>
+                                <div class="kpi-value">{total_charging_time_hours:.2f} hours</div>
+                            </div>
+                            """, unsafe_allow_html=True)
 
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">
-                            <img src="data:image/png;base64,{driving_distance_icon}" class="kpi-icon">
-                            Energy consumption
-                        </div>
-                        <div class="kpi-value">{total_consumption:.2f} kWh</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                            st.markdown(f"""
+                            <div class="kpi-box">
+                                <div class="kpi-label">
+                                    <img src="data:image/png;base64,{driving_distance_icon}" class="kpi-icon">
+                                    Energy consumption
+                                </div>
+                                <div class="kpi-value">{total_consumption:.2f} kWh</div>
+                            </div>
+                            """, unsafe_allow_html=True)
 
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">
-                            <img src="data:image/png;base64,{energy_consumption_icon}" class="kpi-icon">
-                            Total driving distance
-                        </div>
-                        <div class="kpi-value">{total_distance_km:.2f} km</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                            st.markdown(f"""
+                            <div class="kpi-box">
+                                <div class="kpi-label">
+                                    <img src="data:image/png;base64,{energy_consumption_icon}" class="kpi-icon">
+                                    Total driving distance
+                                </div>
+                                <div class="kpi-value">{total_distance_km:.2f} km</div>
+                            </div>
+                            """, unsafe_allow_html=True)
+
+                    with col_diff:
+                        with st.container(key = 'kpi_difference'):
+                            # st.markdown(
+                            #         '<div class="section-title">KPIs</div>',
+                            #         unsafe_allow_html=True
+                            #     )
+    
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-value">{(deployed_buses_count_imp - deployed_buses_count)}</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+    
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-value">{(avg_waiting_time_per_bus_imp - avg_waiting_time_per_bus):.2f} min/bus</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+    
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-value">{(t_material_total_imp - t_material_total)} trips</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+    
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-value">{(d_material_total_km_imp - d_material_total_km):.3f} km</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+    
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-value">{(total_charging_time_hours_imp - total_charging_time_hours):.2f} hours</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+    
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-value">{total_consumption:.2f} kWh</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+    
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-value">{(total_distance_km_imp - total_distance_km):.2f} km</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+
 
             with col_chart:
                 with st.container(key="chart_card"):
