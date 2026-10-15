@@ -985,6 +985,20 @@ elif keuze == "Visualisations":
             hide_index=True
         )
 
+        idle = bp[bp['activity'] == 'idle'].copy()
+
+        start = pd.to_timedelta(idle['start time'].astype(str))
+        end = pd.to_timedelta(idle['end time'].astype(str))
+
+        idle['duration_min'] = (end - start).dt.total_seconds() / 60
+        idle.loc[idle['duration_min'] < 0, 'duration_min'] += 1440
+
+        st.dataframe(
+            idle[['bus', 'start time', 'end time', 'duration_min']]
+            .sort_values(['bus', 'start time']),
+            hide_index=True
+        )
+
     else:
         st.warning(
             "Upload the bus planning, timetable and distance matrix on the Data Check page first."
