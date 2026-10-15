@@ -161,28 +161,34 @@ def gantt_chart_bus(bp, selected_buses=None):
 
         plugins.connect(fig, tooltip)
 
+
         # X-axis
         hours = range(5, 30)
 
         ax.set_xlim(4.2, 29)
-        ax.set_xticks(hours)
+        ax.set_xticks(list(hours))
 
-        ax.set_xticklabels(
-            [f'{hour % 24:02d}:00' for hour in hours],
-            fontsize=11,           # Tekstgrootte
-            color='#222222',       # Tekstkleur
-            fontweight='bold'      # Dikkere tekst
-        )
+        # Hide default time labels
+        ax.set_xticklabels([])
 
-        ax.tick_params(axis='x', pad=15, length=0)
-
+        # Keep x-axis at the top
         ax.xaxis.tick_top()
-        ax.xaxis.set_label_position('top')
+        ax.tick_params(axis='x', length=0)
 
-        # Move time labels upwards
-        for label in ax.get_xticklabels():
-            x, y = label.get_position()
-            label.set_position((x, y + 0.05))
+        # Draw time labels manually
+        for hour in hours:
+            ax.text(
+                hour,
+                -0.85,                        # Vertical position
+                f'{hour % 24:02d}:00',
+                ha='center',
+                va='center',
+                fontsize=10,
+                fontweight='bold',
+                color='#333333',
+                clip_on=False
+            )
+
 
         # Y-axis
         ax.set_yticks(range(len(group)))
