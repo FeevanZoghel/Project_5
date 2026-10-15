@@ -53,14 +53,25 @@ def calculate_distances_and_kpis(bp, dm, tt):
     return total_distance_m, total_distance_km, deployed_buses_count, t_material_total, d_material_total, d_material_total_km
 
 def calculate_waiting_time_kpis(bp, deployed_buses_count):
-    """Calculates total and average waiting time."""
-    start_time = pd.to_timedelta(bp['start time'].astype(str))
-    end_time = pd.to_timedelta(bp['end time'].astype(str))
-    idle = bp[bp['activity'] == 'idle']
-    waiting_time = end_time[idle.index] - start_time[idle.index]
+    """Calculates total and average waiting time, including overnight idle periods."""
+    idle = bp[bp['activity'] == 'idle'].copy()
+
+    start_time = pd.to_timedelta(idle['start time'].astype(str))
+    end_time = pd.to_timedelta(idle['end time'].astype(str))
+
+    waiting_time = end_time - start_time
+    waiting_time = waiting_time.where(
+        waiting_time >= pd.Timedelta(0),
+        waiting_time + pd.Timedelta(days=1)
+    )
+
     tot_waiting_time_min = waiting_time.dt.total_seconds().sum() / 60
     tot_waiting_time_hours = tot_waiting_time_min / 60
-    avg_waiting_time_per_bus = tot_waiting_time_min / deployed_buses_count
+    avg_waiting_time_per_bus = (
+        tot_waiting_time_min / deployed_buses_count
+        if deployed_buses_count > 0 else 0
+    )
+
     return tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus
 
 def calculate_charging_time_kpis(bp):
