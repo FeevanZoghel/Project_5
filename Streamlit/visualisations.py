@@ -20,14 +20,24 @@ def gantt_chart_bus(bp, selected_buses=None):
 
     planning = bp.sort_values(['bus', 'start time']).copy()
 
-    start_times = pd.to_timedelta(planning['start time'].astype(str))
-    end_times = pd.to_timedelta(planning['end time'].astype(str))
+    start_times = pd.to_timedelta(
+        planning['start time'].astype(str)
+    )
+
+    end_times = pd.to_timedelta(
+        planning['end time'].astype(str)
+    )
 
     planning['start_hour'] = start_times.dt.total_seconds() / 3600
     planning['end_hour'] = end_times.dt.total_seconds() / 3600
 
-    planning.loc[planning['start_hour'] < 5, 'start_hour'] += 24
-    planning.loc[planning['end_hour'] <= 5, 'end_hour'] += 24
+    planning.loc[
+        planning['start_hour'] < 5, 'start_hour'
+    ] += 24
+
+    planning.loc[
+        planning['end_hour'] <= 5, 'end_hour'
+    ] += 24
 
     colors = {
         'service trip': 'skyblue',
@@ -38,19 +48,22 @@ def gantt_chart_bus(bp, selected_buses=None):
 
     buses = sorted(planning['bus'].unique())
 
-    groups = []
-    for i in range(0, len(buses), 20):
-        groups.append(buses[i:i + 20])
+    groups = [
+        buses[i:i + 20]
+        for i in range(0, len(buses), 20)
+    ]
 
     for group in groups:
 
         fig, ax = plt.subplots(figsize=(14, 7))
 
-        group_planning = planning[planning['bus'].isin(group)]
+        group_planning = planning[
+            planning['bus'].isin(group)
+        ]
 
-        bus_positions = {}
-        for i in range(len(group)):
-            bus_positions[group[i]] = i
+        bus_positions = {
+            bus: i for i, bus in enumerate(group)
+        }
 
         activities_in_legend = []
 
@@ -59,12 +72,11 @@ def gantt_chart_bus(bp, selected_buses=None):
         hover_y = []
         hover_labels = []
 
-        for i in range(len(group_planning)):
-
-            trip = group_planning.iloc[i]
+        for _, trip in group_planning.iterrows():
 
             bus = trip['bus']
             activity = trip['activity']
+
             start = trip['start_hour']
             end = trip['end_hour']
 
@@ -81,6 +93,7 @@ def gantt_chart_bus(bp, selected_buses=None):
             else:
                 label = None
 
+            # Draw activity bar
             ax.barh(
                 y,
                 duration,
@@ -92,10 +105,11 @@ def gantt_chart_bus(bp, selected_buses=None):
                 label=label
             )
 
-            # Hover point at the centre of each activity
+            # Hover point in the centre of the bar
             hover_x.append(start + duration / 2)
             hover_y.append(y)
 
+            # Tooltip information
             hover_labels.append(
                 f"<b>Start location:</b> "
                 f"{escape(str(trip['start location']))}<br>"
@@ -107,19 +121,22 @@ def gantt_chart_bus(bp, selected_buses=None):
                 f"{escape(str(trip['end time']))}"
             )
 
-            if activity == 'service trip' and pd.notna(trip['line']):
-                line = trip['line']
-
+            # Show line numbers inside service trips
+            if (
+                activity == 'service trip'
+                and pd.notna(trip['line'])
+            ):
                 ax.text(
                     start + duration / 2,
                     y,
-                    f'{int(line)}',
+                    f"{int(trip['line'])}",
                     ha='center',
                     va='center',
-                    fontsize=8
+                    fontsize=8,
+                    color='black'
                 )
 
-        # Add invisible hover points
+        # Hover points
         points = ax.scatter(
             hover_x,
             hover_y,
@@ -138,25 +155,45 @@ def gantt_chart_bus(bp, selected_buses=None):
 
         plugins.connect(fig, tooltip)
 
-        # Chart styling
+        # X-axis
         hours = range(5, 30)
 
         ax.set_xlim(5, 29)
         ax.set_xticks(hours)
         ax.set_xticklabels([
-            f'{hour % 24:02d}:00' for hour in hours
+            f'{hour % 24:02d}:00'
+            for hour in hours
         ])
 
-        ax.set_yticks(range(len(group)))
-        ax.set_yticklabels([
-            f'Bus {bus}' for bus in group
-        ])
-
-        ax.invert_yaxis()
         ax.xaxis.tick_top()
         ax.xaxis.set_label_position('top')
 
+        # Y-axis
+        ax.set_yticks(range(len(group)))
+
+        # Hide default tick labels
+        ax.set_yticklabels([])
+
+        # Put Bus 1 at the top
+        ax.set_ylim(len(group) - 0.5, -0.5)
+
+        # Add bus labels manually as text objects
+        for i, bus in enumerate(group):
+            ax.text(
+                -0.015,
+                i,
+                f'Bus {bus}',
+                transform=ax.get_yaxis_transform(),
+                ha='right',
+                va='center',
+                fontsize=10,
+                color='black',
+                clip_on=False
+            )
+
+        # Grid styling
         ax.set_axisbelow(True)
+
         ax.grid(
             axis='x',
             color='#E5E7EB',
@@ -164,32 +201,7 @@ def gantt_chart_bus(bp, selected_buses=None):
             alpha=0.35
         )
 
-        ax.set_axisbelow(True)
-
         ax.set_xlabel('Time')
-
-        # Y-axis: bus numbers
-        ax.set_yticks(list(range(len(group))))
-        ax.set_yticklabels(
-            [f'Bus {bus}' for bus in group],
-            fontsize=10,
-            color='black'
-        )
-
-        ax.set_ylim(len(group) - 0.5, -0.5)
-
-        ax.tick_params(
-            axis='y',
-            which='major',
-            labelleft=True,
-            left=True,
-            colors='black',
-            length=4,
-            pad=8
-        )
-
-        ax.spines['left'].set_visible(True)
-
         ax.set_title('Improved bus plan')
 
         ax.legend(
@@ -198,6 +210,7 @@ def gantt_chart_bus(bp, selected_buses=None):
             ncol=4
         )
 
+        # Figure margins
         fig.subplots_adjust(
             left=0.12,
             right=0.98,
@@ -205,8 +218,10 @@ def gantt_chart_bus(bp, selected_buses=None):
             bottom=0.15
         )
 
+        # Convert Matplotlib to interactive HTML
         html = mpld3.fig_to_html(fig)
 
+        # Fullscreen functionality
         fullscreen_html = f"""
         <div id="gantt-container" style="
             background: white;
@@ -247,6 +262,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         </script>
         """
 
+        # Display in Streamlit
         components.html(
             fullscreen_html,
             height=850,
