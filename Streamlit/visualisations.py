@@ -263,6 +263,14 @@ def gantt_chart_bus(bp, selected_buses=None):
             }}
 
             #gantt-container .mpld3-tooltip {{
+                background-color: #F3F4F6 !important;
+                color: #222222 !important;
+                border: 2px solid #555555 !important;
+                border-radius: 8px !important;
+                padding: 10px 14px !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+                font-size: 13px !important;
+                line-height: 1.6 !important;
                 z-index: 999999 !important;
                 pointer-events: none;
             }}
