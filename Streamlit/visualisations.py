@@ -168,9 +168,27 @@ def gantt_chart_bus(bp, selected_buses=None):
 
         ax.set_xlabel('Time')
 
-        ax.set_yticks(range(len(group)))
-        ax.set_yticklabels([f'Bus {bus}' for bus in group])
+        # Y-axis: bus numbers
+        ax.set_yticks(list(range(len(group))))
+        ax.set_yticklabels(
+            [f'Bus {bus}' for bus in group],
+            fontsize=10,
+            color='black'
+        )
+
         ax.set_ylim(len(group) - 0.5, -0.5)
+
+        ax.tick_params(
+            axis='y',
+            which='major',
+            labelleft=True,
+            left=True,
+            colors='black',
+            length=4,
+            pad=8
+        )
+
+        ax.spines['left'].set_visible(True)
 
         ax.set_title('Improved bus plan')
 
@@ -180,7 +198,12 @@ def gantt_chart_bus(bp, selected_buses=None):
             ncol=4
         )
 
-        plt.tight_layout()
+        fig.subplots_adjust(
+            left=0.12,
+            right=0.98,
+            top=0.88,
+            bottom=0.15
+        )
 
         html = mpld3.fig_to_html(fig)
 
