@@ -483,12 +483,10 @@ if keuze == "Data Check":
             ["Original planning", "Improved planning"],
             horizontal=True)
 
-#------------------------------------------------------------------
-        if planning_choice == 'Original planning':
-            df1 = st.session_state['improved_bp']
-        else:
-            df1 = st.session_state['bp']
-#------------------------------------------------------------------
+    if planning_choice == 'Original planning':
+        df1 = st.session_state['bp']
+    else:
+        df1 = st.session_state['improved_bp']
 
         validate_bus_planning(df1)
 
@@ -723,7 +721,13 @@ elif keuze == "Visualisations":
         and 'tt' in st.session_state
         and 'dm' in st.session_state
     ):
+        original_bp = st.session_state['bp']
+        tt = st.session_state['tt']
+        dm = st.session_state['dm']
+
         if 'improved_bp' in st.session_state:
+            improved_bp = st.session_state['improved_bp']
+
             planning_choice = st.radio(
                 "Select bus planning",
                 ["Original planning", "Improved planning"],
@@ -731,34 +735,42 @@ elif keuze == "Visualisations":
             )
 
             if planning_choice == "Improved planning":
-                bp = st.session_state['improved_bp']
-                _, total_distance_km_imp, deployed_buses_count_imp, t_material_total_imp, d_material_total_imp, d_material_total_km_imp = calculate_distances_and_kpis(bp, dm, tt)
-                _, tot_waiting_time_hours_imp, avg_waiting_time_per_bus_imp = calculate_waiting_time_kpis(bp, deployed_buses_count)
-                _, total_charging_time_hours_imp = calculate_energy_consumption_kpis(bp)
+                bp = improved_bp
             else:
-                bp = st.session_state['bp']
-                _, total_distance_km, deployed_buses_count, t_material_total, d_material_total, d_material_total_km = calculate_distances_and_kpis(bp, dm, tt)
-                _, tot_waiting_time_hours, avg_waiting_time_per_bus = calculate_waiting_time_kpis(bp, deployed_buses_count)
-                _, total_charging_time_hours = calculate_energy_consumption_kpis(bp)
+                bp = original_bp
         else:
-            bp = st.session_state['bp']
+            planning_choice = "Original planning"
+            bp = original_bp
 
-        tt = st.session_state['tt']
-        dm = st.session_state['dm']
-        # KPI calculations
-        total_distance_m, total_distance_km, deployed_buses_count, t_material_total, d_material_total, d_material_total_km = calculate_distances_and_kpis(
-            bp, dm, tt
-        )
+        # KPIs of the selected planning
+        total_distance_m, total_distance_km, deployed_buses_count, t_material_total, d_material_total, d_material_total_km = calculate_distances_and_kpis(bp, dm, tt)
 
-        tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus = calculate_waiting_time_kpis(
-            bp, deployed_buses_count
-        )
+        tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus = calculate_waiting_time_kpis(bp, deployed_buses_count)
 
         total_charging_time_min, total_charging_time_hours = calculate_charging_time_kpis(bp)
 
         total_consumption = calculate_energy_consumption_kpis(bp)
 
-        # Main dashboard
+        # Differences between improved and original planning
+        if 'improved_bp' in st.session_state:
+            _, original_distance, original_buses, original_material, _, original_material_km = calculate_distances_and_kpis(original_bp, dm, tt)
+            _, _, original_waiting = calculate_waiting_time_kpis(original_bp, original_buses)
+            _, original_charging = calculate_charging_time_kpis(original_bp)
+            original_energy = calculate_energy_consumption_kpis(original_bp)
+
+            _, improved_distance, improved_buses, improved_material, _, improved_material_km = calculate_distances_and_kpis(improved_bp, dm, tt)
+            _, _, improved_waiting = calculate_waiting_time_kpis(improved_bp, improved_buses)
+            _, improved_charging = calculate_charging_time_kpis(improved_bp)
+            improved_energy = calculate_energy_consumption_kpis(improved_bp)
+
+            buses_diff = improved_buses - original_buses
+            waiting_diff = improved_waiting - original_waiting
+            material_diff = improved_material - original_material
+            material_km_diff = improved_material_km - original_material_km
+            charging_diff = improved_charging - original_charging
+            energy_diff = improved_energy - original_energy
+            distance_diff = improved_distance - original_distance
+
         # Main dashboard
         with st.container(key="results_dashboard"):
 
@@ -862,54 +874,55 @@ elif keuze == "Visualisations":
                             </div>
                             """, unsafe_allow_html=True)
 
-                    with col_diff:
-                        with st.container(key = 'kpi_difference'):
-                            # st.markdown(
-                            #         '<div class="section-title">KPIs</div>',
-                            #         unsafe_allow_html=True
-                            #     )
-    
-                                st.markdown(f"""
-                                <div class="kpi-box">
-                                    <div class="kpi-value">{(deployed_buses_count_imp - deployed_buses_count)}</div>
-                                </div>
-                                """, unsafe_allow_html=True)
-    
-                                st.markdown(f"""
-                                <div class="kpi-box">
-                                    <div class="kpi-value">{(avg_waiting_time_per_bus_imp - avg_waiting_time_per_bus):.2f} min/bus</div>
-                                </div>
-                                """, unsafe_allow_html=True)
-    
-                                st.markdown(f"""
-                                <div class="kpi-box">
-                                    <div class="kpi-value">{(t_material_total_imp - t_material_total)} trips</div>
-                                </div>
-                                """, unsafe_allow_html=True)
-    
-                                st.markdown(f"""
-                                <div class="kpi-box">
-                                    <div class="kpi-value">{(d_material_total_km_imp - d_material_total_km):.3f} km</div>
-                                </div>
-                                """, unsafe_allow_html=True)
-    
-                                st.markdown(f"""
-                                <div class="kpi-box">
-                                    <div class="kpi-value">{(total_charging_time_hours_imp - total_charging_time_hours):.2f} hours</div>
-                                </div>
-                                """, unsafe_allow_html=True)
-    
-                                st.markdown(f"""
-                                <div class="kpi-box">
-                                    <div class="kpi-value">{total_consumption:.2f} kWh</div>
-                                </div>
-                                """, unsafe_allow_html=True)
-    
-                                st.markdown(f"""
-                                <div class="kpi-box">
-                                    <div class="kpi-value">{(total_distance_km_imp - total_distance_km):.2f} km</div>
-                                </div>
-                                """, unsafe_allow_html=True)
+                    if 'improved_bp' in st.sessions_state:
+                        with col_diff:
+                            with st.container(key = 'kpi_difference'):
+                                # st.markdown(
+                                #         '<div class="section-title">KPIs</div>',
+                                #         unsafe_allow_html=True
+                                #     )
+        
+                                    st.markdown(f"""
+                                    <div class="kpi-box">
+                                        <div class="kpi-value">{buses_diff}</div>
+                                    </div>
+                                    """, unsafe_allow_html=True)
+        
+                                    st.markdown(f"""
+                                    <div class="kpi-box">
+                                        <div class="kpi-value">{waiting_diff:.2f} min/bus</div>
+                                    </div>
+                                    """, unsafe_allow_html=True)
+        
+                                    st.markdown(f"""
+                                    <div class="kpi-box">
+                                        <div class="kpi-value">{material_diff} trips</div>
+                                    </div>
+                                    """, unsafe_allow_html=True)
+        
+                                    st.markdown(f"""
+                                    <div class="kpi-box">
+                                        <div class="kpi-value">{material_diff:.3f} km</div>
+                                    </div>
+                                    """, unsafe_allow_html=True)
+        
+                                    st.markdown(f"""
+                                    <div class="kpi-box">
+                                        <div class="kpi-value">{charging_diff:.2f} hours</div>
+                                    </div>
+                                    """, unsafe_allow_html=True)
+        
+                                    st.markdown(f"""
+                                    <div class="kpi-box">
+                                        <div class="kpi-value">{energy_diff:.2f} kWh</div>
+                                    </div>
+                                    """, unsafe_allow_html=True)
+        
+                                    st.markdown(f"""
+                                    <div class="kpi-box">
+                                        <div class="kpi-value">{distance_diff:.2f} km</div>
+                                    </div>
+                                    """, unsafe_allow_html=True)
 
 
             with col_chart:
