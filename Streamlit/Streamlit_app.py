@@ -884,12 +884,20 @@ elif keuze == "Visualisations":
         
                                 st.markdown(f"""
                                 <div class="kpi-box">
+                                    <div class="kpi-label">
+                                        <img src="data:image/png;base64,{number_bus_used_icon}" class="kpi-icon">
+                                        Number of buses used
+                                    </div>
                                     <div class="kpi-value">{buses_diff}</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
                                 st.markdown(f"""
                                 <div class="kpi-box">
+                                    <div class="kpi-label">
+                                        <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
+                                        Average waiting time
+                                    </div>
                                     <div class="kpi-value">{waiting_diff:.2f} min/bus</div>
                                 </div>
                                 """, unsafe_allow_html=True)
