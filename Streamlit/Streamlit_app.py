@@ -410,7 +410,7 @@ if keuze == "Data Check":
         key in st.session_state for key in ['bp', 'tt', 'dm']
     )
 
-    if st.button("Solve", type="primary", disabled=not files_ready):
+    if st.button("Optimize", type="primary", disabled=not files_ready):
         with st.spinner("Optimizing bus planning..."):
             try:
                 improved_bp = solve_bus_planning(
@@ -477,7 +477,16 @@ if keuze == "Data Check":
         </style>
     """, unsafe_allow_html=True)
 
-        df1 = st.session_state['improved_bp']
+
+        planning_choice = st.radio(
+            "Select bus planning",
+            ["Original planning", "Improved planning"],
+            horizontal=True)
+
+        if planning_choice == 'Original planning':
+            df1 = st.session_state['improved_bp']
+        else:
+            df1 = st.session_state['bp']
 
         validate_bus_planning(df1)
 
