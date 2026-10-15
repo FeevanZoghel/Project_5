@@ -241,6 +241,7 @@ for i in range(len(tt)):
 
     add_activity(ibp, gekozen_bus, trip['start'], trip['end'], start_time, end_time, 'service trip', trip['line'], energy_consumption, battery[gekozen_bus], total_travel_time)
 
+# dit voegt de idle time toe
 for bus in ibp['bus'].unique():
     bus_planning = ibp[ibp['bus'] == bus].sort_values('start time').copy()
     for i in range(len(bus_planning) - 1):
