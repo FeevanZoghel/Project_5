@@ -182,11 +182,50 @@ def gantt_chart_bus(bp, selected_buses=None):
 
         plt.tight_layout()
 
-        # Convert to interactive HTML
         html = mpld3.fig_to_html(fig)
 
+        fullscreen_html = f"""
+        <div id="gantt-container" style="
+            background: white;
+            padding: 10px;
+            overflow: auto;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+        ">
+            <button onclick="toggleFullscreen()" style="
+                float: right;
+                padding: 7px 12px;
+                margin-bottom: 10px;
+                background: #EA3323;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+            ">
+                ⛶ Fullscreen
+            </button>
+
+            <div style="clear: both;"></div>
+
+            {html}
+        </div>
+
+        <script>
+        function toggleFullscreen() {{
+            const container = document.getElementById("gantt-container");
+
+            if (!document.fullscreenElement) {{
+                container.requestFullscreen();
+            }} else {{
+                document.exitFullscreen();
+            }}
+        }}
+        </script>
+        """
+
         components.html(
-            html,
+            fullscreen_html,
             height=850,
             scrolling=False
         )
