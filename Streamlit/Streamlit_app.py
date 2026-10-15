@@ -789,22 +789,22 @@ elif keuze == "Visualisations":
             buses_diff_perc = 100-((improved_buses/original_buses)*100)
 
             waiting_diff =  original_waiting - improved_waiting
-            waiting_diff_perc = ((original_waiting/improved_waiting)*100)-100
+            waiting_diff_perc = 100-((improved_waiting/original_waiting)*100)
 
             material_diff = original_material - improved_material
-            material_diff_perc = ((original_material/improved_material)*100)-100
+            material_diff_perc = 100-((improved_material/original_material)*100)
 
             material_km_diff = original_material_km - improved_material_km 
-            material_km_diff_perc = ((original_material_km/improved_material_km)*100)-100
+            material_km_diff_perc = 100-((improved_material_km/original_material_km)*100)
 
             charging_diff = original_charging - improved_charging
-            charging_diff_perc = ((original_charging/improved_charging)*100)-100
+            charging_diff_perc = 100-((improved_charging/original_charging)*100)
 
             energy_diff = original_energy - improved_energy 
-            energy_diff_perc = ((original_energy/improved_energy)*100)-100
+            energy_diff_perc = 100-((improved_energy/original_energy)*100)
 
             distance_diff = original_distance - improved_distance
-            distance_diff_perc = ((original_distance/improved_distance)*100)-100
+            distance_diff_perc = 100-((improved_distance/original_distance)*100)
 
         # Main dashboard
         with st.container(key="results_dashboard"):
