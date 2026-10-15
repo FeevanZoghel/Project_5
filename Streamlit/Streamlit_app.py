@@ -786,25 +786,25 @@ elif keuze == "Visualisations":
             improved_energy = calculate_energy_consumption_kpis(improved_bp)
 
             buses_diff = original_buses - improved_buses
-            buses_diff_perc = (original_buses/improved_buses)*100
+            buses_diff_perc = ((original_buses/improved_buses)*100)-100
 
             waiting_diff =  original_waiting - improved_waiting
-            waiting_diff_perc = (original_waiting/improved_waiting)*100 
+            waiting_diff_perc = ((original_waiting/improved_waiting)*100)-100
 
             material_diff = original_material - improved_material
-            material_diff_perc = (original_material/improved_material)*100
+            material_diff_perc = ((original_material/improved_material)*100)-100
 
             material_km_diff = original_material_km - improved_material_km 
-            material_km_diff_perc = (original_material_km/improved_material_km)*100
+            material_km_diff_perc = ((original_material_km/improved_material_km)*100)-100
 
             charging_diff = original_charging - improved_charging
-            charging_diff_perc = (original_charging/improved_charging)*100
+            charging_diff_perc = ((original_charging/improved_charging)*100)-100
 
             energy_diff = original_energy - improved_energy 
-            energy_diff_perc = (original_energy/improved_energy)*100
+            energy_diff_perc = ((original_energy/improved_energy)*100)-100
 
             distance_diff = original_distance - improved_distance
-            distance_diff_perc = (original_distance/improved_distance)*100
+            distance_diff_perc = ((original_distance/improved_distance)*100)-100
 
         # Main dashboard
         with st.container(key="results_dashboard"):
