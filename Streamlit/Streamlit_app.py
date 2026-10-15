@@ -820,7 +820,7 @@ elif keuze == "Visualisations":
                                     <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
                                     Average waiting time
                                 </div>
-                                <div class="kpi-value">{avg_waiting_time_per_bus:.2f} min/bus</div>
+                                <div class="kpi-value">{(-1*(avg_waiting_time_per_bus)):.2f} min/bus</div>
                             </div>
                             """, unsafe_allow_html=True)
 
