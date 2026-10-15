@@ -665,7 +665,7 @@ elif keuze == "Visualisations":
         color: #1F1F1F;
         padding-bottom: 12px;
         margin-bottom: 15px;
-        border-bottom: 2px solid #FFFFFF;
+        border-bottom: 2px solid #E5E5E5;
         position: relative;
     }
 
@@ -953,20 +953,35 @@ elif keuze == "Visualisations":
                                 </div>
                                 """, unsafe_allow_html=True)
 
-
             with col_chart:
                 with st.container(key="chart_card"):
-                    st.markdown('<div class="section-title">Bus planning</div>', unsafe_allow_html=True)
-                    all_buses = sorted(bp['bus'].dropna().unique().tolist())
-
-                    selected_buses = st.multiselect(
-                        "Select buses to display",
-                        options=all_buses,
-                        default=all_buses,
-                        key=f"selected_buses_{planning_choice}" if 'improved_bp' in st.session_state else "selected_buses_original"
+                    st.markdown(
+                        '<div class="section-title">Bus planning</div>',
+                        unsafe_allow_html=True
                     )
 
-                    gantt_chart_bus(bp, selected_buses)
+                    all_buses = sorted(bp['bus'].dropna().unique().tolist())
+
+                    selection_key = (
+                        f"selected_buses_{planning_choice}"
+                        if 'improved_bp' in st.session_state
+                        else "selected_buses_original"
+                    )
+
+                    if selection_key not in st.session_state:
+                        st.session_state[selection_key] = all_buses
+
+                    with st.popover(
+                        f"🚌 Select buses ({len(st.session_state[selection_key])}/{len(all_buses)} selected)",
+                        use_container_width=True
+                    ):
+                        selected_buses = st.multiselect(
+                            "Select buses to display",
+                            options=all_buses,
+                            key=selection_key
+                        )
+
+                    gantt_chart_bus(bp, st.session_state[selection_key])
 
     else:
         st.warning(
