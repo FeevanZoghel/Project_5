@@ -218,9 +218,9 @@ for i in range(len(tt)):
         gekozen_bus = nieuwe_bus
         nieuwe_bus_aangemaakt = True
 
-    # kiest de bus met de hoogste traveltijd (deze is gefabriceerd met chat)
+    # kiest de bus met de hoogste traveltijd 
     else:
-            gekozen_bus = min(
+            gekozen_bus = max(
                 beschikbare_bussen,
                 key=lambda b: ibp[ibp['bus'] == b].iloc[-1]['end time']
             )
