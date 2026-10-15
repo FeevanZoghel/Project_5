@@ -665,7 +665,7 @@ elif keuze == "Visualisations":
         color: #1F1F1F;
         padding-bottom: 12px;
         margin-bottom: 15px;
-        border-bottom: 2px solid #E5E5E5;
+        border-bottom: 2px solid #FFFFFF;
         position: relative;
     }
 
