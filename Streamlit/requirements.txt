@@ -4,4 +4,3 @@ openpyxl
 matplotlib
 scipy
 numpy
-plotly
