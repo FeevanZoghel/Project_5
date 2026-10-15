@@ -105,8 +105,8 @@ def gantt_chart_bus(bp, selected_buses=None):
                 left=start,
                 height=0.8,
                 color=colors[activity],
-                edgecolor='grey',
-                linewidth=2,
+                edgecolor='#000000',
+                linewidth=1.5,
                 label=label
             )
 
@@ -167,10 +167,14 @@ def gantt_chart_bus(bp, selected_buses=None):
         ax.set_xlim(4.2, 29)
         ax.set_xticks(hours)
 
-        ax.set_xticklabels([
-            f'{hour % 24:02d}:00'
-            for hour in hours
-        ])
+        ax.set_xticklabels(
+            [f'{hour % 24:02d}:00' for hour in hours],
+            fontsize=11,           # Tekstgrootte
+            color='#222222',       # Tekstkleur
+            fontweight='bold'      # Dikkere tekst
+        )
+        
+        ax.tick_params(axis='x', pad=6, length=0)
 
         ax.xaxis.tick_top()
         ax.xaxis.set_label_position('top')
@@ -269,7 +273,7 @@ def gantt_chart_bus(bp, selected_buses=None):
                 border-radius: 8px !important;
                 padding: 10px 14px !important;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-                font-size: 13px !important;
+                font-size: 14px !important;
                 line-height: 1.6 !important;
                 z-index: 999999 !important;
                 pointer-events: none;
