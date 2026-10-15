@@ -180,7 +180,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         # Add bus labels manually as text objects
         for i, bus in enumerate(group):
             ax.text(
-                4.8,
+                10,
                 i,
                 f'Bus {bus}',
                 ha='right',
