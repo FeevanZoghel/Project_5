@@ -215,7 +215,7 @@ def gantt_chart_bus(bp, selected_buses=None):
             axis = 'y',
             color = '#E5E7EB',
             linewidth = 0.6,
-            alpha = 0.7
+            alpha = 0.05
         )
 
         # Titles
