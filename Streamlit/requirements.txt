@@ -4,3 +4,4 @@ openpyxl
 matplotlib
 scipy
 numpy
+mpld3
