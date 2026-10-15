@@ -786,12 +786,25 @@ elif keuze == "Visualisations":
             improved_energy = calculate_energy_consumption_kpis(improved_bp)
 
             buses_diff = original_buses - improved_buses
-            waiting_diff =  original_waiting - improved_waiting 
+            buses_diff_perc = (original_buses/improved_buses)*100
+
+            waiting_diff =  original_waiting - improved_waiting
+            waiting_diff_perc = (original_waiting/improved_waiting)*100 
+
             material_diff = original_material - improved_material
+            material_diff_perc = (original_material/improved_material)*100
+
             material_km_diff = original_material_km - improved_material_km 
+            material_km_diff_perc = (original_material_km/improved_material_km)*100
+
             charging_diff = original_charging - improved_charging
+            charging_diff_perc = (original_charging/improved_charging)*100
+
             energy_diff = original_energy - improved_energy 
+            energy_diff_perc = (original_energy/improved_energy)*100
+
             distance_diff = original_distance - improved_distance
+            distance_diff_perc = (original_distance/improved_distance)*100
 
         # Main dashboard
         with st.container(key="results_dashboard"):
@@ -910,7 +923,7 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{number_bus_used_icon}" class="kpi-icon">
                                         Number of buses used
                                     </div>
-                                    <div class="kpi-value">{buses_diff}</div>
+                                    <div class="kpi-value">{buses_diff_perc:.1f}</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
@@ -920,7 +933,7 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
                                         Average waiting time
                                     </div>
-                                    <div class="kpi-value">{waiting_diff:.2f} min/bus</div>
+                                    <div class="kpi-value">{waiting_diff_perc:.1f} min/bus</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
@@ -930,7 +943,7 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{material_icon}" class="kpi-icon">
                                         Material trips
                                     </div>
-                                    <div class="kpi-value">{material_diff} trips</div>
+                                    <div class="kpi-value">{material_diff_perc:.1f} trips</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
@@ -940,7 +953,7 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{material_distance_icon}" class="kpi-icon">
                                         Material trip distance
                                     </div>
-                                    <div class="kpi-value">{material_km_diff:.3f} km</div>
+                                    <div class="kpi-value">{material_km_diff_perc:.1f} km</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
@@ -950,7 +963,7 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{charging_time_icon}" class="kpi-icon">
                                         Charging time
                                     </div>
-                                    <div class="kpi-value">{charging_diff:.2f} hours</div>
+                                    <div class="kpi-value">{charging_diff_perc:.1f} hours</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
@@ -960,7 +973,7 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{driving_distance_icon}" class="kpi-icon">
                                         Energy consumption
                                     </div>
-                                    <div class="kpi-value">{energy_diff:.2f} kWh</div>
+                                    <div class="kpi-value">{energy_diff_perc:.1f} kWh</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
@@ -970,7 +983,7 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{energy_consumption_icon}" class="kpi-icon">
                                         Total driving distance
                                     </div>
-                                    <div class="kpi-value">{distance_diff:.2f} km</div>
+                                    <div class="kpi-value">{distance_diff_perc:.1f} km</div>
                                 </div>
                                 """, unsafe_allow_html=True)
 
@@ -993,7 +1006,7 @@ elif keuze == "Visualisations":
                         st.session_state[selection_key] = all_buses
 
                     with st.popover(
-                        f"🚌 Select buses ({len(st.session_state[selection_key])}/{len(all_buses)} selected)",
+                        f"Select buses ({len(st.session_state[selection_key])}/{len(all_buses)} selected)",
                         use_container_width=True
                     ):
                         selected_buses = st.multiselect(
