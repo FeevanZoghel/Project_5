@@ -57,8 +57,8 @@ def gantt_chart_bus(bp, selected_buses=None):
                 color=colors[activity],
                 edgecolor='grey',
                 linewidth=1,
-                label=label
-            )
+                label=label)
+            
             if activity == 'service trip':
                 line = trip['line']
                 ax.text(
