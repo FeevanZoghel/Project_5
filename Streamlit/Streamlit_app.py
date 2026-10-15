@@ -967,6 +967,24 @@ elif keuze == "Visualisations":
 
                     gantt_chart_bus(bp, selected_buses)
 
+        st.write("Waiting time per bus")
+
+        idle = bp[bp['activity'] == 'idle'].copy()
+
+        start = pd.to_timedelta(idle['start time'].astype(str))
+        end = pd.to_timedelta(idle['end time'].astype(str))
+
+        duration = (end - start).dt.total_seconds() / 60
+        idle['waiting minutes'] = duration.where(duration >= 0, duration + 1440)
+
+        st.dataframe(
+            idle.groupby('bus')['waiting minutes']
+            .sum()
+            .reset_index()
+            .sort_values('waiting minutes', ascending=False),
+            hide_index=True
+        )
+
     else:
         st.warning(
             "Upload the bus planning, timetable and distance matrix on the Data Check page first."
