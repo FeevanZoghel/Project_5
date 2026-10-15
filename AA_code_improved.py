@@ -30,7 +30,7 @@ battery = {}
 charging_start = {}
 
 # Beginwaardes
-assumed_battery_value = 85
+assumed_battery_value = 95
 max_battery = 300 * assumed_battery_value / 100
 charging_limit = 0.9 * max_battery
 fast_charge_per_min = 450 / 60
@@ -108,6 +108,7 @@ def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_tim
 def garage_to_trip(bus, trip, start_time, ibp, battery, dm, bp):
     if trip['start'] == 'ehvgar':
             return
+    
     dm_material = dm[(dm['start']=='ehvgar') & (dm['end'] == trip['start'])]
     material_travel_time = (dm_material['min_travel_time'].iloc[0]+dm_material['max_travel_time'].iloc[0])/2
     material_start_time = start_time - pd.Timedelta(minutes = material_travel_time)
@@ -297,6 +298,18 @@ output_filename = 'Improved_plan_Feasibility_and_KPI_results.xlsx'
 output = export_results_to_excel(feasibility_results, kpi_results, filename=output_filename)
 output
 
+
+
+# oefenen 
+
+print("Minimale batterijgrens:", min_battery_value)
+print("Laagste batterijwaarde:", ibp['total battery bus'].min())
+
+print(
+    ibp.nsmallest(10, 'total battery bus')[
+        ['bus', 'activity', 'total battery bus']
+    ]
+)
 
 t_end = time.perf_counter()
 computation_time = t_end - t_start
