@@ -763,13 +763,13 @@ elif keuze == "Visualisations":
             _, improved_charging = calculate_charging_time_kpis(improved_bp)
             improved_energy = calculate_energy_consumption_kpis(improved_bp)
 
-            buses_diff = improved_buses - original_buses
-            waiting_diff = improved_waiting - original_waiting
-            material_diff = improved_material - original_material
-            material_km_diff = improved_material_km - original_material_km
-            charging_diff = improved_charging - original_charging
-            energy_diff = improved_energy - original_energy
-            distance_diff = improved_distance - original_distance
+            buses_diff = original_buses - improved_buses
+            waiting_diff = original_waiting - improved_waiting 
+            material_diff = original_material - improved_material
+            material_km_diff = original_material_km - improved_material_km 
+            charging_diff = original_charging - improved_charging
+            energy_diff = original_energy - improved_energy 
+            distance_diff = original_distance - improved_distance
 
         # Main dashboard
         with st.container(key="results_dashboard"):
@@ -790,12 +790,12 @@ elif keuze == "Visualisations":
                 st.image(logo_path, width=500)      
 
             # KPI + Gantt chart
-            col_kpi, col_chart = st.columns([2.4, 7.6], gap="medium")
+            col_kpi, col_chart = st.columns([3.4, 6.6], gap="medium")
 
             # KPI CARD
             with col_kpi:
                 with st.container(key="kpi_selection"):
-                    col_kpi, col_diff = st.columns([1.5,0.9], gap = 'small')
+                    col_kpi, col_diff = st.columns([1.9,1.5], gap = 'small')
                     with col_kpi:
                         with st.container(key = 'kpi_card'):
 
