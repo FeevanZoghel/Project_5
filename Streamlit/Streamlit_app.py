@@ -923,7 +923,7 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{number_bus_used_icon}" class="kpi-icon">
                                         Number of buses used
                                     </div>
-                                    <div class="kpi-value">{buses_diff_perc:.1f}</div>
+                                    <div class="kpi-value">{buses_diff_perc:.1f}%</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
@@ -933,17 +933,17 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
                                         Average waiting time
                                     </div>
-                                    <div class="kpi-value">{waiting_diff_perc:.1f} min/bus</div>
+                                    <div class="kpi-value">{waiting_diff_perc:.1f}%</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
                                 st.markdown(f"""
                                 <div class="kpi-box">
                                     <div class="kpi-label">
-                                        <img src="data:image/png;base64,{material_icon}" class="kpi-icon">
+                                        <img src="data:image/png;base64,{material_icon}%" class="kpi-icon">
                                         Material trips
                                     </div>
-                                    <div class="kpi-value">{material_diff_perc:.1f} trips</div>
+                                    <div class="kpi-value">{material_diff_perc:.1f}%</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
@@ -953,7 +953,7 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{material_distance_icon}" class="kpi-icon">
                                         Material trip distance
                                     </div>
-                                    <div class="kpi-value">{material_km_diff_perc:.1f} km</div>
+                                    <div class="kpi-value">{material_km_diff_perc:.1f}%</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
@@ -963,7 +963,7 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{charging_time_icon}" class="kpi-icon">
                                         Charging time
                                     </div>
-                                    <div class="kpi-value">{charging_diff_perc:.1f} hours</div>
+                                    <div class="kpi-value">{charging_diff_perc:.1f}%</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
@@ -973,7 +973,7 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{driving_distance_icon}" class="kpi-icon">
                                         Energy consumption
                                     </div>
-                                    <div class="kpi-value">{energy_diff_perc:.1f} kWh</div>
+                                    <div class="kpi-value">{energy_diff_perc:.1f}%</div>
                                 </div>
                                 """, unsafe_allow_html=True)
     
@@ -983,7 +983,7 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{energy_consumption_icon}" class="kpi-icon">
                                         Total driving distance
                                     </div>
-                                    <div class="kpi-value">{distance_diff_perc:.1f} km</div>
+                                    <div class="kpi-value">{distance_diff_perc:.1f}%</div>
                                 </div>
                                 """, unsafe_allow_html=True)
 
