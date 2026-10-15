@@ -649,7 +649,8 @@ elif keuze == "Visualisations":
 
     /* KPI and chart cards */
     .st-key-kpi_card,
-    .st-key-chart_card {
+    .st-key-chart_card,
+    .st-key-kpi_difference {
         background: #FAFAFA !important;
         border: 1px solid #E5E7EB !important;
         border-radius: 12px !important;
@@ -790,12 +791,12 @@ elif keuze == "Visualisations":
                 st.image(logo_path, width=500)      
 
             # KPI + Gantt chart
-            col_kpi, col_chart = st.columns([3.4, 6.6], gap="medium")
+            col_kpi, col_chart = st.columns([4, 7], gap="medium")
 
             # KPI CARD
             with col_kpi:
                 with st.container(key="kpi_selection"):
-                    col_kpi, col_diff = st.columns([1.9,1.5])
+                    col_kpi, col_diff = st.columns([2.3,1.7])
                     with col_kpi:
                         with st.container(key = 'kpi_card'):
 
