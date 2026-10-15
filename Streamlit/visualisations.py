@@ -185,7 +185,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         # Draw bus labels manually using data coordinates
         for i, bus in enumerate(group):
             ax.text(
-                5.8,
+                4.8,
                 i,
                 f"Bus {bus}",
                 ha='left',
