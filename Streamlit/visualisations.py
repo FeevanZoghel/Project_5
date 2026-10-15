@@ -204,7 +204,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         ax.axvline(
             x=5,
             color='black',
-            linewidth=5,
+            linewidth=1,
             zorder=2
         )   
 
