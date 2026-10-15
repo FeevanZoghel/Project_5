@@ -194,7 +194,7 @@ def gantt_chart_bus(bp, selected_buses=None):
             box-sizing: border-box;
         ">
             <button onclick="toggleFullscreen()" style="
-                float: right;
+                float: left;
                 padding: 7px 12px;
                 margin-bottom: 10px;
                 background: #EA3323;
