@@ -796,7 +796,7 @@ elif keuze == "Visualisations":
             # KPI CARD
             with col_kpi:
                 with st.container(key="kpi_selection"):
-                    col_kpi, col_diff = st.columns([2.3,1.7])
+                    col_kpi, col_diff = st.columns([2,2])
                     with col_kpi:
                         with st.container(key = 'kpi_card'):
 
