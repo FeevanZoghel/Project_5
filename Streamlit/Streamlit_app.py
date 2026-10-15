@@ -794,7 +794,7 @@ elif keuze == "Visualisations":
 
             # KPI CARD
             with col_kpi:
-                with st.container(key="kpi_card"):
+                with st.container(key="kpi_selection"):
                     col_kpi, col_diff = st.columns([1.5,0.9], gap = 'small')
                     with col_kpi:
                         with st.container(key = 'kpi_card'):
@@ -874,7 +874,7 @@ elif keuze == "Visualisations":
                             </div>
                             """, unsafe_allow_html=True)
 
-                    if 'improved_bp' in st.sessions_state:
+                    if 'improved_bp' in st.session_state:
                         with col_diff:
                             with st.container(key = 'kpi_difference'):
                                 # st.markdown(
