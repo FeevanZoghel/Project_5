@@ -176,19 +176,6 @@ def gantt_chart_bus(bp, selected_buses=None):
 
         # Put Bus 1 at the top
         ax.set_ylim(len(group) - 0.5, -0.5)
-
-        # Add bus labels manually as text objects
-        for i, bus in enumerate(group):
-            ax.text(
-                10,
-                i,
-                f'Bus {bus}',
-                ha='right',
-                va='center',
-                fontsize=10,
-                color='black',
-                clip_on=False
-            )
         # Grid styling
         ax.set_axisbelow(True)
 
@@ -218,6 +205,8 @@ def gantt_chart_bus(bp, selected_buses=None):
 
         # Convert Matplotlib to interactive HTML
         html = mpld3.fig_to_html(fig)
+        # Bus labels and positions for HTML
+        bus_labels = [f"Bus {bus}" for bus in group]        
 
         # Fullscreen functionality
         fullscreen_html = f"""
@@ -245,6 +234,19 @@ def gantt_chart_bus(bp, selected_buses=None):
             <div style="clear: both;"></div>
 
             {html}
+            <script>
+            function addBusLabels() {
+                const svg = document.querySelector("#gantt-container svg");
+                if (!svg) return;
+
+                const plot = svg.querySelector(".mpld3-axes");
+                if (!plot) return;
+
+                const bars = plot.querySelectorAll("path");
+
+                // Bus labels are added independently of Matplotlib tick labels.
+            }
+            </script>
         </div>
 
         <script>
