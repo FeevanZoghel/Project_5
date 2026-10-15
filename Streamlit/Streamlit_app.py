@@ -877,52 +877,52 @@ elif keuze == "Visualisations":
                     if 'improved_bp' in st.session_state:
                         with col_diff:
                             with st.container(key = 'kpi_difference'):
-                                # st.markdown(
-                                #         '<div class="section-title">KPIs</div>',
-                                #         unsafe_allow_html=True
-                                #     )
+                                st.markdown(
+                                        '<div class="section-title">Difference</div>',
+                                        unsafe_allow_html=True
+                                    )
         
-                                    st.markdown(f"""
-                                    <div class="kpi-box">
-                                        <div class="kpi-value">{buses_diff}</div>
-                                    </div>
-                                    """, unsafe_allow_html=True)
-        
-                                    st.markdown(f"""
-                                    <div class="kpi-box">
-                                        <div class="kpi-value">{waiting_diff:.2f} min/bus</div>
-                                    </div>
-                                    """, unsafe_allow_html=True)
-        
-                                    st.markdown(f"""
-                                    <div class="kpi-box">
-                                        <div class="kpi-value">{material_diff} trips</div>
-                                    </div>
-                                    """, unsafe_allow_html=True)
-        
-                                    st.markdown(f"""
-                                    <div class="kpi-box">
-                                        <div class="kpi-value">{material_diff:.3f} km</div>
-                                    </div>
-                                    """, unsafe_allow_html=True)
-        
-                                    st.markdown(f"""
-                                    <div class="kpi-box">
-                                        <div class="kpi-value">{charging_diff:.2f} hours</div>
-                                    </div>
-                                    """, unsafe_allow_html=True)
-        
-                                    st.markdown(f"""
-                                    <div class="kpi-box">
-                                        <div class="kpi-value">{energy_diff:.2f} kWh</div>
-                                    </div>
-                                    """, unsafe_allow_html=True)
-        
-                                    st.markdown(f"""
-                                    <div class="kpi-box">
-                                        <div class="kpi-value">{distance_diff:.2f} km</div>
-                                    </div>
-                                    """, unsafe_allow_html=True)
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-value">{buses_diff}</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+    
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-value">{waiting_diff:.2f} min/bus</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+    
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-value">{material_diff} trips</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+    
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-value">{material_diff:.3f} km</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+    
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-value">{charging_diff:.2f} hours</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+    
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-value">{energy_diff:.2f} kWh</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+    
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-value">{distance_diff:.2f} km</div>
+                                </div>
+                                """, unsafe_allow_html=True)
 
 
             with col_chart:
