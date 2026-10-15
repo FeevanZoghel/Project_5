@@ -182,7 +182,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         # Move time labels upwards
         for label in ax.get_xticklabels():
             x, y = label.get_position()
-            label.set_position((x, y + 1))
+            label.set_position((x, y + 0.05))
 
         # Y-axis
         ax.set_yticks(range(len(group)))
