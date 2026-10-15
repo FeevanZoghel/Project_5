@@ -241,18 +241,33 @@ def gantt_chart_bus(bp, selected_buses=None):
         html = mpld3.fig_to_html(fig)
 
         # Fullscreen functionality
+        
+        # Fullscreen functionality
         fullscreen_html = f"""
-        <div id="gantt-container" style="
-            background: white;
-            padding: 10px;
-            overflow: auto;
-            width: 100%;
-            height: 100%;
-            box-sizing: border-box;
-        ">
+        <style>
+            #gantt-container {{
+                background: white;
+                padding: 10px;
+                width: 100%;
+                height: 100%;
+                box-sizing: border-box;
+                position: relative;
+                overflow: visible;
+            }}
 
-            <button onclick="toggleFullscreen()" style="
-                float: left;
+            #gantt-container:fullscreen {{
+                background: white;
+                width: 100vw;
+                height: 100vh;
+                overflow: auto;
+            }}
+
+            #gantt-container .mpld3-tooltip {{
+                z-index: 999999 !important;
+                pointer-events: none;
+            }}
+
+            #fullscreen-button {{
                 padding: 7px 12px;
                 margin-bottom: 10px;
                 background: #EA3323;
@@ -260,13 +275,18 @@ def gantt_chart_bus(bp, selected_buses=None):
                 border: none;
                 border-radius: 6px;
                 cursor: pointer;
-            ">
+            }}
+        </style>
+
+        <div id="gantt-container">
+
+            <button id="fullscreen-button" onclick="toggleFullscreen()">
                 ⛶ Fullscreen
             </button>
 
-            <div style="clear: both;"></div>
-
-            {html}
+            <div id="gantt-chart">
+                {html}
+            </div>
 
         </div>
 
@@ -280,8 +300,29 @@ def gantt_chart_bus(bp, selected_buses=None):
                 document.exitFullscreen();
             }}
         }}
+
+        // Move mpld3 tooltips into the fullscreen container
+        function moveTooltips() {{
+            const container = document.getElementById("gantt-container");
+
+            document.querySelectorAll("body > .mpld3-tooltip").forEach(function(tooltip) {{
+                container.appendChild(tooltip);
+            }});
+        }}
+
+        // mpld3 creates its tooltip elements asynchronously
+        const tooltipObserver = new MutationObserver(function() {{
+            moveTooltips();
+        }});
+
+        tooltipObserver.observe(document.body, {{
+            childList: true
+        }});
+
+        moveTooltips();
         </script>
         """
+
 
         # Display in Streamlit
         components.html(
