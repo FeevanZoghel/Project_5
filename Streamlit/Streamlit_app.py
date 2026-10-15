@@ -789,7 +789,7 @@ elif keuze == "Visualisations":
             buses_diff_perc = 100-((improved_buses/original_buses)*100)
 
             waiting_diff =  original_waiting - improved_waiting
-            waiting_diff_perc = 100-((improved_waiting/original_waiting)*100)
+            waiting_diff_perc = 100-((original_waiting/improved_waiting)*100)
 
             material_diff = original_material - improved_material
             material_diff_perc = 100-((improved_material/original_material)*100)
