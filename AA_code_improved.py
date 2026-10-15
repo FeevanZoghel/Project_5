@@ -30,7 +30,7 @@ battery = {}
 charging_start = {}
 
 # Beginwaardes
-assumed_battery_value = 95
+assumed_battery_value = 85
 max_battery = 300 * assumed_battery_value / 100
 charging_limit = 0.9 * max_battery
 fast_charge_per_min = 450 / 60
@@ -299,17 +299,6 @@ output = export_results_to_excel(feasibility_results, kpi_results, filename=outp
 output
 
 
-
-# oefenen 
-
-print("Minimale batterijgrens:", min_battery_value)
-print("Laagste batterijwaarde:", ibp['total battery bus'].min())
-
-print(
-    ibp.nsmallest(10, 'total battery bus')[
-        ['bus', 'activity', 'total battery bus']
-    ]
-)
 
 t_end = time.perf_counter()
 computation_time = t_end - t_start
