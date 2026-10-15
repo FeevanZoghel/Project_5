@@ -786,7 +786,7 @@ elif keuze == "Visualisations":
             improved_energy = calculate_energy_consumption_kpis(improved_bp)
 
             buses_diff = original_buses - improved_buses
-            buses_diff_perc = ((original_buses/improved_buses)*100)-100
+            buses_diff_perc = (improved_buses/original_buses)*100
 
             waiting_diff =  original_waiting - improved_waiting
             waiting_diff_perc = ((original_waiting/improved_waiting)*100)-100
@@ -940,7 +940,7 @@ elif keuze == "Visualisations":
                                 st.markdown(f"""
                                 <div class="kpi-box">
                                     <div class="kpi-label">
-                                        <img src="data:image/png;base64,{material_icon}%" class="kpi-icon">
+                                        <img src="data:image/png;base64,{material_icon}" class="kpi-icon">
                                         Material trips
                                     </div>
                                     <div class="kpi-value">{material_diff_perc:.1f}%</div>
