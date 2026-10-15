@@ -123,9 +123,9 @@ def gantt_chart_bus(bp, selected_buses=None):
         points = ax.scatter(
             hover_x,
             hover_y,
-            s=2500,
+            s=25,
             color='red',
-            alpha=0,
+            alpha=5,
             zorder=10
         )
 
