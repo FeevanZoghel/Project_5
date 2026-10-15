@@ -164,7 +164,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         # X-axis
         hours = range(5, 30)
 
-        ax.set_xlim(1, 29)
+        ax.set_xlim(4, 29)
         ax.set_xticks(hours)
 
         ax.set_xticklabels([
@@ -208,7 +208,7 @@ def gantt_chart_bus(bp, selected_buses=None):
             axis='x',
             color='#E5E7EB',
             linewidth=0.6,
-            alpha=0.35
+            alpha=0.25
         )
 
         ax.grid(
