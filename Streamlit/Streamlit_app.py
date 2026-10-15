@@ -649,7 +649,8 @@ elif keuze == "Visualisations":
 
     /* KPI and chart cards */
     .st-key-kpi_card,
-    .st-key-chart_card {
+    .st-key-chart_card,
+    .st-key-kpi_difference {
         background: #FAFAFA !important;
         border: 1px solid #E5E7EB !important;
         border-radius: 12px !important;
@@ -764,7 +765,7 @@ elif keuze == "Visualisations":
             improved_energy = calculate_energy_consumption_kpis(improved_bp)
 
             buses_diff = original_buses - improved_buses
-            waiting_diff = original_waiting - improved_waiting 
+            waiting_diff =  original_waiting - improved_waiting 
             material_diff = original_material - improved_material
             material_km_diff = original_material_km - improved_material_km 
             charging_diff = original_charging - improved_charging
@@ -966,38 +967,6 @@ elif keuze == "Visualisations":
                     )
 
                     gantt_chart_bus(bp, selected_buses)
-
-        st.write("Waiting time per bus")
-
-        idle = bp[bp['activity'] == 'idle'].copy()
-
-        start = pd.to_timedelta(idle['start time'].astype(str))
-        end = pd.to_timedelta(idle['end time'].astype(str))
-
-        duration = (end - start).dt.total_seconds() / 60
-        idle['waiting minutes'] = duration.where(duration >= 0, duration + 1440)
-
-        st.dataframe(
-            idle.groupby('bus')['waiting minutes']
-            .sum()
-            .reset_index()
-            .sort_values('waiting minutes', ascending=False),
-            hide_index=True
-        )
-
-        idle = bp[bp['activity'] == 'idle'].copy()
-
-        start = pd.to_timedelta(idle['start time'].astype(str))
-        end = pd.to_timedelta(idle['end time'].astype(str))
-
-        idle['duration_min'] = (end - start).dt.total_seconds() / 60
-        idle.loc[idle['duration_min'] < 0, 'duration_min'] += 1440
-
-        st.dataframe(
-            idle[['bus', 'start time', 'end time', 'duration_min']]
-            .sort_values(['bus', 'start time']),
-            hide_index=True
-        )
 
     else:
         st.warning(
