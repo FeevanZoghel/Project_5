@@ -649,8 +649,7 @@ elif keuze == "Visualisations":
 
     /* KPI and chart cards */
     .st-key-kpi_card,
-    .st-key-chart_card,
-    .st-key-kpi_difference {
+    .st-key-chart_card {
         background: #FAFAFA !important;
         border: 1px solid #E5E7EB !important;
         border-radius: 12px !important;
