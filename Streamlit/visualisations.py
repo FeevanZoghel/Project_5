@@ -191,12 +191,12 @@ def gantt_chart_bus(bp, selected_buses=None):
                 ha='left',
                 va='center',
                 fontsize=10,
+                linewidth = 10,
                 color='black',
                 zorder=20,
                 bbox=dict(
                     facecolor='white',
                     edgecolor='none',
-                    linewidth = 10,
                     alpha=0.85,
                     pad=1
                 )
