@@ -240,7 +240,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         ax.set_xlabel('Time')
         ax.set_title(
             'Improved bus plan',
-            fontsize=18,           # Lettergrootte
+            fontsize=30,           # Lettergrootte
             fontweight='bold',     # Vetgedrukt
             color='#333333'        # Tekstkleur
         )
