@@ -745,10 +745,23 @@ elif keuze == "Visualisations":
         white-space: nowrap;
     }
 
-    /* Align planning selection to the right */
-    .st-key-chart_header [data-testid="stRadio"] > div {
+    /* Radio container neemt volledige breedte in */
+    .st-key-chart_header [data-testid="stHorizontalBlock"] {
+        width: 100% !important;
+    }
+
+    /* Radioknoppen rechts uitlijnen */
+    .st-key-planning_choice {
+        width: 100% !important;
+    }
+
+    .st-key-planning_choice [data-testid="stRadioGroup"] {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
         justify-content: flex-end !important;
-        padding-left: 0 !important;
+        width: 100% !important;
+        gap: 20px !important;
     }
 
     /* Radio text */
@@ -885,6 +898,36 @@ elif keuze == "Visualisations":
         color: #FFFFFF !important;
     }
 
+    /* Multiselect invoervak: gebroken wit */
+    div[data-testid="stPopoverBody"] [data-baseweb="select"] > div,
+    div[data-testid="stPopoverBody"] [data-baseweb="select"] [data-baseweb="select"] {
+        background-color: #F8F9FA !important;
+        color: #222222 !important;
+    }
+
+    /* Ook de binnenste invoeronderdelen licht maken */
+    div[data-testid="stPopoverBody"] [data-baseweb="select"] input {
+        background-color: transparent !important;
+        color: #222222 !important;
+    }
+
+    /* Dropdownlijst wit */
+    div[data-baseweb="menu"],
+    ul[role="listbox"] {
+        background-color: #FFFFFF !important;
+        color: #222222 !important;
+    }
+
+    /* Geselecteerde busnummers blijven rood */
+    div[data-testid="stPopoverBody"] [data-baseweb="tag"] {
+        background-color: #FF4545 !important;
+        color: #FFFFFF !important;
+    }
+
+    /* Pijltje en kruisje donker */
+    div[data-testid="stPopoverBody"] [data-baseweb="select"] svg {
+        fill: #333333 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
