@@ -1,4 +1,3 @@
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
@@ -167,9 +166,9 @@ def gantt_chart_bus(bp, selected_buses=None):
         ax.set_xlim(4.2, 29)
         ax.set_xticks(hours)
 
-        # Keep ticks for vertical grid lines
-        # Hide automatically generated labels
+        # Hide automatically generated time labels
         ax.set_xticklabels([])
+
         ax.tick_params(
             axis='x',
             which='both',
@@ -179,7 +178,6 @@ def gantt_chart_bus(bp, selected_buses=None):
         )
 
         # Custom time labels
-        # More negative y = higher above chart
         for hour in hours:
             ax.text(
                 hour,
@@ -258,24 +256,41 @@ def gantt_chart_bus(bp, selected_buses=None):
         # Convert Matplotlib to interactive HTML
         html = mpld3.fig_to_html(fig)
 
-        # Unique ID for each group
+        # Unique IDs for each chart
         container_id = f"gantt-container-{group_index}"
         chart_id = f"gantt-chart-{group_index}"
         button_id = f"fullscreen-button-{group_index}"
 
-        # Fullscreen functionality and styling
+        # Fullscreen functionality and responsive scaling
         fullscreen_html = f"""
         <style>
+            html, body {{
+                margin: 0;
+                padding: 0;
+                overflow-x: hidden;
+            }}
+
             #{container_id} {{
                 background: white;
                 padding: 10px;
                 width: 100%;
-                height: 100%;
                 box-sizing: border-box;
                 position: relative;
-                overflow: auto;
+                overflow: hidden;
             }}
 
+            #{chart_id} {{
+                width: 100%;
+                position: relative;
+                overflow: hidden;
+            }}
+
+            #{chart_id} svg {{
+                display: block;
+                transform-origin: top left;
+            }}
+
+            /* Fullscreen styling */
             #{container_id}:fullscreen {{
                 background: white;
                 width: 100vw;
@@ -283,12 +298,11 @@ def gantt_chart_bus(bp, selected_buses=None):
                 overflow: auto;
             }}
 
-            #{chart_id} {{
-                width: max-content;
-                min-width: 100%;
+            #{container_id}:fullscreen #{chart_id} {{
+                overflow: visible;
             }}
 
-            /* Hide mpld3 automatic x-axis labels */
+            /* Hide automatic x-axis labels */
             #{chart_id} .mpld3-xaxis .tick text,
             #{chart_id} .mpld3-xaxis text {{
                 display: none !important;
@@ -336,45 +350,138 @@ def gantt_chart_bus(bp, selected_buses=None):
         </div>
 
         <script>
-        function toggleFullscreen_{group_index}() {{
+        (function() {{
+
             const container = document.getElementById(
                 "{container_id}"
             );
 
-            if (!document.fullscreenElement) {{
-                container.requestFullscreen();
-            }} else {{
-                document.exitFullscreen();
+            const chart = document.getElementById(
+                "{chart_id}"
+            );
+
+            const button = document.getElementById(
+                "{button_id}"
+            );
+
+            let originalWidth = null;
+            let originalHeight = null;
+
+            function resizeGantt() {{
+
+                const svg = chart.querySelector("svg");
+
+                if (!svg) return;
+
+                // Store original SVG dimensions
+                if (originalWidth === null) {{
+                    originalWidth = parseFloat(
+                        svg.getAttribute("width")
+                    );
+
+                    originalHeight = parseFloat(
+                        svg.getAttribute("height")
+                    );
+                }}
+
+                if (!originalWidth || !originalHeight) return;
+
+                const isFullscreen =
+                    document.fullscreenElement === container;
+
+                const availableWidth =
+                    container.clientWidth - 20;
+
+                const scale = isFullscreen
+                    ? 1
+                    : Math.min(
+                        1,
+                        availableWidth / originalWidth
+                    );
+
+                // Scale SVG
+                svg.style.transform =
+                    `scale(${{scale}})`;
+
+                // Adjust wrapper dimensions
+                chart.style.height =
+                    `${{originalHeight * scale}}px`;
+
+                chart.style.width = isFullscreen
+                    ? `${{originalWidth}}px`
+                    : "100%";
+
+                // Update container height
+                if (!isFullscreen) {{
+                    container.style.height =
+                        `${{originalHeight * scale + button.offsetHeight + 30}}px`;
+                }} else {{
+                    container.style.height = "100vh";
+                }}
             }}
-        }}
 
-        // Move mpld3 tooltips into fullscreen container
-        function moveTooltips_{group_index}() {{
-            const container = document.getElementById(
-                "{container_id}"
+            // Fullscreen functionality
+            button.addEventListener("click", function() {{
+
+                if (!document.fullscreenElement) {{
+                    container.requestFullscreen();
+                }} else {{
+                    document.exitFullscreen();
+                }}
+
+            }});
+
+            // Resize when fullscreen changes
+            document.addEventListener(
+                "fullscreenchange",
+                resizeGantt
             );
 
-            document.querySelectorAll(
-                "body > .mpld3-tooltip"
-            ).forEach(function(tooltip) {{
-                container.appendChild(tooltip);
-            }});
-        }}
+            // Resize when browser size changes
+            window.addEventListener(
+                "resize",
+                resizeGantt
+            );
 
-        // Watch for new tooltip elements
-        const tooltipObserver_{group_index} =
-            new MutationObserver(function() {{
-                moveTooltips_{group_index}();
+            // Wait until mpld3 has created the SVG
+            const resizeObserver = new MutationObserver(
+                function() {{
+                    if (chart.querySelector("svg")) {{
+                        resizeGantt();
+                        resizeObserver.disconnect();
+                    }}
+                }}
+            );
+
+            resizeObserver.observe(chart, {{
+                childList: true,
+                subtree: true
             }});
 
-        tooltipObserver_{group_index}.observe(
-            document.body,
-            {{
+            // Move tooltips into fullscreen container
+            function moveTooltips() {{
+
+                document.querySelectorAll(
+                    "body > .mpld3-tooltip"
+                ).forEach(function(tooltip) {{
+                    container.appendChild(tooltip);
+                }});
+
+            }}
+
+            const tooltipObserver = new MutationObserver(
+                moveTooltips
+            );
+
+            tooltipObserver.observe(document.body, {{
                 childList: true
-            }}
-        );
+            }});
 
-        moveTooltips_{group_index}();
+            // Initial sizing
+            resizeGantt();
+            moveTooltips();
+
+        }})();
         </script>
         """
 
@@ -382,7 +489,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         components.html(
             fullscreen_html,
             height=850,
-            scrolling=True
+            scrolling=False
         )
 
         plt.close(fig)
