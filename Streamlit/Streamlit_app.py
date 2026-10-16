@@ -735,6 +735,29 @@ elif keuze == "Visualisations":
         background-color: #E5E7EB !important;
         color: #222222 !important;
     }
+
+    /* Planning selection card */
+    .st-key-planning_selection_card {
+        background: #FAFAFA !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 12px !important;
+        padding: 18px 20px !important;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08) !important;
+    }
+
+    /* Card title */
+    .st-key-planning_selection_card .column-title {
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        color: #1F1F1F !important;
+        margin-bottom: 12px !important;
+    }
+
+    /* Radio option text */
+    .st-key-planning_selection_card [data-testid="stRadio"] label p {
+        color: #222222 !important;
+        font-size: 14px !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -806,7 +829,7 @@ elif keuze == "Visualisations":
 
         # Main dashboard
         with st.container(key="results_dashboard"):
-            
+
             # Header
             col_title, col_selection, col_logo = st.columns(
                 [5, 3, 2],
@@ -824,12 +847,19 @@ elif keuze == "Visualisations":
 
             with col_selection:
                 if 'improved_bp' in st.session_state:
-                    st.radio(
-                        "Select bus planning",
-                        ["Original planning", "Improved planning"],
-                        horizontal=True,
-                        key="planning_choice"
-                    )
+                    with st.container(key="planning_selection_card"):
+                        st.markdown(
+                            '<div class="column-title">Select bus planning</div>',
+                            unsafe_allow_html=True
+                        )
+
+                        st.radio(
+                            "Select bus planning",
+                            ["Original planning", "Improved planning"],
+                            horizontal=True,
+                            label_visibility="collapsed",
+                            key="planning_choice"
+                        )
 
             with col_logo:
                 st.image(logo_path, use_container_width=True)     
