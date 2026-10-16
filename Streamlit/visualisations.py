@@ -147,7 +147,7 @@ def gantt_chart_bus(bp, selected_buses=None):
             hover_y,
             s=25,
             color='red',
-            alpha=0.6,
+            alpha=0,
             zorder=10
         )
 
@@ -249,8 +249,8 @@ def gantt_chart_bus(bp, selected_buses=None):
 
         # Figure margins
         fig.subplots_adjust(
-            left=0.12,
-            right=0.98,
+            left=0.04,
+            right=0.99,
             top=0.80,
             bottom=0.15
         )
