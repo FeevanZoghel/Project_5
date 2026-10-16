@@ -780,7 +780,7 @@ elif keuze == "Visualisations":
         flex-wrap: nowrap !important;
         justify-content: flex-start !important;
         padding-left: 300px !important;
-        gap: 20px !important;
+        gap: 200px !important;
     }
 
     /* Radiobolletje standaard wit met zwarte rand */
