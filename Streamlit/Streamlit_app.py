@@ -773,13 +773,14 @@ elif keuze == "Visualisations":
         border-radius: 3px;
     }
 
-    /* Beide opties naast elkaar */
+    /* Radiobolletjes helemaal rechts */
     .st-key-planning_choice [data-testid="stRadioGroup"] {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
-        justify-content: flex-start !important;
-        padding-right: 300px !important;
+        justify-content: flex-end !important;
+        width: 100% !important;
+        padding-right: 0 !important;
         gap: 20px !important;
     }
 
