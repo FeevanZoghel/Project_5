@@ -809,6 +809,47 @@ elif keuze == "Visualisations":
         background: black !important;
         border-color: black !important;
     }
+
+    /* Select buses button stays white */
+    .st-key-chart_card [data-testid="stPopover"] > button {
+        background-color: #FFFFFF !important;
+        color: #222222 !important;
+        border: 1px solid #EA3323 !important;
+        border-radius: 10px !important;
+    }
+
+    /* Popover window stays white */
+    div[data-testid="stPopoverBody"],
+    div[data-testid="stPopoverBody"] > div {
+        background-color: #FFFFFF !important;
+        color: #222222 !important;
+    }
+
+    /* Multiselect input stays white */
+    div[data-testid="stPopoverBody"] [data-baseweb="select"] > div {
+        background-color: #FFFFFF !important;
+        color: #222222 !important;
+        border: 1px solid #E5E7EB !important;
+    }
+
+    /* Selected buses remain red */
+    div[data-testid="stPopoverBody"] [data-baseweb="tag"] {
+        background-color: #EA3323 !important;
+        color: #FFFFFF !important;
+    }
+
+    /* Text and remove icons inside selected buses */
+    div[data-testid="stPopoverBody"] [data-baseweb="tag"] * {
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
+    }
+
+    /* Apply button red */
+    div[data-testid="stPopoverBody"] button[kind="primary"] {
+        background-color: #EA3323 !important;
+        color: #FFFFFF !important;
+        border-radius: 8px !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -1178,43 +1219,65 @@ elif keuze == "Visualisations":
                                     key="planning_choice"
                                 )
 
-                    # Bus selection
-                    all_buses = sorted(
-                        bp['bus'].dropna().unique().tolist()
+                # Bus selection
+                all_buses = sorted(
+                    bp['bus'].dropna().unique().tolist()
+                )
+
+                selection_key = (
+                    f"selected_buses_{planning_choice}"
+                    if 'improved_bp' in st.session_state
+                    else "selected_buses_original"
+                )
+
+                draft_key = f"draft_{selection_key}"
+
+                # Initially select all buses
+                if selection_key not in st.session_state:
+                    st.session_state[selection_key] = all_buses.copy()
+
+                if draft_key not in st.session_state:
+                    st.session_state[draft_key] = st.session_state[selection_key].copy()
+
+                # Keep selections valid
+                st.session_state[selection_key] = [
+                    bus for bus in st.session_state[selection_key]
+                    if bus in all_buses
+                ]
+
+                st.session_state[draft_key] = [
+                    bus for bus in st.session_state[draft_key]
+                    if bus in all_buses
+                ]
+
+                # Selection popover
+                with st.popover(
+                    f"Select buses ({len(st.session_state[selection_key])}/{len(all_buses)} selected)",
+                    use_container_width=True
+                ):
+
+                    st.multiselect(
+                        "Select buses to display",
+                        options=all_buses,
+                        key=draft_key
                     )
 
-                    selection_key = (
-                        f"selected_buses_{planning_choice}"
-                        if 'improved_bp' in st.session_state
-                        else "selected_buses_original"
-                    )
-
-                    if selection_key not in st.session_state:
-                        st.session_state[selection_key] = all_buses
-
-                    # Keep selected buses valid for this planning
-                    st.session_state[selection_key] = [
-                        bus
-                        for bus in st.session_state[selection_key]
-                        if bus in all_buses
-                    ]
-
-                    with st.popover(
-                        f"Select buses ({len(st.session_state[selection_key])}/{len(all_buses)} selected)",
-                        use_container_width=True
+                    if st.button(
+                        "Apply selection",
+                        type="primary",
+                        use_container_width=True,
+                        key=f"apply_{selection_key}"
                     ):
-
-                        st.multiselect(
-                            "Select buses to display",
-                            options=all_buses,
-                            key=selection_key
+                        st.session_state[selection_key] = (
+                            st.session_state[draft_key].copy()
                         )
+                        st.rerun()
 
-                    # Display Gantt chart
-                    gantt_chart_bus(
-                        bp,
-                        st.session_state[selection_key]
-                    )
+                # Gantt chart only uses applied selection
+                gantt_chart_bus(
+                    bp,
+                    st.session_state[selection_key]
+                )
 
     else:
         st.warning(
