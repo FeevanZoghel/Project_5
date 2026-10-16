@@ -778,8 +778,8 @@ elif keuze == "Visualisations":
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
-        justify-content: flex-end !important;
-        padding-left: 300px !important;
+        justify-content: flex-start !important;
+        padding-right: 300px !important;
         gap: 20px !important;
     }
 
