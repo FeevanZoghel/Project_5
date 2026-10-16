@@ -780,7 +780,7 @@ elif keuze == "Visualisations":
         flex-wrap: nowrap !important;
         justify-content: flex-end !important;
         width: 100% !important;
-        padding-right: 100000 !important;
+        padding-right: 0 important;
         gap: 20px !important;
     }
 
