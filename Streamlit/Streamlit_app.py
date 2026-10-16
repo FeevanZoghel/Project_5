@@ -1263,23 +1263,13 @@ elif keuze == "Visualisations":
                         else "selected_buses_original"
                     )
 
-                    draft_key = f"draft_{selection_key}"
-
                     # Initially select all buses
                     if selection_key not in st.session_state:
                         st.session_state[selection_key] = all_buses.copy()
 
-                    if draft_key not in st.session_state:
-                        st.session_state[draft_key] = st.session_state[selection_key].copy()
-
-                    # Keep selections valid
+                    # Keep applied selection valid
                     st.session_state[selection_key] = [
                         bus for bus in st.session_state[selection_key]
-                        if bus in all_buses
-                    ]
-
-                    st.session_state[draft_key] = [
-                        bus for bus in st.session_state[draft_key]
                         if bus in all_buses
                     ]
 
@@ -1289,24 +1279,26 @@ elif keuze == "Visualisations":
                         use_container_width=True
                     ):
 
-                        st.multiselect(
-                            "Select buses to display",
-                            options=all_buses,
-                            key=draft_key
-                        )
+                        # Form prevents reruns while selecting buses
+                        with st.form(key=f"bus_form_{planning_choice}"):
 
-                        if st.button(
-                            "Apply selection",
-                            type="primary",
-                            use_container_width=True,
-                            key=f"apply_{selection_key}"
-                        ):
-                            st.session_state[selection_key] = (
-                                st.session_state[draft_key].copy()
+                            selected_buses = st.multiselect(
+                                "Select buses to display",
+                                options=all_buses,
+                                default=st.session_state[selection_key]
                             )
+
+                            apply_selection = st.form_submit_button(
+                                "Apply selection",
+                                type="primary",
+                                use_container_width=True
+                            )
+
+                        if apply_selection:
+                            st.session_state[selection_key] = selected_buses.copy()
                             st.rerun()
 
-                    # Gantt chart only uses applied selection
+                    # Gantt chart uses only the applied selection
                     gantt_chart_bus(
                         bp,
                         st.session_state[selection_key]
