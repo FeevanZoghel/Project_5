@@ -759,7 +759,7 @@ elif keuze == "Visualisations":
 
     /* Align planning selection to the right */
     .st-key-chart_header [data-testid="stRadio"] > div {
-        justify-content: flex-end !important;
+        justify-content: flex-start !important;
     }
 
     /* Radio text */
