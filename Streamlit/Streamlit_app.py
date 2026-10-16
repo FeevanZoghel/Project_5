@@ -779,8 +779,8 @@ elif keuze == "Visualisations":
         border-radius: 3px;
     }
 
-    /* Radioknoppen naast elkaar, rechts uitgelijnd */
-    .st-key-chart_header [data-testid="stRadioGroup"] {
+    /* Beide opties naast elkaar */
+    .st-key-planning_choice [data-testid="stRadioGroup"] {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
@@ -788,40 +788,26 @@ elif keuze == "Visualisations":
         gap: 20px !important;
     }
 
-    /* Achtergrond van de opties transparant */
-    .st-key-chart_header [data-testid="stRadioOption"] {
-        background: transparent !important;
-        padding: 0 !important;
-    }
-
-    /* Radiobolletje: standaard wit met zwarte rand */
-    .st-key-chart_header
-    [data-testid="stRadioOption"] label > div > div:first-child {
+    /* Radiobolletje standaard wit met zwarte rand */
+    .st-key-planning_choice [data-testid="stRadioOption"]
+    > div > div:first-child {
         background: white !important;
-        border: 2px solid #1F1F1F !important;
+        border: 2px solid black !important;
         border-radius: 50% !important;
     }
 
-    /* Radiobolletje: zwart bij hover */
-    .st-key-chart_header
-    [data-testid="stRadioOption"]:hover label > div > div:first-child {
-        background: #1F1F1F !important;
-        border-color: #1F1F1F !important;
+    /* Radiobolletje zwart bij hover */
+    .st-key-planning_choice [data-testid="stRadioOption"]:hover
+    > div > div:first-child {
+        background: black !important;
+        border-color: black !important;
     }
 
-    /* Geselecteerd radiobolletje: zwart */
-    .st-key-chart_header
-    [data-testid="stRadioOption"][aria-checked="true"]
-    label > div > div:first-child {
-        background: #1F1F1F !important;
-        border-color: #1F1F1F !important;
-    }
-
-    /* Tekst altijd zwart */
-    .st-key-chart_header
-    [data-testid="stRadioOption"] p {
-        color: #222222 !important;
-        font-size: 13px !important;
+    /* Geselecteerd radiobolletje zwart */
+    .st-key-planning_choice [data-testid="stRadioOption"][data-selected="true"]
+    > div > div:first-child {
+        background: black !important;
+        border-color: black !important;
     }
     </style>
     """, unsafe_allow_html=True)
