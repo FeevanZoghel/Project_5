@@ -236,7 +236,7 @@ def gantt_chart_bus(bp, selected_buses=None):
 
         # Titles
         ax.set_xlabel('Time',
-                      fontsize = 15,
+                      fontsize = 25,
                       fontweight = 'bold',
                       color = '#333333')
         # Titles
