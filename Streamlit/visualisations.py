@@ -105,7 +105,7 @@ def gantt_chart_bus(bp, selected_buses=None):
                 height=0.8,
                 color=colors.get(activity, 'lightgrey'),
                 edgecolor='#000000',
-                linewidth=1.5,
+                linewidth=1,
                 label=label
             )
 
