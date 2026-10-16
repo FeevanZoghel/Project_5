@@ -750,10 +750,8 @@ elif keuze == "Visualisations":
         if 'improved_bp' in st.session_state:
             improved_bp = st.session_state['improved_bp']
 
-            planning_choice = st.radio(
-                "Select bus planning",
-                ["Original planning", "Improved planning"],
-                horizontal=True
+            planning_choice = st.session_state.get(
+                "planning_choice", "Original planning"
             )
 
             if planning_choice == "Improved planning":
@@ -808,9 +806,12 @@ elif keuze == "Visualisations":
 
         # Main dashboard
         with st.container(key="results_dashboard"):
-
+            
             # Header
-            col_title, col_logo = st.columns([8, 2])
+            col_title, col_selection, col_logo = st.columns(
+                [5, 3, 2],
+                vertical_alignment="center"
+            )
 
             with col_title:
                 st.title("Planning results")
@@ -821,8 +822,17 @@ elif keuze == "Visualisations":
                     unsafe_allow_html=True
                 )
 
+            with col_selection:
+                if 'improved_bp' in st.session_state:
+                    st.radio(
+                        "Select bus planning",
+                        ["Original planning", "Improved planning"],
+                        horizontal=True,
+                        key="planning_choice"
+                    )
+
             with col_logo:
-                st.image(logo_path, width=500)      
+                st.image(logo_path, use_container_width=True)     
 
             # KPI + Gantt chart
             col_kpi, col_chart = st.columns([4, 7], gap="medium")
