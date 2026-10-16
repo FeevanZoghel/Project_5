@@ -249,9 +249,9 @@ def gantt_chart_bus(bp, selected_buses=None):
 
         # Figure margins
         fig.subplots_adjust(
-            left=0.02,
+            left=0.01,
             right=0.99,
-            top=0.98,
+            top=0.96,
             bottom=0.15
         )
 
