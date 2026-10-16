@@ -760,7 +760,7 @@ elif keuze == "Visualisations":
     /* Align planning selection to the right */
     .st-key-chart_header [data-testid="stRadio"] > div {
         justify-content: flex-start !important;
-        padding-left: 30px !important;
+        padding-left: 300px !important;
     }
 
     /* Radio text */
