@@ -273,7 +273,7 @@ def gantt_chart_bus(bp, selected_buses=None):
                 height: 100%;
                 box-sizing: border-box;
                 position: relative;
-                overflow: visible;
+                overflow: auto;
             }}
 
             #{container_id}:fullscreen {{
@@ -281,6 +281,11 @@ def gantt_chart_bus(bp, selected_buses=None):
                 width: 100vw;
                 height: 100vh;
                 overflow: auto;
+            }}
+
+            #{chart_id} {{
+                width: max-content;
+                min-width: 100%;
             }}
 
             /* Hide mpld3 automatic x-axis labels */
@@ -377,7 +382,7 @@ def gantt_chart_bus(bp, selected_buses=None):
         components.html(
             fullscreen_html,
             height=850,
-            scrolling=False
+            scrolling=True
         )
 
         plt.close(fig)
