@@ -1253,7 +1253,9 @@ elif keuze == "Visualisations":
                                 )
 
                     # Bus selection
-                    all_buses = sorted(bp['bus'].dropna().unique().tolist())
+                    all_buses = sorted(
+                        bp['bus'].dropna().unique().tolist()
+                    )
 
                     selection_key = (
                         f"selected_buses_{planning_choice}"
@@ -1261,15 +1263,17 @@ elif keuze == "Visualisations":
                         else "selected_buses_original"
                     )
 
+                    # Start with no buses selected
                     if selection_key not in st.session_state:
-                        st.session_state[selection_key] = all_buses.copy()
+                        st.session_state[selection_key] = []
 
-                    # Keep valid selections
+                    # Keep only valid bus numbers
                     st.session_state[selection_key] = [
                         bus for bus in st.session_state[selection_key]
                         if bus in all_buses
                     ]
 
+                    # Bus selection popover
                     with st.popover(
                         f"Select buses ({len(st.session_state[selection_key])}/{len(all_buses)} selected)",
                         use_container_width=True
@@ -1277,23 +1281,11 @@ elif keuze == "Visualisations":
 
                         with st.form(key=f"bus_form_{planning_choice}"):
 
-                            st.write("Select buses to display")
-
-                            selected_buses = []
-
-                            # Display buses in 5 columns
-                            columns = st.columns(5)
-
-                            for i, bus in enumerate(all_buses):
-                                with columns[i % 5]:
-                                    checked = st.checkbox(
-                                        f"Bus {bus}",
-                                        value=bus in st.session_state[selection_key],
-                                        key=f"checkbox_{planning_choice}_{bus}"
-                                    )
-
-                                    if checked:
-                                        selected_buses.append(bus)
+                            selected_buses = st.multiselect(
+                                "Select buses to display",
+                                options=all_buses,
+                                default=st.session_state[selection_key]
+                            )
 
                             apply_selection = st.form_submit_button(
                                 "Apply selection",
@@ -1305,11 +1297,14 @@ elif keuze == "Visualisations":
                             st.session_state[selection_key] = selected_buses.copy()
                             st.rerun()
 
-                    # Only update the Gantt chart after applying
-                    gantt_chart_bus(
-                        bp,
-                        st.session_state[selection_key]
-                    )
+                    # Display Gantt chart only when buses are selected
+                    if st.session_state[selection_key]:
+                        gantt_chart_bus(
+                            bp,
+                            st.session_state[selection_key]
+                        )
+                    else:
+                        st.info("Select buses and click Apply selection to display the Gantt chart.")
 
     else:
         st.warning(
