@@ -235,9 +235,11 @@ def gantt_chart_bus(bp, selected_buses=None):
         )
 
         # Titles
-        ax.set_xlabel('Time')
+        ax.set_xlabel('Time',
+                      fontsize = 15,
+                      fontweight = 'bold',
+                      color = '#333333')
         # Titles
-        ax.set_xlabel('Time')
         ax.set_title(
             'Improved bus plan',
             fontsize=30,           # Lettergrootte
