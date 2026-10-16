@@ -1,11 +1,5 @@
 #URL:
-#https://project5-jmfoec4ruxwpczdw5mf76w.streamlit.app/
-
-#AANPASSEN
-#balkje links met assumed_battery aanpassen
-#min/max/gemiddelde bustijd pakken aanvinken
-#   gewoon/beter/uitstekend vakjes aankruizen.
-#Solve knop?
+#https://project5groep5optimizationtool.streamlit.app/ 
 
 from solver import solve_bus_planning
 from io import BytesIO
@@ -783,6 +777,30 @@ elif keuze == "Visualisations":
         height: 4px;
         background: #EA3323;
         border-radius: 3px;
+    }
+
+    /* Standaard witte achtergrond */
+    .st-key-chart_header [data-testid="stRadio"] label {
+        background-color: white !important;
+        border-radius: 6px !important;
+        padding: 6px 10px !important;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    /* Zwarte achtergrond bij hover */
+    .st-key-chart_header [data-testid="stRadio"] label:hover {
+        background-color: #1F1F1F !important;
+    }
+
+    /* Witte tekst bij hover */
+    .st-key-chart_header [data-testid="stRadio"] label:hover p {
+        color: white !important;
+    }
+
+    /* Rode geselecteerde radioknop behouden */
+    .st-key-chart_header [data-testid="stRadio"] label:hover [data-testid="stMarkdownContainer"] p {
+        color: white !important;
     }
     </style>
     """, unsafe_allow_html=True)
