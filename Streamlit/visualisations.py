@@ -236,7 +236,14 @@ def gantt_chart_bus(bp, selected_buses=None):
 
         # Titles
         ax.set_xlabel('Time')
-        ax.set_title('Improved bus plan')
+        # Titles
+        ax.set_xlabel('Time')
+        ax.set_title(
+            'Improved bus plan',
+            fontsize=18,           # Lettergrootte
+            fontweight='bold',     # Vetgedrukt
+            color='#333333'        # Tekstkleur
+        )
 
         # Legend
         ax.legend(
