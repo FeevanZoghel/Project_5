@@ -779,44 +779,47 @@ elif keuze == "Visualisations":
         border-radius: 3px;
     }
 
-    /* Radioknoppen naast elkaar */
-    .st-key-chart_header [data-testid="stRadio"] [role="radiogroup"] {
+    /* Radioknoppen naast elkaar, rechts uitgelijnd */
+    .st-key-chart_header [data-testid="stRadioGroup"] {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         justify-content: flex-end !important;
-        align-items: center !important;
         gap: 20px !important;
     }
 
-    /* Geen achtergrond achter de tekst */
-    .st-key-chart_header [data-testid="stRadio"] label {
+    /* Achtergrond van de opties transparant */
+    .st-key-chart_header [data-testid="stRadioOption"] {
         background: transparent !important;
         padding: 0 !important;
-        white-space: nowrap !important;
     }
 
-    /* Radiobolletje standaard wit met zwarte rand */
-    .st-key-chart_header [data-testid="stRadio"] label > div:first-child {
-        background-color: white !important;
+    /* Radiobolletje: standaard wit met zwarte rand */
+    .st-key-chart_header
+    [data-testid="stRadioOption"] label > div > div:first-child {
+        background: white !important;
         border: 2px solid #1F1F1F !important;
         border-radius: 50% !important;
     }
 
-    /* Radiobolletje zwart bij hover */
-    .st-key-chart_header [data-testid="stRadio"] label:hover > div:first-child {
-        background-color: #1F1F1F !important;
+    /* Radiobolletje: zwart bij hover */
+    .st-key-chart_header
+    [data-testid="stRadioOption"]:hover label > div > div:first-child {
+        background: #1F1F1F !important;
+        border-color: #1F1F1F !important;
     }
 
-    /* Geselecteerd bolletje: rode binnenkant */
-    .st-key-chart_header [data-testid="stRadio"] label:has(input:checked) > div:first-child {
-        background-color: #EA3323 !important;
-        border-color: #EA3323 !important;
+    /* Geselecteerd radiobolletje: zwart */
+    .st-key-chart_header
+    [data-testid="stRadioOption"][aria-checked="true"]
+    label > div > div:first-child {
+        background: #1F1F1F !important;
+        border-color: #1F1F1F !important;
     }
 
-    /* Tekst blijft zwart */
-    .st-key-chart_header [data-testid="stRadio"] label p,
-    .st-key-chart_header [data-testid="stRadio"] label:hover p {
+    /* Tekst altijd zwart */
+    .st-key-chart_header
+    [data-testid="stRadioOption"] p {
         color: #222222 !important;
         font-size: 13px !important;
     }
