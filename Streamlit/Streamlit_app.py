@@ -996,9 +996,6 @@ elif keuze == "Visualisations":
 
                     all_buses = sorted(bp['bus'].dropna().unique().tolist())
 
-                    if selection_key not in st.session_state:
-                        st.session_state[selection_key] = all_buses
-
                     with st.popover(
                         f"Select buses ({len(st.session_state[selection_key])}/{len(all_buses)} selected)",
                         use_container_width=True
@@ -1013,6 +1010,9 @@ elif keuze == "Visualisations":
                             if 'improved_bp' in st.session_state
                             else "selected_buses_original"
                         )
+
+                        if selection_key not in st.session_state:
+                            st.session_state[selection_key] = all_buses
 
                     gantt_chart_bus(bp, st.session_state[selection_key])
 
