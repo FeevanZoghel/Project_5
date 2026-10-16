@@ -185,7 +185,7 @@ def gantt_chart_bus(bp, selected_buses=None):
                 f'{hour % 24:02d}:00',
                 ha='center',
                 va='center',
-                fontsize=10,
+                fontsize=15,
                 fontweight='bold',
                 color='#333333',
                 clip_on=False
@@ -206,7 +206,7 @@ def gantt_chart_bus(bp, selected_buses=None):
                 f"Bus {bus}",
                 ha='left',
                 va='center',
-                fontsize=10,
+                fontsize=15,
                 color='black',
                 zorder=20,
                 bbox=dict(
