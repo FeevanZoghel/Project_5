@@ -705,23 +705,17 @@ elif keuze == "Visualisations":
         object-fit: contain;
     }
 
-    /* Bus selection dropdown */
+    /* White Select buses trigger */
     .st-key-chart_card [data-testid="stPopover"] button {
-        background-color: #F3F4F6 !important;
+        background: #FFFFFF !important;
         color: #222222 !important;
         border: 1px solid #EA3323 !important;
         border-radius: 10px !important;
     }
-
-    .st-key-chart_card [data-testid="stPopover"] button *,
-    .st-key-chart_card [data-testid="stPopover"] button svg {
-        color: #222222 !important;
-        fill: #222222 !important;
-        stroke: #222222 !important;
-    }
-
     .st-key-chart_card [data-testid="stPopover"] button:hover {
-        background-color: #E5E7EB !important;
+        background: #F8F9FA !important;
+    }
+    .st-key-chart_card [data-testid="stPopover"] button * {
         color: #222222 !important;
     }
 
@@ -753,8 +747,8 @@ elif keuze == "Visualisations":
 
     /* Align planning selection to the right */
     .st-key-chart_header [data-testid="stRadio"] > div {
-        justify-content: flex-start !important;
-        padding-left: 300px !important;
+        justify-content: flex-end !important;
+        padding-left: 0 !important;
     }
 
     /* Radio text */
@@ -810,46 +804,85 @@ elif keuze == "Visualisations":
         border-color: black !important;
     }
 
-    /* Select buses button stays white */
-    .st-key-chart_card [data-testid="stPopover"] > button {
-        background-color: #FFFFFF !important;
-        color: #222222 !important;
-        border: 1px solid #EA3323 !important;
-        border-radius: 10px !important;
-    }
-
-    /* Popover window stays white */
-    div[data-testid="stPopoverBody"],
-    div[data-testid="stPopoverBody"] > div {
+    /* Popover itself: white, with an off-white inner panel */
+    [data-testid="stPopoverBody"],
+    [data-testid="stPopoverBody"] > div,
+    [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"] {
         background-color: #FFFFFF !important;
         color: #222222 !important;
     }
-
-    /* Multiselect input stays white */
-    div[data-testid="stPopoverBody"] [data-baseweb="select"] > div {
-        background-color: #FFFFFF !important;
-        color: #222222 !important;
+    [data-testid="stPopoverBody"] {
         border: 1px solid #E5E7EB !important;
+        border-radius: 12px !important;
+    }
+    [data-testid="stPopoverBody"] p,
+    [data-testid="stPopoverBody"] label,
+    [data-testid="stPopoverBody"] span {
+        color: #222222 !important;
     }
 
-    /* Selected buses remain red */
-    div[data-testid="stPopoverBody"] [data-baseweb="tag"] {
+    /* Multiselect: pale background, dark text */
+    [data-testid="stPopoverBody"] [data-baseweb="select"],
+    [data-testid="stPopoverBody"] [data-baseweb="select"] > div,
+    [data-testid="stPopoverBody"] [data-baseweb="select"] [data-baseweb="input"] {
+        background-color: #F8F9FA !important;
+        color: #222222 !important;
+    }
+    [data-testid="stPopoverBody"] [data-baseweb="select"] > div {
+        border: 1px solid #DADDE2 !important;
+        border-radius: 8px !important;
+    }
+    [data-testid="stPopoverBody"] input {
+        color: #222222 !important;
+        -webkit-text-fill-color: #222222 !important;
+    }
+
+    /* BaseWeb listbox may be rendered in a portal */
+    [data-baseweb="popover"],
+    [data-baseweb="popover"] > div,
+    [data-baseweb="menu"],
+    [data-baseweb="menu"] > div,
+    [role="listbox"] {
+        background-color: #FFFFFF !important;
+        color: #222222 !important;
+    }
+    [role="option"] {
+        background-color: #FFFFFF !important;
+        color: #222222 !important;
+    }
+    [role="option"]:hover,
+    [role="option"][aria-selected="true"] {
+        background-color: #F3F4F6 !important;
+    }
+    [role="option"] * {
+        color: #222222 !important;
+    }
+
+    /* Only the selected bus chips are red */
+    [data-testid="stPopoverBody"] [data-baseweb="tag"],
+    [data-testid="stPopoverBody"] [data-baseweb="tag"] > span {
         background-color: #EA3323 !important;
         color: #FFFFFF !important;
     }
-
-    /* Text and remove icons inside selected buses */
-    div[data-testid="stPopoverBody"] [data-baseweb="tag"] * {
+    [data-testid="stPopoverBody"] [data-baseweb="tag"] *,
+    [data-testid="stPopoverBody"] [data-baseweb="tag"] svg {
         color: #FFFFFF !important;
         fill: #FFFFFF !important;
     }
 
-    /* Apply button red */
-    div[data-testid="stPopoverBody"] button[kind="primary"] {
+    /* Apply button */
+    [data-testid="stPopoverBody"] button[kind="primary"],
+    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"] {
         background-color: #EA3323 !important;
         color: #FFFFFF !important;
+        border: 1px solid #EA3323 !important;
         border-radius: 8px !important;
     }
+    [data-testid="stPopoverBody"] button[kind="primary"] *,
+    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"] * {
+        color: #FFFFFF !important;
+    }
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -1219,65 +1252,65 @@ elif keuze == "Visualisations":
                                     key="planning_choice"
                                 )
 
-                # Bus selection
-                all_buses = sorted(
-                    bp['bus'].dropna().unique().tolist()
-                )
-
-                selection_key = (
-                    f"selected_buses_{planning_choice}"
-                    if 'improved_bp' in st.session_state
-                    else "selected_buses_original"
-                )
-
-                draft_key = f"draft_{selection_key}"
-
-                # Initially select all buses
-                if selection_key not in st.session_state:
-                    st.session_state[selection_key] = all_buses.copy()
-
-                if draft_key not in st.session_state:
-                    st.session_state[draft_key] = st.session_state[selection_key].copy()
-
-                # Keep selections valid
-                st.session_state[selection_key] = [
-                    bus for bus in st.session_state[selection_key]
-                    if bus in all_buses
-                ]
-
-                st.session_state[draft_key] = [
-                    bus for bus in st.session_state[draft_key]
-                    if bus in all_buses
-                ]
-
-                # Selection popover
-                with st.popover(
-                    f"Select buses ({len(st.session_state[selection_key])}/{len(all_buses)} selected)",
-                    use_container_width=True
-                ):
-
-                    st.multiselect(
-                        "Select buses to display",
-                        options=all_buses,
-                        key=draft_key
+                    # Bus selection
+                    all_buses = sorted(
+                        bp['bus'].dropna().unique().tolist()
                     )
 
-                    if st.button(
-                        "Apply selection",
-                        type="primary",
-                        use_container_width=True,
-                        key=f"apply_{selection_key}"
-                    ):
-                        st.session_state[selection_key] = (
-                            st.session_state[draft_key].copy()
-                        )
-                        st.rerun()
+                    selection_key = (
+                        f"selected_buses_{planning_choice}"
+                        if 'improved_bp' in st.session_state
+                        else "selected_buses_original"
+                    )
 
-                # Gantt chart only uses applied selection
-                gantt_chart_bus(
-                    bp,
-                    st.session_state[selection_key]
-                )
+                    draft_key = f"draft_{selection_key}"
+
+                    # Initially select all buses
+                    if selection_key not in st.session_state:
+                        st.session_state[selection_key] = all_buses.copy()
+
+                    if draft_key not in st.session_state:
+                        st.session_state[draft_key] = st.session_state[selection_key].copy()
+
+                    # Keep selections valid
+                    st.session_state[selection_key] = [
+                        bus for bus in st.session_state[selection_key]
+                        if bus in all_buses
+                    ]
+
+                    st.session_state[draft_key] = [
+                        bus for bus in st.session_state[draft_key]
+                        if bus in all_buses
+                    ]
+
+                    # Selection popover
+                    with st.popover(
+                        f"Select buses ({len(st.session_state[selection_key])}/{len(all_buses)} selected)",
+                        use_container_width=True
+                    ):
+
+                        st.multiselect(
+                            "Select buses to display",
+                            options=all_buses,
+                            key=draft_key
+                        )
+
+                        if st.button(
+                            "Apply selection",
+                            type="primary",
+                            use_container_width=True,
+                            key=f"apply_{selection_key}"
+                        ):
+                            st.session_state[selection_key] = (
+                                st.session_state[draft_key].copy()
+                            )
+                            st.rerun()
+
+                    # Gantt chart only uses applied selection
+                    gantt_chart_bus(
+                        bp,
+                        st.session_state[selection_key]
+                    )
 
     else:
         st.warning(
