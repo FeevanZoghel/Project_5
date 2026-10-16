@@ -742,6 +742,47 @@ elif keuze == "Visualisations":
         margin: 0 !important;
     }
 
+    /* Header spanning the full width of the Gantt card */
+    .st-key-chart_header {
+        border-bottom: 2px solid #E5E5E5 !important;
+        padding-bottom: 12px !important;
+        margin-bottom: 15px !important;
+    }
+
+    /* Bus planning title */
+    .chart-header-title {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1F1F1F;
+        white-space: nowrap;
+    }
+
+    /* Align planning selection to the right */
+    .st-key-chart_header [data-testid="stRadio"] > div {
+        justify-content: flex-end !important;
+    }
+
+    /* Radio text */
+    .st-key-chart_header [data-testid="stRadio"] label p {
+        font-size: 13px !important;
+        color: #222222 !important;
+        white-space: nowrap;
+    }
+
+    .st-key-chart_header {
+    position: relative;
+    }
+
+    .st-key-chart_header::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 65px;
+        height: 4px;
+        background: #EA3323;
+        border-radius: 3px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -1088,28 +1129,28 @@ elif keuze == "Visualisations":
                 with st.container(key="chart_card"):
 
                     # Bus planning title + planning selection
-                    col_chart_title, col_planning = st.columns(
-                        [2, 3],
-                        vertical_alignment="center"
-                    )
+                    with st.container(key="chart_header"):
 
-                    with col_chart_title:
-                        st.markdown(
-                            '<div class="section-title">Bus planning</div>',
-                            unsafe_allow_html=True
+                        col_chart_title, col_planning = st.columns(
+                            [1, 3],
+                            vertical_alignment="center"
                         )
-                    with col_planning:
-                        if 'improved_bp' in st.session_state:
-                            st.radio(
-                                "Select bus planning",
-                                [
-                                    "Original planning",
-                                    "Improved planning"
-                                ],
-                                horizontal=True,
-                                label_visibility="collapsed",
-                                key="planning_choice"
+
+                        with col_chart_title:
+                            st.markdown(
+                                '<div class="chart-header-title">Bus planning</div>',
+                                unsafe_allow_html=True
                             )
+
+                        with col_planning:
+                            if 'improved_bp' in st.session_state:
+                                st.radio(
+                                    "Select bus planning",
+                                    ["Original planning", "Improved planning"],
+                                    horizontal=True,
+                                    label_visibility="collapsed",
+                                    key="planning_choice"
+                                )
 
                     # Bus selection
                     all_buses = sorted(
