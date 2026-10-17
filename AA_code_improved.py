@@ -65,6 +65,7 @@ def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_tim
                 charging_time = (start_time - charging_start[bus]).total_seconds() / 60
                 battery_start = battery[bus]
 
+
                 if battery_start < charging_limit:
                     tijd_tot_90 = (charging_limit - battery_start) / fast_charge_per_min
 
@@ -78,7 +79,9 @@ def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_tim
                     charged_energy = charging_time * slow_charge_per_min
 
                 battery_after_charging = min(max_battery, battery_start + charged_energy)
+                charged_energy = battery_after_charging - battery_start
 
+                
                 if (charging_time >= 15 and battery_after_charging >= benodigde_energy):
                     battery[bus] = battery_after_charging
                     # Charging activity toevoegen aan de planning
@@ -357,7 +360,11 @@ print('na import')
 feasibility_results = run_all_feasibility_checks(ibp, tt)
 kpi_results = run_all_kpi_calculations(ibp, dm, tt)
 
-ibp[['start location', 'end location', 'start time', 'end time', 'activity', 'line', 'energy consumption', 'bus']].to_excel('AA_improved_bus_planning.xlsx', index = False)
+
+
+
+
+ibp[['start location', 'end location', 'start time', 'end time', 'activity', 'line', 'energy consumption', 'bus']].to_excel('BRO.xlsx', index = False)
 
 output_filename = 'Improved_plan_Feasibility_and_KPI_results.xlsx'
 output = export_results_to_excel(feasibility_results, kpi_results, filename=output_filename)
