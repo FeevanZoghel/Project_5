@@ -133,17 +133,17 @@ def check_material_trip(bus, last_activity, trip, ibp, battery, dm, bp, toevoege
     return material_travel_time, material_energy
 
 def calculate_idle_time(bus, start_time, ibp, battery, toevoegen = False):
-    last_activity = ibp[ibp['bus']== bus].iloc[-1]
+    
     last_activity = ibp[ibp['bus'] == bus].iloc[-1]
 
     idle_start = last_activity['end time']
     idle_end = start_time
 
     idle_hours = max(0, (idle_end - idle_start).total_seconds() / 3600) # nooit een negatieve wachttijd
-    idle_energy = idle_hours * 5 
+    idle_energy = idle_hours * 5  # 5 kwh energie verbruik 
     if toevoegen and idle_hours>0:
         battery[bus] -= idle_energy
-        add_activity(ibp, bus, last_activity['end_location'], last_activity['end_location'], idle_start, idle_end, 'idle', None, idle_energy, battery[bus], last_activity['total travel time'])
+        add_activity(ibp, bus, last_activity['end location'], last_activity['end location'], idle_start, idle_end, 'idle', None, idle_energy, battery[bus], last_activity['total travel time'])
 
     return idle_energy
 
@@ -261,6 +261,51 @@ for i in range(len(tt)):
         total_travel_time = hoogste_travel_tijd + travel_time
 
     add_activity(ibp, gekozen_bus, trip['start'], trip['end'], start_time, end_time, 'service trip', trip['line'], energy_consumption, battery[gekozen_bus], total_travel_time)
+
+
+
+# de bussen naar de garage terug laten rijden 
+for bus in bussen: 
+    last_activity = ibp[ibp['bus'] == bus].iloc[-1]
+
+    if last_activity['end location']!= 'ehvgar':
+        trip_gar = {'start': 'ehvgar'} # normaal de volgende trip doorgeven, nu het alle trips gereden, dus de 'volgende' trip moet starten bij ehvgar wat de eindlocatie is
+        material_travel_time, material_energy = check_material_trip(bus, last_activity, trip_gar, ibp, battery, dm, bp, toevoegen = True )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # # dit voegt de idle time toe
 # for bus in ibp['bus'].unique():
