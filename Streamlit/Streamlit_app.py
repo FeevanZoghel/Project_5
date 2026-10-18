@@ -477,10 +477,10 @@ if keuze == "Data Check":
             ["Original planning", "Improved planning"],
             horizontal=True)
 
-    if planning_choice == 'Original planning':
-        df1 = st.session_state['bp']
-    else:
-        df1 = st.session_state['improved_bp']
+        if planning_choice == 'Original planning':
+            df1 = st.session_state['bp']
+        else:
+            df1 = st.session_state['improved_bp']
 
         validate_bus_planning(df1)
 
