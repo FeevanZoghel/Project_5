@@ -7,7 +7,7 @@ as DataFrames and the result is returned, without file I/O or KPI exports.
 import pandas as pd
 
 
-def solve_bus_planning(bp, dm, tt):
+def solve_bus_planning(bp, dm, tt, progress_callback=None):
     """Generate the improved bus planning from three input DataFrames."""
     bp = bp.copy()
     dm = dm.copy()
@@ -202,6 +202,13 @@ def solve_bus_planning(bp, dm, tt):
 
     for i in range(len(tt)):
 
+        if progress_callback is not None:
+            progress_callback(
+                i,
+                len(tt),
+                "Scheduling service trips"
+            )
+
         trip = tt.iloc[i,:]
 
         dm_trip = dm[(dm['start'] == trip['start']) &(dm['end'] == trip['end']) &(dm['line'] == trip['line'])]
@@ -356,6 +363,13 @@ def solve_bus_planning(bp, dm, tt):
 
         add_activity(ibp, gekozen_bus, trip['start'], trip['end'], start_time, end_time, 'service trip', trip['line'], energy_consumption, battery[gekozen_bus], total_travel_time)
 
+
+    if progress_callback is not None:
+        progress_callback(
+            len(tt),
+            len(tt),
+            "Returning buses to the garage"
+        )
     # de bussen naar de garage terug laten rijden 
 
     for bus in bussen: 
@@ -369,4 +383,11 @@ def solve_bus_planning(bp, dm, tt):
             material_travel_time, material_energy = check_material_trip(bus, last_activity, trip_gar, ibp, battery, dm, bp, toevoegen = True )
 
     ibp = ibp.sort_values(['bus', 'start time']).reset_index(drop=True)
+
+    if progress_callback is not None:
+        progress_callback(
+            len(tt),
+            len(tt),
+            "Completed"
+        )
     return ibp
