@@ -104,7 +104,19 @@ def get_charging_speed_errors(df):
     charging_limit = 0.9 * max_battery
 
     for bus, bus_data in df.groupby('bus', sort=False):
-        bus_data = bus_data.sort_values('start time')
+        bus_data = bus_data.copy()
+
+        bus_data['_sort_minutes'] = pd.to_timedelta(
+            bus_data['start time'].astype(str)
+        ).dt.total_seconds() / 60
+
+        # Times before 05:07 belong to the next operational day
+        bus_data.loc[
+            bus_data['_sort_minutes'] < 5 * 60 + 7,
+            '_sort_minutes'
+        ] += 24 * 60
+
+        bus_data = bus_data.sort_values('_sort_minutes')
         battery = max_battery
 
         for _, row in bus_data.iterrows():
