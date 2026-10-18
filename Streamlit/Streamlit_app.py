@@ -1297,20 +1297,17 @@ elif keuze == "Visualisations":
                                     key="planning_choice"
                                 )
 
+
                     # Bus selection
                     all_buses = sorted(
                         bp['bus'].dropna().unique().tolist()
                     )
 
-                    selection_key = (
-                        f"selected_buses_{planning_choice}"
-                        if 'improved_bp' in st.session_state
-                        else "selected_buses_original"
-                    )
+                    selection_key = f"selected_buses_{planning_choice}"
 
-                    # Start with no buses selected
+                    # Initially display all buses
                     if selection_key not in st.session_state:
-                        st.session_state[selection_key] = []
+                        st.session_state[selection_key] = all_buses.copy()
 
                     # Keep only valid bus numbers
                     st.session_state[selection_key] = [
@@ -1342,7 +1339,7 @@ elif keuze == "Visualisations":
                             st.session_state[selection_key] = selected_buses.copy()
                             st.rerun()
 
-                    # Display Gantt chart only when buses are selected
+                    # Display Gantt chart
                     if st.session_state[selection_key]:
                         gantt_chart_bus(
                             bp,
