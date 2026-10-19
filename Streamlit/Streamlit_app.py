@@ -3,6 +3,7 @@
 
 from solver import solve_bus_planning
 from io import BytesIO
+import time
 
 from DataFrame_check import validate_bus_planning
 
@@ -405,17 +406,76 @@ if keuze == "Data Check":
     )
 
     if st.button("Optimize", type="primary", disabled=not files_ready):
-        with st.spinner("Optimizing bus planning..."):
-            try:
-                improved_bp = solve_bus_planning(
-                    st.session_state['bp'],
-                    st.session_state['dm'],
-                    st.session_state['tt']
+
+        progress_bar = st.progress(
+            0,
+            text="Preparing optimization..."
+        )
+
+        start_time = time.monotonic()
+
+        def update_progress(completed, total, phase):
+
+            if phase == "Completed":
+                progress_bar.progress(
+                    100,
+                    text="Optimization completed!"
                 )
-                st.session_state['improved_bp'] = improved_bp
-                st.success("Improved bus planning generated successfully!")
-            except Exception as e:
-                st.error(f"Solver failed: {e}")
+                return
+
+            if phase == "Returning buses to the garage":
+                progress_bar.progress(
+                    95,
+                    text="95% — Returning buses to the garage..."
+                )
+                return
+
+            percentage = int(95 * completed / max(total, 1))
+
+            elapsed = time.monotonic() - start_time
+
+            if completed > 0:
+                remaining = elapsed / completed * (total - completed)
+                remaining_text = f"Estimated {remaining:.0f} seconds remaining"
+            else:
+                remaining_text = "Calculating remaining time..."
+
+            progress_bar.progress(
+                percentage,
+                text=(
+                    f"Optimizing bus planning... {percentage}% "
+                    f"— {remaining_text}"
+                )
+            )
+
+        try:
+            improved_bp = solve_bus_planning(
+                st.session_state["bp"],
+                st.session_state["dm"],
+                st.session_state["tt"],
+                progress_callback=update_progress
+            )
+
+            st.session_state["improved_bp"] = improved_bp
+
+            total_time = time.monotonic() - start_time
+
+            progress_bar.progress(
+                100,
+                text=f"Optimization completed in {total_time:.1f} seconds!"
+            )
+
+            st.success(
+                "Improved bus planning generated successfully!"
+            )
+
+        except Exception as e:
+            progress_bar.empty()
+            st.error(f"Solver failed: {e}")
+
+        except Exception as e:
+            progress_bar.empty()
+            st.error(f"Solver failed: {e}")
 
     if 'improved_bp' in st.session_state:
         improved_bp = st.session_state['improved_bp'][[
@@ -477,10 +537,10 @@ if keuze == "Data Check":
             ["Original planning", "Improved planning"],
             horizontal=True)
 
-    if planning_choice == 'Original planning':
-        df1 = st.session_state['bp']
-    else:
-        df1 = st.session_state['improved_bp']
+        if planning_choice == 'Original planning':
+            df1 = st.session_state['bp']
+        else:
+            df1 = st.session_state['improved_bp']
 
         validate_bus_planning(df1)
 
@@ -1297,20 +1357,17 @@ elif keuze == "Visualisations":
                                     key="planning_choice"
                                 )
 
+
                     # Bus selection
                     all_buses = sorted(
                         bp['bus'].dropna().unique().tolist()
                     )
 
-                    selection_key = (
-                        f"selected_buses_{planning_choice}"
-                        if 'improved_bp' in st.session_state
-                        else "selected_buses_original"
-                    )
+                    selection_key = f"selected_buses_{planning_choice}"
 
-                    # Start with no buses selected
+                    # Initially display all buses
                     if selection_key not in st.session_state:
-                        st.session_state[selection_key] = []
+                        st.session_state[selection_key] = all_buses.copy()
 
                     # Keep only valid bus numbers
                     st.session_state[selection_key] = [
@@ -1342,7 +1399,7 @@ elif keuze == "Visualisations":
                             st.session_state[selection_key] = selected_buses.copy()
                             st.rerun()
 
-                    # Display Gantt chart only when buses are selected
+                    # Display Gantt chart
                     if st.session_state[selection_key]:
                         gantt_chart_bus(
                             bp,
