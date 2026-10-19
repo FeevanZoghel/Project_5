@@ -280,7 +280,7 @@ for i in range(len(tt)):
 
 
 
-# de bussen naar de garage terug laten rijden en daarna laten laden
+# de bussen naar de garage terug laten rijden en daarna laten laden.
 for bus in bussen: 
     last_activity = ibp[ibp['bus'] == bus].iloc[-1]
 
