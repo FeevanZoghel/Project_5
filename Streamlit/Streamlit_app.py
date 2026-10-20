@@ -393,13 +393,15 @@ if keuze == "Data Check":
         st.session_state['dm'] = pd.read_excel(bestand3)
 
     energy_method = st.selectbox(
-        "Please select a method for the energy estimation",
-        ["mean", "min", "max"],
+        "Select an energy estimation method for material trips",
+        ["Mean", "Min", "Max"],
         index=0
     )
 
+    energy_method = energy_method.lower()
+
     SoH = st.slider(
-        "Please select SoH value",
+        "Select the State of Health (SoH) (%)",
         min_value=0,
         max_value=100,
         value=85,
@@ -461,7 +463,7 @@ if keuze == "Data Check":
                 st.session_state["bp"],
                 st.session_state["dm"],
                 st.session_state["tt"],
-                SoH,
+                assumed_battery_value = SoH,
                 energy_method = energy_method,
                 progress_callback=update_progress
             )
