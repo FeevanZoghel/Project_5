@@ -181,7 +181,6 @@ st.sidebar.markdown("""
 <div class="sidebar-title">
     Menu
 </div>
-<div class="sidebar-line"></div>
 """, unsafe_allow_html=True)
 
 st.sidebar.divider()
