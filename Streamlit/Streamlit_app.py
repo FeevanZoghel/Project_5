@@ -4,6 +4,7 @@
 from solver import solve_bus_planning
 from io import BytesIO
 import time
+import textwrap
 
 from DataFrame_check import validate_bus_planning
 
@@ -239,38 +240,41 @@ keuze = st.sidebar.radio(
 st.sidebar.divider()
 
 
-st.sidebar.markdown("""
-<div class="sidebar-about-title">
-    About this tool
-</div>
 
-<div class="sidebar-about-description">
-    A planning optimization dashboard for electric bus operations.
-</div>
-
-<div class="sidebar-about-card">
-
-    <div class="sidebar-about-item">
-        <span class="sidebar-about-icon">🚌</span>
-        <span>Electric bus scheduling</span>
+st.sidebar.markdown(
+    textwrap.dedent("""
+    <div class="sidebar-about-title">
+        About this tool
     </div>
 
-    <div class="sidebar-about-item">
-        <span class="sidebar-about-icon">🔋</span>
-        <span>Battery feasibility</span>
+    <div class="sidebar-about-description">
+        A planning optimization dashboard for electric bus operations.
     </div>
 
-    <div class="sidebar-about-item">
-        <span class="sidebar-about-icon">📊</span>
-        <span>Performance analysis</span>
+    <div class="sidebar-about-card">
+        <div class="sidebar-about-item">
+            <span class="sidebar-about-icon">🚌</span>
+            <span>Electric bus scheduling</span>
+        </div>
+
+        <div class="sidebar-about-item">
+            <span class="sidebar-about-icon">🔋</span>
+            <span>Battery feasibility</span>
+        </div>
+
+        <div class="sidebar-about-item">
+            <span class="sidebar-about-icon">📊</span>
+            <span>Performance analysis</span>
+        </div>
     </div>
 
-</div>
+    <div class="sidebar-footer">
+        Fontys · Applied Mathematics
+    </div>
+    """),
+    unsafe_allow_html=True
+)
 
-<div class="sidebar-footer">
-    Fontys · Applied Mathematics
-</div>
-""", unsafe_allow_html=True)
 
 
 st.markdown("""
