@@ -7,7 +7,7 @@ as DataFrames and the result is returned, without file I/O or KPI exports.
 import pandas as pd
 
 
-def solve_bus_planning(bp, dm, tt, progress_callback=None):
+def solve_bus_planning(bp, dm, tt, assumed_battery_value, energy_method = 'mean', progress_callback=None):
     """Generate the improved bus planning from three input DataFrames."""
     bp = bp.copy()
     dm = dm.copy()
@@ -122,7 +122,13 @@ def solve_bus_planning(bp, dm, tt, progress_callback=None):
 
                 material_travel_time = (dm_material['min_travel_time'].iloc[0]+dm_material['max_travel_time'].iloc[0])/2
 
-                material_energy = bp[(bp['start location'] == material_start) & (bp['end location'] == 'ehvgar') &(bp['activity'] == 'material trip')]['energy consumption'].mean()
+                energy_values = bp[
+                    (bp['start location'] == material_start) &
+                    (bp['end location'] == 'ehvgar') &
+                    (bp['activity'] == 'material trip')
+                ]['energy consumption']
+
+                material_energy = getattr(energy_values, energy_method)()
 
                 material_start_time = last_activity['end time']
 

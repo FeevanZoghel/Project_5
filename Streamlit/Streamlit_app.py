@@ -449,10 +449,17 @@ if keuze == "Data Check":
             )
 
         try:
+
+            energy_method = st.selectbox(
+                "Material trip energy estimation",
+                ["mean", "min", "max"]
+            )
             improved_bp = solve_bus_planning(
                 st.session_state["bp"],
                 st.session_state["dm"],
                 st.session_state["tt"],
+                85,
+                energy_method,
                 progress_callback=update_progress
             )
 
