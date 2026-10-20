@@ -184,6 +184,7 @@ st.sidebar.markdown("""
 <div class="sidebar-line"></div>
 """, unsafe_allow_html=True)
 
+st.sidebar.divider()
 
 keuze = st.sidebar.radio(
     "Navigation",
@@ -192,14 +193,6 @@ keuze = st.sidebar.radio(
 )
 
 st.sidebar.divider()
-
-assumed_battery = st.sidebar.slider(
-    "Assumed battery capacity (kWh)",
-    min_value=200,
-    max_value=400,
-    value=300,
-    step=10
-)
 
 
 st.markdown("""
@@ -399,10 +392,8 @@ if keuze == "Data Check":
     if bestand3 is not None:
         st.session_state['dm'] = pd.read_excel(bestand3)
 
-    st.markdown("### Improve bus planning")
-
     energy_method = st.selectbox(
-        "Material trip energy estimation",
+        "Please select a method for the energy estimation",
         ["mean", "min", "max"],
         index=0
     )
@@ -414,6 +405,8 @@ if keuze == "Data Check":
         value=85,
         step=5
     )
+
+    st.markdown("### Improve bus planning")
 
     files_ready = all(
         key in st.session_state for key in ['bp', 'tt', 'dm']
