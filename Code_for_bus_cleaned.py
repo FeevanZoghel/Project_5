@@ -17,13 +17,21 @@ bp = pd.read_excel('Bus_Plan_Cleaned.xlsx')
 dm = pd.read_excel('DistanceMatrix.xlsx')
 tt = pd.read_excel('Timetable.xlsx')
 
+# Beginwaardes
+assumed_battery_value = 85
+max_battery = 300 * assumed_battery_value / 100
+charging_limit = 0.9 * max_battery
+fast_charge_per_min = 450 / 60
+slow_charge_per_min = 60 / 60
+min_battery_value = max_battery * 0.1
+
+
+
 # Feasibility checks
 
 # checks minimum battery value per bus (min 10%)
-def check_battery_feasibility(bp, start_battery=300):
+def check_battery_feasibility(bp, start_battery=max_battery):
     """Check if any bus falls below the minimum required battery capacity threshold."""
-    assumed_battery_value = 85
-    min_battery_value = (300 / assumed_battery_value * 100) * 0.1  # 10% of real capacity
     planning_sor = bp.sort_values(['bus', 'start time'])
     
     empty_bus = []
@@ -127,7 +135,7 @@ def check_valid_charging_duration(bp):
     return len(not_valid_charging_trips)
 
 # calculate the energy usage of busses (takes the quick recharge speed and slow recharge speed into account)
-def check_charging_constraint_and_speeds(bp, start_battery=300):
+def check_charging_constraint_and_speeds(bp, start_battery=max_battery):
     """Simulate battery levels throughout the day considering quick and slow charging speeds."""
     bp['start_dt'] = pd.to_datetime(bp['start time'])
     bp['end_dt'] = pd.to_datetime(bp['end time'])
@@ -135,12 +143,9 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
     bp['charging_duration_min'] = (bp['end_dt'] - bp['start_dt']).dt.total_seconds() / 60
 
     planning_sor = bp.sort_values(['bus', 'start time'])
-    assumed_battery_value = 85
-    min_battery_value = (300 / assumed_battery_value * 100) * 0.1 # same formula used
+    
     # 2 Charging rates in kWh: quick one and slow one
-    quick_recharge_speed = 450 / 60
-    slow_recharge_speed = 60 / 60
-    charging_speeds = [quick_recharge_speed, slow_recharge_speed]
+    charging_speeds = [fast_charge_per_min, slow_charge_per_min]
     number_charging_speeds = len(charging_speeds)
 
     # Feasibility check for number of charging speeds
@@ -157,18 +162,18 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
             if row['activity'] == 'charging' and row['charging_duration_min'] >= 15:
                 time_avail = row['charging_duration_min']
                 # use quick_recharge_speed if energy of a bus < 270 kWh
-                if battery < 270:
-                    needed_energy = 270 - battery
-                    time_needed = needed_energy / quick_recharge_speed
+                if battery < charging_limit:
+                    needed_energy = charging_limit - battery
+                    time_needed = needed_energy / fast_charge_per_min
                     if time_avail <= time_needed:
-                        battery += time_avail * quick_recharge_speed
+                        battery += time_avail * fast_charge_per_min
                         time_avail = 0
                     else:
-                        battery = 270
+                        battery = charging_limit
                         time_avail -= time_needed
-                # use slow_recharge_speed if 270 kWh < energy of a bus < 300 kWh
-                if time_avail > 0 and battery < 300:
-                    battery += min(time_avail * slow_recharge_speed, 300 - battery)
+                # use slow_recharge_speed if charging_limit kWh < energy of a bus < 300 kWh
+                if time_avail > 0 and battery < max_battery:
+                    battery += min(time_avail * slow_charge_per_min, max_battery - battery)
 
             else:
                 if row['activity'] != 'charging':
@@ -190,10 +195,10 @@ def check_charging_constraint_and_speeds(bp, start_battery=300):
 
     for bus_id, final_batt in total_usage:
         print(f'Bus {bus_id} has final battery level: {final_batt:.2f} kWh')
-        if (final_batt > 300) or (final_batt < 0):
-            print(f'Bus {bus_id} has a final battery level that is not possible (above 300 kWh or under 0 kWh). \nThe battery level is: {final_batt:.2f} kWh')
+        if (final_batt > max_battery) or (final_batt < 0):
+            print(f'Bus {bus_id} has a final battery level that is not possible (above 255 kWh or under 0 kWh). \nThe battery level is: {final_batt:.2f} kWh')
 
-    return empty_bus, total_usage, number_charging_speeds, assumed_battery_value, quick_recharge_speed, slow_recharge_speed
+    return empty_bus, total_usage, number_charging_speeds, assumed_battery_value, fast_charge_per_min, slow_charge_per_min
 
 # checks whether the required trips are all included in the schedule
 def check_required_trips(bp, tt):
