@@ -218,12 +218,14 @@ st.markdown(f'''
         padding: 9px 0;
     }}
 
+
     .sidebar-about-icon {{
-        color: #FF4555;
-        font-size: 19px;
-        width: 24px;
-        text-align: center;
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+        flex-shrink: 0;
     }}
+
 
     .sidebar-footer {{
         color: #89939F;
