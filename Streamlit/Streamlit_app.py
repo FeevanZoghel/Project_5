@@ -479,8 +479,8 @@ if keuze == "Data Check":
             )
 
             st.write(
-                "Total planning energy:",
-                improved_bp["energy consumption"].sum()
+                "Total energy consumption:",
+                calculate_energy_consumption_kpis(improved_bp)
             )
 
             total_time = time.monotonic() - start_time
