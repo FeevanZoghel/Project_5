@@ -374,18 +374,75 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value, energy_method = 'mean'
             len(tt),
             "Returning buses to the garage"
         )
-    # de bussen naar de garage terug laten rijden 
 
-    for bus in bussen: 
+    # Return all buses to the garage and charge them to 100%
+
+    for bus in bussen:
 
         last_activity = ibp[ibp['bus'] == bus].iloc[-1]
 
-        if last_activity['end location']!= 'ehvgar':
+        # Return bus to garage
+        if last_activity['end location'] != 'ehvgar':
 
-            trip_gar = {'start': 'ehvgar'} # normaal de volgende trip doorgeven, nu het alle trips gereden, dus de 'volgende' trip moet starten bij ehvgar wat de eindlocatie is
+            trip_gar = {'start': 'ehvgar'}
 
-            material_travel_time, material_energy = check_material_trip(bus, last_activity, trip_gar, ibp, battery, dm, bp, toevoegen = True )
+            material_travel_time, material_energy = check_material_trip(
+                bus, last_activity, trip_gar, ibp, battery, dm, bp,
+                toevoegen=True
+            )
 
+        # Charge bus to 100%
+        if battery[bus] < max_battery:
+
+            last_activity = ibp[ibp['bus'] == bus].iloc[-1]
+            battery_start = battery[bus]
+
+            # Calculate charging time
+            if battery_start < charging_limit:
+
+                time_to_90 = (
+                    charging_limit - battery_start
+                ) / fast_charge_per_min
+
+                charging_time = (
+                    time_to_90
+                    + (max_battery - charging_limit) / slow_charge_per_min
+                )
+
+            else:
+
+                charging_time = (
+                    max_battery - battery_start
+                ) / slow_charge_per_min
+
+            # Minimum charging time of 15 minutes
+            charging_time = max(15, charging_time)
+
+            charging_end = (
+                last_activity['end time']
+                + pd.Timedelta(minutes=charging_time)
+            )
+
+            charged_energy = max_battery - battery_start
+
+            # Update battery
+            battery[bus] = max_battery
+
+            # Add charging activity to planning
+            add_activity(
+                ibp,
+                bus,
+                'ehvgar',
+                'ehvgar',
+                last_activity['end time'],
+                charging_end,
+                'charging',
+                None,
+                -charged_energy,
+                battery[bus],
+                last_activity['total travel time']
+            )
+    
     ibp = ibp.sort_values(['bus', 'start time']).reset_index(drop=True)
 
     if progress_callback is not None:
