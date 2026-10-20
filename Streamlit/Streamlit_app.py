@@ -50,6 +50,9 @@ charging_time_path = image_path / "charging_time.png"
 energy_consumption_path = image_path / "energy_consumption.png"
 driving_distance_path = image_path / "driving_distance.png"
 logo_path = image_path / "Logo_Transdev.png"
+bar_chart_sidebar_path = image_path / "Bar_chart_sidebar.png"
+bus_sidebar_path = image_path / "Bus_sidebar.png"
+energy_sidebar_path = image_path / "energy_sidebar.png"
 
 with open(number_bus_used_path, "rb") as file:
     number_bus_used_icon = base64.b64encode(file.read()).decode()
@@ -71,6 +74,15 @@ with open(energy_consumption_path, "rb") as file:
 
 with open(driving_distance_path, "rb") as file:
     driving_distance_icon = base64.b64encode(file.read()).decode()
+
+with open(bar_chart_sidebar_path, "rb") as file:
+    bar_chart_sidebar_icon = base64.b64encode(file.read()).decode()
+
+with open(bus_sidebar_path, "rb") as file:
+    bus_sidebar_icon = base64.b64encode(file.read()).decode()
+
+with open(energy_sidebar_path, "rb") as file:
+    energy_sidebar_icon = base64.b64encode(file.read()).decode()
 
 data_check_icon = base64.b64encode(
     (image_path / "data_check_icon.png").read_bytes()
@@ -241,8 +253,9 @@ st.sidebar.divider()
 
 
 
+
 st.sidebar.markdown(
-    textwrap.dedent("""
+    textwrap.dedent(f"""
     <div class="sidebar-about-title">
         About this tool
     </div>
@@ -252,20 +265,25 @@ st.sidebar.markdown(
     </div>
 
     <div class="sidebar-about-card">
+
         <div class="sidebar-about-item">
-            <span class="sidebar-about-icon">🚌</span>
+            <img src="data:image/png;base64,{bus_sidebar_icon}"
+                 class="sidebar-about-icon">
             <span>Electric bus scheduling</span>
         </div>
 
         <div class="sidebar-about-item">
-            <span class="sidebar-about-icon">🔋</span>
+            <img src="data:image/png;base64,{energy_sidebar_icon}"
+                 class="sidebar-about-icon">
             <span>Battery feasibility</span>
         </div>
 
         <div class="sidebar-about-item">
-            <span class="sidebar-about-icon">📊</span>
+            <img src="data:image/png;base64,{bar_chart_sidebar_icon}"
+                 class="sidebar-about-icon">
             <span>Performance analysis</span>
         </div>
+
     </div>
 
     <div class="sidebar-footer">
@@ -274,6 +292,7 @@ st.sidebar.markdown(
     """),
     unsafe_allow_html=True
 )
+
 
 
 
