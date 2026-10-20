@@ -172,7 +172,52 @@ st.markdown(f'''
         color: white !important;
         font-weight: 600 !important;
     }}
+        
+    /* ===== ABOUT THIS TOOL ===== */
 
+    .sidebar-about-title {{
+        color: #FFFFFF;
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }}
+
+    .sidebar-about-description {{
+        color: #B7BEC8;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 18px;
+    }}
+
+    .sidebar-about-card {{
+        background-color: #222B35;
+        border: 1px solid #303B47;
+        border-radius: 10px;
+        padding: 16px;
+    }}
+
+    .sidebar-about-item {{
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #E5E7EB;
+        font-size: 14px;
+        padding: 9px 0;
+    }}
+
+    .sidebar-about-icon {{
+        color: #FF4555;
+        font-size: 19px;
+        width: 24px;
+        text-align: center;
+    }}
+
+    .sidebar-footer {{
+        color: #89939F;
+        font-size: 12px;
+        text-align: center;
+        margin-top: 24px;
+    }}
 
 </style>
 ''', unsafe_allow_html=True)
@@ -192,6 +237,40 @@ keuze = st.sidebar.radio(
 )
 
 st.sidebar.divider()
+
+
+st.sidebar.markdown("""
+<div class="sidebar-about-title">
+    About this tool
+</div>
+
+<div class="sidebar-about-description">
+    A planning optimization dashboard for electric bus operations.
+</div>
+
+<div class="sidebar-about-card">
+
+    <div class="sidebar-about-item">
+        <span class="sidebar-about-icon">🚌</span>
+        <span>Electric bus scheduling</span>
+    </div>
+
+    <div class="sidebar-about-item">
+        <span class="sidebar-about-icon">🔋</span>
+        <span>Battery feasibility</span>
+    </div>
+
+    <div class="sidebar-about-item">
+        <span class="sidebar-about-icon">📊</span>
+        <span>Performance analysis</span>
+    </div>
+
+</div>
+
+<div class="sidebar-footer">
+    Fontys · Applied Mathematics
+</div>
+""", unsafe_allow_html=True)
 
 
 st.markdown("""
