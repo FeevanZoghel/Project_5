@@ -4,9 +4,8 @@
 from solver import solve_bus_planning
 from io import BytesIO
 import time
-import inspect
 
-from DataFrame_check import validate_bus_planning
+from dataframe_check import validate_bus_planning
 
 from feasibility_checks import (
     ASSUMED_SOH,
@@ -411,9 +410,6 @@ if keuze == "Data Check":
     files_ready = all(
         key in st.session_state for key in ['bp', 'tt', 'dm']
     )
-
-    st.write("Solver location:", inspect.getfile(solve_bus_planning))
-    st.write("Solver parameters:", inspect.signature(solve_bus_planning))
 
     if st.button("Optimize", type="primary", disabled=not files_ready):
 
