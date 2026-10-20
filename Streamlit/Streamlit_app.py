@@ -486,10 +486,6 @@ if keuze == "Data Check":
             progress_bar.empty()
             st.error(f"Solver failed: {e}")
 
-        except Exception as e:
-            progress_bar.empty()
-            st.error(f"Solver failed: {e}")
-
     if 'improved_bp' in st.session_state:
         improved_bp = st.session_state['improved_bp'][[
             'start location', 'end location', 'start time', 'end time',
