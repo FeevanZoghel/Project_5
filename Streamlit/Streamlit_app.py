@@ -407,6 +407,14 @@ if keuze == "Data Check":
         index=0
     )
 
+    SoH = st.slider(
+        "Please select SoH value",
+        min_value=0,
+        max_value=100,
+        value=85,
+        step=5
+    )
+
     files_ready = all(
         key in st.session_state for key in ['bp', 'tt', 'dm']
     )
@@ -460,7 +468,7 @@ if keuze == "Data Check":
                 st.session_state["bp"],
                 st.session_state["dm"],
                 st.session_state["tt"],
-                85,
+                SoH,
                 energy_method = energy_method,
                 progress_callback=update_progress
             )
@@ -471,17 +479,6 @@ if keuze == "Data Check":
                 improved_bp["activity"] == "material trip"
             ]
 
-            st.write("Selected energy method:", energy_method)
-
-            st.write(
-                "Total material trip energy:",
-                material_trips["energy consumption"].sum()
-            )
-
-            st.write(
-                "Total energy consumption:",
-                calculate_energy_consumption_kpis(improved_bp)
-            )
 
             total_time = time.monotonic() - start_time
 
