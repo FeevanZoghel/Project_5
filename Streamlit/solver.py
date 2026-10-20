@@ -35,8 +35,6 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value, energy_method = 'mean'
 
     # Beginwaardes
 
-    assumed_battery_value = 85
-
     max_battery = 300 * assumed_battery_value / 100
 
     charging_limit = 0.9 * max_battery
@@ -154,7 +152,7 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value, energy_method = 'mean'
 
         material_end_time = material_start_time+pd.Timedelta(minutes = material_travel_time)
 
-        material_energy = bp[(bp['start location'] == 'ehvgar') & (bp['end location'] == trip['start']) & (bp['activity'] == 'material trip')]['energy consumption'].mean()
+        material_energy = bp[(bp['start location'] == 'ehvgar') & (bp['end location'] == trip['start']) & (bp['activity'] == 'material trip')]['energy consumption'].agg(energy_method)
 
         battery[bus] -= material_energy
 
@@ -174,7 +172,7 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value, energy_method = 'mean'
 
             material_travel_time = (dm_material['min_travel_time'].iloc[0] + dm_material['max_travel_time'].iloc[0]) / 2
 
-            material_energy = bp[(bp['start location'] == last_activity['end location']) & (bp['end location'] == trip['start']) & (bp['activity'] == 'material trip')]['energy consumption'].mean()
+            material_energy = bp[(bp['start location'] == last_activity['end location']) & (bp['end location'] == trip['start']) & (bp['activity'] == 'material trip')]['energy consumption'].agg(energy_method)
 
         aankomsttijd = last_activity['end time'] + pd.Timedelta(minutes=material_travel_time)
 
@@ -265,7 +263,7 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value, energy_method = 'mean'
 
             continue
 
-        material_energy         = bp[(bp['start location'] == trip['end']) & (bp['end location'] == 'ehvgar') & (bp['activity'] == 'material trip')]['energy consumption'].mean()
+        material_energy         = bp[(bp['start location'] == trip['end']) & (bp['end location'] == 'ehvgar') & (bp['activity'] == 'material trip')]['energy consumption'].agg(energy_method)
 
         if trip['end'] =='ehvgar':
 
