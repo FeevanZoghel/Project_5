@@ -467,6 +467,22 @@ if keuze == "Data Check":
 
             st.session_state["improved_bp"] = improved_bp
 
+            material_trips = improved_bp[
+                improved_bp["activity"] == "material trip"
+            ]
+
+            st.write("Selected energy method:", energy_method)
+
+            st.write(
+                "Total material trip energy:",
+                material_trips["energy consumption"].sum()
+            )
+
+            st.write(
+                "Total planning energy:",
+                improved_bp["energy consumption"].sum()
+            )
+
             total_time = time.monotonic() - start_time
 
             progress_bar.progress(
