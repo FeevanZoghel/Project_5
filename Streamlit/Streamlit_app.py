@@ -1316,7 +1316,7 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{charging_time_icon}" class="kpi-icon">
                                         Charging time
                                     </div>
-                                    <div class="kpi-value">+{charging_diff_perc:.1f}%</div>
+                                    <div class="kpi-value">{charging_diff_perc:.1f}%</div>
                                 </div>
                                 """, unsafe_allow_html=True)
 
