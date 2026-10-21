@@ -770,6 +770,7 @@ if keuze == "Data Check":
 elif keuze == "Visualisations":
 
 
+    
     st.markdown("""
     <style>
 
@@ -958,21 +959,50 @@ elif keuze == "Visualisations":
 
 
     /* =========================================
-       5. SELECT BUSES POPOVER BUTTON
+       5. COMPACT BUS TOOLBAR
     ========================================= */
 
-    .st-key-chart_card [data-testid="stPopover"] button {
+    .st-key-bus_toolbar {
+        background: transparent !important;
+        padding: 4px 0 8px 0 !important;
+    }
+
+    /* Main selection button */
+    .st-key-bus_toolbar [data-testid="stPopover"] button {
         background: #FFFFFF !important;
         color: #222222 !important;
-        border: 1px solid #EA3323 !important;
-        border-radius: 10px !important;
+        border: 1px solid #DADDE2 !important;
+        border-radius: 8px !important;
+        min-height: 40px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        box-shadow: none !important;
     }
 
-    .st-key-chart_card [data-testid="stPopover"] button:hover {
+    .st-key-bus_toolbar [data-testid="stPopover"] button:hover {
         background: #F8F9FA !important;
+        border-color: #EA3323 !important;
     }
 
-    .st-key-chart_card [data-testid="stPopover"] button * {
+    .st-key-bus_toolbar [data-testid="stPopover"] button * {
+        color: #222222 !important;
+    }
+
+    /* Select all and Clear buttons */
+    .st-key-bus_toolbar [data-testid="stButton"] button {
+        background: #F4F5F7 !important;
+        color: #374151 !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 8px !important;
+        min-height: 40px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        box-shadow: none !important;
+    }
+
+    .st-key-bus_toolbar [data-testid="stButton"] button:hover {
+        background: #E9ECEF !important;
+        border-color: #CBD5E1 !important;
         color: #222222 !important;
     }
 
@@ -981,16 +1011,16 @@ elif keuze == "Visualisations":
        6. POPOVER PANEL
     ========================================= */
 
-    [data-testid="stPopoverBody"],
-    [data-testid="stPopoverBody"] > div,
-    [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"] {
-        background-color: #FFFFFF !important;
+    [data-testid="stPopoverBody"] {
+        background: #FFFFFF !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 12px !important;
         color: #222222 !important;
     }
 
-    [data-testid="stPopoverBody"] {
-        border: 1px solid #E5E7EB !important;
-        border-radius: 12px !important;
+    [data-testid="stPopoverBody"] > div,
+    [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"] {
+        background: transparent !important;
     }
 
     [data-testid="stPopoverBody"] p,
@@ -1000,88 +1030,112 @@ elif keuze == "Visualisations":
 
 
     /* =========================================
-    7. BUS MULTISELECT - CLEAN LIGHT DESIGN
+       7. BUS MULTISELECT - LIGHT GRAY DESIGN
     ========================================= */
 
-    /* Main selection field: one subtle border */
-    div[class*="st-key-bus_multiselect_"] [data-rac=""],
-    div[class*="st-key-bus_multiselect_"] [data-rac=""] > div {
-        background-color: #FFFFFF !important;
-        background-image: none !important;
+    /*
+       Actual Streamlit structure:
+       stMultiSelect
+         > div[data-rac]
+           > div[data-rac][role="group"]
+             > stMultiSelectTagsContainer
+               > selected tags + input
+    */
+
+    /* Outer combobox: one light-gray background */
+    div[class*="st-key-bus_multiselect_"]
+    [data-testid="stMultiSelect"] > div[data-rac] {
+        background: #F3F4F6 !important;
         border: 1px solid #DADDE2 !important;
         border-radius: 8px !important;
-        color: #222222 !important;
+        box-shadow: none !important;
     }
 
-    /* Remove extra borders from inner containers */
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"],
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"] > div,
-    div[class*="st-key-bus_multiselect_"] [data-testid="stMultiSelectTagsContainer"] {
-        background-color: #FFFFFF !important;
+    /* Inner group: no extra border */
+    div[class*="st-key-bus_multiselect_"]
+    [data-testid="stMultiSelect"] > div[data-rac]
+    > div[role="group"] {
+        background: transparent !important;
         border: none !important;
         box-shadow: none !important;
     }
 
-    /* Space between selected buses */
-    div[class*="st-key-bus_multiselect_"] [data-testid="stMultiSelectTagsContainer"] {
+    /* Tags container */
+    div[class*="st-key-bus_multiselect_"]
+    [data-testid="stMultiSelectTagsContainer"] {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
         gap: 5px !important;
         padding: 3px 5px !important;
     }
 
-    /* Selected bus chips */
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] {
-        background-color: #EA3323 !important;
-        border: none !important;
-        border-radius: 5px !important;
-        margin: 2px !important;
-    }
-
-    /* White text and remove crosses on bus chips */
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] span,
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] svg {
-        color: #FFFFFF !important;
-        fill: #FFFFFF !important;
-        -webkit-text-fill-color: #FFFFFF !important;
-    }
-
-    /* Input field */
-    div[class*="st-key-bus_multiselect_"] input {
+    /* Remove visual styling from empty input */
+    div[class*="st-key-bus_multiselect_"]
+    [data-testid="stMultiSelectTagsContainer"] input {
         background: transparent !important;
+        background-color: transparent !important;
+        background-image: none !important;
         border: none !important;
+        border-radius: 0 !important;
         outline: none !important;
         box-shadow: none !important;
         color: #222222 !important;
         -webkit-text-fill-color: #222222 !important;
     }
 
-    /* Clear-all and dropdown buttons */
-    div[class*="st-key-bus_multiselect_"] [data-rac] button {
+    /* Focused input */
+    div[class*="st-key-bus_multiselect_"]
+    [data-testid="stMultiSelectTagsContainer"] input:focus {
         background: transparent !important;
         border: none !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
         outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Selected bus chips */
+    div[class*="st-key-bus_multiselect_"]
+    [data-baseweb="tag"] {
+        background: #EA3323 !important;
+        border: none !important;
+        border-radius: 5px !important;
+        margin: 2px !important;
+    }
+
+    /* Chip text */
+    div[class*="st-key-bus_multiselect_"]
+    [data-baseweb="tag"] span {
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+    }
+
+    /* Chip remove icons */
+    div[class*="st-key-bus_multiselect_"]
+    [data-baseweb="tag"] svg {
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
+    }
+
+    /* Clear-all and dropdown buttons */
+    div[class*="st-key-bus_multiselect_"]
+    [data-rac] button {
+        background: transparent !important;
+        border: none !important;
+        border-radius: 5px !important;
+        box-shadow: none !important;
         padding: 4px !important;
     }
 
-    /* Dark gray icons */
-    div[class*="st-key-bus_multiselect_"] [data-rac] button svg {
+    div[class*="st-key-bus_multiselect_"]
+    [data-rac] button svg {
         color: #667085 !important;
         fill: #667085 !important;
     }
 
-    /* Subtle hover effect */
-    div[class*="st-key-bus_multiselect_"] [data-rac] button:hover {
-        background-color: #F3F4F6 !important;
-        border-radius: 5px !important;
+    div[class*="st-key-bus_multiselect_"]
+    [data-rac] button:hover {
+        background: #E5E7EB !important;
     }
-
-    /* Remove focus borders on inner elements */
-    div[class*="st-key-bus_multiselect_"] [data-rac] *:focus {
-        outline: none !important;
-        box-shadow: none !important;
-    }
-
 
 
     /* =========================================
@@ -1116,121 +1170,33 @@ elif keuze == "Visualisations":
        9. APPLY SELECTION BUTTON
     ========================================= */
 
-    [data-testid="stPopoverBody"] button[kind="primary"],
-    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"] {
-        background-color: #EA3323 !important;
-        color: #FFFFFF !important;
-        border: 1px solid #EA3323 !important;
-        border-radius: 8px !important;
-    }
-
-    [data-testid="stPopoverBody"] button[kind="primary"] *,
-    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"] * {
-        color: #FFFFFF !important;
-    }
-
-    [data-testid="stPopoverBody"] button[kind="primary"]:hover,
-    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"]:hover {
-        background-color: #D92D20 !important;
-        border-color: #D92D20 !important;
-    }
-
-    
-    /* =========================================
-    COMPACT BUS SELECTION TOOLBAR
-    ========================================= */
-
-    /* Toolbar layout */
-    .st-key-bus_toolbar {
-        background: transparent !important;
-        padding: 4px 0 8px 0 !important;
-    }
-
-    /* Main selection button */
-    .st-key-bus_toolbar [data-testid="stPopover"] button {
-        background: #FFFFFF !important;
-        color: #222222 !important;
-        border: 1px solid #DADDE2 !important;
-        border-radius: 8px !important;
-        min-height: 40px !important;
-        font-size: 13px !important;
-        font-weight: 500 !important;
-        text-align: left !important;
-        box-shadow: none !important;
-    }
-
-    /* Selection button hover */
-    .st-key-bus_toolbar [data-testid="stPopover"] button:hover {
-        background: #F8F9FA !important;
-        border-color: #EA3323 !important;
-    }
-
-    /* Toolbar action buttons */
-    .st-key-bus_toolbar [data-testid="stButton"] button {
-        background: #F4F5F7 !important;
-        color: #374151 !important;
-        border: 1px solid #E5E7EB !important;
-        border-radius: 8px !important;
-        min-height: 40px !important;
-        font-size: 12px !important;
-        font-weight: 500 !important;
-        box-shadow: none !important;
-    }
-
-    /* Toolbar action button hover */
-    .st-key-bus_toolbar [data-testid="stButton"] button:hover {
-        background: #E9ECEF !important;
-        border-color: #CBD5E1 !important;
-        color: #222222 !important;
-    }
-
-    /* Popover panel */
-    [data-testid="stPopoverBody"] {
-        background: #FFFFFF !important;
-        border: 1px solid #E5E7EB !important;
-        border-radius: 12px !important;
-    }
-
-    /* Bus multiselect background */
-    div[class*="st-key-bus_multiselect_"] [data-rac],
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"],
-    div[class*="st-key-bus_multiselect_"] [data-testid="stMultiSelectTagsContainer"] {
-        background-color: #FFFFFF !important;
-    }
-
-    /* Selected bus tags */
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] {
-        background-color: #EA3323 !important;
-        border-radius: 5px !important;
-    }
-
-    /* Selected bus text */
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] span {
-        color: #FFFFFF !important;
-    }
-
-    /* Apply selection button */
-    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"] {
+    [data-testid="stPopoverBody"]
+    [data-testid="stBaseButton-primary"] {
         background: #EA3323 !important;
         color: #FFFFFF !important;
         border: 1px solid #EA3323 !important;
         border-radius: 8px !important;
     }
 
-    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"]:hover {
+    [data-testid="stPopoverBody"]
+    [data-testid="stBaseButton-primary"] * {
+        color: #FFFFFF !important;
+    }
+
+    [data-testid="stPopoverBody"]
+    [data-testid="stBaseButton-primary"]:hover {
         background: #D92D20 !important;
         border-color: #D92D20 !important;
     }
-
-    
 
     </style>
     """, unsafe_allow_html=True)
 
 
+    # Custom bus icon in compact toolbar
     st.markdown(f"""
     <style>
-    /* Bus icon in compact selection toolbar */
+
     .st-key-bus_toolbar [data-testid="stPopover"] button::before {{
         content: "";
         display: inline-block;
@@ -1245,9 +1211,10 @@ elif keuze == "Visualisations":
 
         margin-right: 8px;
     }}
-    
+
     </style>
-    """, unsafe_allow_html = True)
+    """, unsafe_allow_html=True)
+
 
     if (
         'bp' in st.session_state
