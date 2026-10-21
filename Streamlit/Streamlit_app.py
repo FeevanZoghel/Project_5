@@ -645,18 +645,25 @@ if keuze == "Data Check":
                     Feasibility checks
                 </div>
                 """, unsafe_allow_html=True)
-                
+
             st.markdown("""
             <style>
-            div[data-testid="stRadio"] label[data-baseweb="radio"] > div:first-child {
-                border-color: black !important;
+            .st-key-feasibility_planning_choice [data-testid="stRadioOption"] > div > div:first-child {
+                background: #FFFFFF !important;
+                border: 2px solid #000000 !important;
+                border-radius: 50% !important;
             }
-            div[data-testid="stRadio"] label[data-baseweb="radio"] > div:first-child > div {
-                background-color: black !important;
+            .st-key-feasibility_planning_choice [data-testid="stRadioOption"]:hover > div > div:first-child {
+                background: #000000 !important;
+                border-color: #000000 !important;
+            }
+            .st-key-feasibility_planning_choice [data-testid="stRadioOption"][data-selected="true"] > div > div:first-child {
+                background: #000000 !important;
+                border-color: #000000 !important;
             }
             </style>
             """, unsafe_allow_html=True)
-
+            
             with col_radio:
                 planning_choice = st.radio(
                     "Select bus planning",
