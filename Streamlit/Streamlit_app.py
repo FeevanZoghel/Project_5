@@ -824,7 +824,7 @@ elif keuze == "Visualisations":
         color: #667085 !important;
         font-size: 17px;
         margin-top: -12px;
-        margin-bottom: 10px;
+        margin-bottom: 0px;
     }
 
 
