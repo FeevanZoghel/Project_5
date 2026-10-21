@@ -1222,6 +1222,36 @@ elif keuze == "Visualisations":
         border-color: #D92D20 !important;
     }
 
+    
+    /* Lichtgrijze achtergrond van de busselectie */
+    div[class*="st-key-bus_multiselect_"] [data-rac],
+    div[class*="st-key-bus_multiselect_"] [data-testid="stMultiSelectTagsContainer"] {
+        background-color: #F3F4F6 !important;
+        background-image: none !important;
+    }
+
+    /* Verwijder de losse grijze rechthoek rondom het invoerveld */
+    div[class*="st-key-bus_multiselect_"] input,
+    div[class*="st-key-bus_multiselect_"] input:focus {
+        background: transparent !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Verwijder ook de rand van de binnenste invoercontainer */
+    div[class*="st-key-bus_multiselect_"] [data-testid="stMultiSelectTagsContainer"] > div:not([data-baseweb="tag"]) {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Behoud de rode buslabels */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] {
+        background-color: #EA3323 !important;
+        border-radius: 5px !important;
+    }
+
 
     </style>
     """, unsafe_allow_html=True)
