@@ -660,13 +660,6 @@ if keuze == "Data Check":
                     "https://www.transdev.com/uploads/2026/09/logo.png",
                     width=80
                 )
-            # Select bus planning
-            planning_choice = st.radio(
-                "Select bus planning",
-                ["Original planning", "Improved planning"],
-                horizontal=True,
-                key="feasibility_planning_choice"
-            )
 
             if planning_choice == 'Original planning':
                 df1 = st.session_state['bp']
