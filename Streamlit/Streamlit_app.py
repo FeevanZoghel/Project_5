@@ -635,7 +635,7 @@ if keuze == "Data Check":
         with st.container(border=True, key="box_feasibility"):
 
             col_title, col_radio, col_logo = st.columns(
-                [3.5, 3, 0.5],
+                [4.5, 2, 0.5],
                 vertical_alignment="center"
             )
 
