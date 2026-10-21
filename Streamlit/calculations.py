@@ -52,12 +52,53 @@ def calculate_distances_and_kpis(bp, dm, tt):
     d_material_total_km = d_material_total / 1000
     return total_distance_m, total_distance_km, deployed_buses_count, t_material_total, d_material_total, d_material_total_km
 
+def convert_time_to_timedelta(time_values):
+
+    def convert_single_time(value):
+
+        if pd.isna(value):
+            return pd.NaT
+
+        if isinstance(value, pd.Timedelta):
+            return value
+
+        if isinstance(value, pd.Timestamp):
+            return pd.Timedelta(
+                hours=value.hour,
+                minutes=value.minute,
+                seconds=value.second,
+                microseconds=value.microsecond
+            )
+
+        value = str(value).strip()
+
+        # Probeer eerst een gewone tijd of tijdsduur
+        result = pd.to_timedelta(value, errors="coerce")
+
+        if pd.notna(result):
+            return result
+
+        # Probeer een volledige datum met tijd
+        result = pd.to_datetime(value, errors="coerce")
+
+        if pd.notna(result):
+            return pd.Timedelta(
+                hours=result.hour,
+                minutes=result.minute,
+                seconds=result.second,
+                microseconds=result.microsecond
+            )
+
+        return pd.NaT
+
+    return time_values.apply(convert_single_time)
+
 def calculate_waiting_time_kpis(bp, deployed_buses_count):
     """Calculates total and average waiting time, including overnight idle periods."""
     idle = bp[bp['activity'] == 'idle'].copy()
 
-    start_time = pd.to_timedelta(idle['start time'].astype(str))
-    end_time = pd.to_timedelta(idle['end time'].astype(str))
+    start_time = convert_time_to_timedelta(idle['start time'])
+    end_time = convert_time_to_timedelta(idle['end time'])
 
     waiting_time = end_time - start_time
     waiting_time = waiting_time.where(
