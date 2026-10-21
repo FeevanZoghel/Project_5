@@ -769,9 +769,6 @@ if keuze == "Data Check":
 
 elif keuze == "Visualisations":
 
-
-elif keuze == "Visualisations":
-
     st.markdown("""
     <style>
 
