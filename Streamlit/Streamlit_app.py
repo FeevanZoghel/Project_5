@@ -256,20 +256,26 @@ st.sidebar.divider()
 
 st.markdown("""
 <style>
-/* Sidebar open: normale breedte */
-.stApp:has([data-testid="stSidebar"][aria-expanded="true"]) .block-container {
+/* Sidebar open */
+[data-testid="stAppViewContainer"]:has(
+    [data-testid="stSidebar"][aria-expanded="true"]
+) [data-testid="stMainBlockContainer"] {
     max-width: 85% !important;
     width: 85% !important;
 }
 
-/* Sidebar ingeklapt: bredere inhoud */
-.stApp:has([data-testid="stSidebar"][aria-expanded="false"]) .block-container {
+/* Sidebar ingeklapt */
+[data-testid="stAppViewContainer"]:not(:has(
+    [data-testid="stSidebar"][aria-expanded="true"]
+)) [data-testid="stMainBlockContainer"] {
     max-width: 95% !important;
     width: 95% !important;
 }
 
-/* Soepele overgang */
-.block-container {
+/* Algemene instellingen */
+[data-testid="stMainBlockContainer"] {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
     transition: max-width 0.3s ease, width 0.3s ease;
 }
 </style>
@@ -782,12 +788,8 @@ elif keuze == "Visualisations":
     /* =========================================
        1. MAIN DASHBOARD
     ========================================= */
-
     .block-container {
-        max-width: 95% !important;
         padding-top: 2rem !important;
-        padding-left: 2rem !important;
-        padding-right: 2rem !important;
     }
 
     .st-key-results_dashboard {
