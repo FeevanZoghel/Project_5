@@ -495,8 +495,8 @@ if keuze == "Data Check":
     with col_SoH:
         SoH = st.slider(
             "Select the State of Health (SoH) (%)",
-            min_value=0,
-            max_value=100,
+            min_value=85,
+            max_value=95,
             value=85,
             step=5
         )
@@ -556,17 +556,17 @@ if keuze == "Data Check":
                 st.session_state["bp"],
                 st.session_state["dm"],
                 st.session_state["tt"],
-                assumed_battery_value = SoH,
-                energy_method = energy_method,
+                assumed_battery_value=SoH,
+                energy_method=energy_method,
                 progress_callback=update_progress
             )
 
             st.session_state["improved_bp"] = improved_bp
+            st.session_state["improved_soh"] = SoH
 
             material_trips = improved_bp[
                 improved_bp["activity"] == "material trip"
             ]
-
 
             total_time = time.monotonic() - start_time
 
@@ -584,20 +584,13 @@ if keuze == "Data Check":
             st.error(f"Solver failed: {e}")
 
     if 'improved_bp' in st.session_state:
-        improved_bp = st.session_state['improved_bp'][[
+
+        export_bp = st.session_state['improved_bp'][[
             'start location', 'end location', 'start time', 'end time',
             'activity', 'line', 'energy consumption', 'bus'
         ]].copy()
-        improved_bp['bus'] = improved_bp['bus'].astype(int)
 
-        for col in ['start time', 'end time']:
-            improved_bp[col] = pd.to_datetime(
-                improved_bp[col]
-            ).dt.strftime('%H:%M:%S')
-
-        st.session_state['improved_bp'] = improved_bp
-
-        export_bp = improved_bp.copy()
+        export_bp['bus'] = export_bp['bus'].astype(int)
 
         for col in ['start time', 'end time']:
             export_bp[col] = pd.to_datetime(
@@ -605,6 +598,7 @@ if keuze == "Data Check":
             ).dt.strftime('%H:%M:%S')
 
         output = BytesIO()
+
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
             export_bp.to_excel(
                 writer,
@@ -620,6 +614,7 @@ if keuze == "Data Check":
         )
 
     if 'improved_bp' in st.session_state:
+
         st.markdown("### Improved planning feasibility")
 
         st.markdown("""
@@ -635,20 +630,45 @@ if keuze == "Data Check":
             overflow-y: auto;
         }
         </style>
-    """, unsafe_allow_html=True)
-
+        """, unsafe_allow_html=True)
 
         planning_choice = st.radio(
             "Select bus planning",
             ["Original planning", "Improved planning"],
-            horizontal=True)
+            horizontal=True
+        )
 
         if planning_choice == 'Original planning':
             df1 = st.session_state['bp']
+            check_soh = 85
         else:
             df1 = st.session_state['improved_bp']
+            check_soh = st.session_state.get('improved_soh', 85)
 
-        validate_bus_planning(df1)
+        validation_df = df1[[
+            'start location', 'end location', 'start time', 'end time',
+            'activity', 'line', 'energy consumption', 'bus'
+        ]].copy()
+
+        for col in ['start time', 'end time']:
+            validation_df[col] = pd.to_datetime(
+                validation_df[col]
+            ).dt.strftime('%H:%M:%S')
+
+        validate_bus_planning(validation_df)
+
+        feasibility_results = {
+            "Minimum SOC": validate_minimum_soc(df1, check_soh),
+            "SOH": validate_soh(check_soh),
+            "Minimum charging time": validate_minimum_charging_time(df1),
+            "Charging speed": validate_charging_speed(df1, check_soh),
+            "Location continuity": validate_location_continuity(df1),
+            "Overlapping trips": validate_no_overlapping_trips(df1)
+        }
+
+        if "tt" in st.session_state:
+            df2 = st.session_state["tt"]
+            feasibility_results["Required trips"] = validate_required_trips(df1, df2)
 
         with st.container(border=True, key="box_feasibility"):
 
@@ -666,6 +686,7 @@ if keuze == "Data Check":
                     "https://www.transdev.com/uploads/2026/09/logo.png",
                     width=80
                 )
+
             # De echte cards
             with st.container(key="check_cards"):
 
@@ -680,22 +701,22 @@ if keuze == "Data Check":
 
                     status_check(
                         "Minimum SOC is maintained (10%)",
-                        validate_minimum_soc(df1)
+                        feasibility_results["Minimum SOC"]
                     )
 
                     status_check(
                         "SOH is correct (between 85% and 95%)",
-                        validate_soh(85)
+                        feasibility_results["SOH"]
                     )
 
                     status_check(
                         "Minimum charging time (15 minutes)",
-                        validate_minimum_charging_time(df1)
+                        feasibility_results["Minimum charging time"]
                     )
 
                     status_check(
                         "Charging speed is correct",
-                        validate_charging_speed(df1)
+                        feasibility_results["Charging speed"]
                     )
 
                 with col2:
@@ -707,55 +728,49 @@ if keuze == "Data Check":
 
                     status_check(
                         "Start and end locations match",
-                        validate_location_continuity(df1)
+                        feasibility_results["Location continuity"]
                     )
 
                     status_check(
                         "No overlapping trips",
-                        validate_no_overlapping_trips(df1)
+                        feasibility_results["Overlapping trips"]
                     )
 
-                    if "tt" in st.session_state:
-                        df2 = st.session_state["tt"]
-
+                    if "Required trips" in feasibility_results:
                         status_check(
                             "All required trips",
-                            validate_required_trips(df1, df2)
+                            feasibility_results["Required trips"]
                         )
-
                     else:
                         st.info("Upload the timetable to check all required trips.")
 
-                                # Feasibility error messages
-            feasibility_results = {
-                "Minimum SOC": validate_minimum_soc(df1),
-                "SOH": validate_soh(ASSUMED_SOH),
-                "Minimum charging time": validate_minimum_charging_time(df1),
-                "Charging speed": validate_charging_speed(df1),
-                "Location continuity": validate_location_continuity(df1),
-                "Overlapping trips": validate_no_overlapping_trips(df1)
-            }
-
-            if "tt" in st.session_state:
-                df2 = st.session_state["tt"]
-                feasibility_results["Required trips"] = validate_required_trips(df1, df2)
-
+            # Feasibility error messages
             if not all(feasibility_results.values()):
+
                 st.error("The bus planning is not feasible.")
+
                 with st.expander("Click here for details"):
+
                     with st.container(key="error_details"):
+
                         if not feasibility_results["Minimum SOC"]:
-                            show_minimum_soc_errors(df1)
+                            show_minimum_soc_errors(df1, check_soh)
+
                         if not feasibility_results["SOH"]:
                             st.error("SOH must be between 85% and 95%.")
+
                         if not feasibility_results["Minimum charging time"]:
                             show_minimum_charging_time_errors(df1)
+
                         if not feasibility_results["Charging speed"]:
-                            show_charging_speed_errors(df1)
+                            show_charging_speed_errors(df1, check_soh)
+
                         if not feasibility_results["Location continuity"]:
                             show_location_continuity_errors(df1)
+
                         if not feasibility_results["Overlapping trips"]:
                             show_overlapping_trip_errors(df1)
+
                         if "Required trips" in feasibility_results and not feasibility_results["Required trips"]:
                             show_required_trip_errors(df1, df2)
 
