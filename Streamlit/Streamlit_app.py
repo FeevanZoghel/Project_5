@@ -769,10 +769,17 @@ if keuze == "Data Check":
 
 elif keuze == "Visualisations":
 
+
+elif keuze == "Visualisations":
+
     st.markdown("""
     <style>
 
-    /* Visualisations page wider */
+    /* =========================================
+       MAIN DASHBOARD
+    ========================================= */
+
+    /* Wider Visualisations page */
     .block-container {
         max-width: 95% !important;
         padding-top: 2rem !important;
@@ -782,14 +789,14 @@ elif keuze == "Visualisations":
 
     /* Main white dashboard */
     .st-key-results_dashboard {
-        background: white !important;
+        background: #FFFFFF !important;
         border-radius: 14px !important;
         border-top: 7px solid #EA3323 !important;
         padding: 25px !important;
         box-shadow: 0 5px 20px rgba(0,0,0,0.20) !important;
     }
 
-    /* All text inside dashboard */
+    /* Dashboard text */
     .st-key-results_dashboard h1,
     .st-key-results_dashboard h2,
     .st-key-results_dashboard h3,
@@ -807,7 +814,11 @@ elif keuze == "Visualisations":
         margin-bottom: 22px;
     }
 
-    /* KPI and chart cards */
+
+    /* =========================================
+       KPI AND CHART CARDS
+    ========================================= */
+
     .st-key-kpi_card,
     .st-key-chart_card,
     .st-key-kpi_difference {
@@ -840,7 +851,7 @@ elif keuze == "Visualisations":
         border-radius: 3px;
     }
 
-    /* Individual KPI blocks */
+    /* KPI boxes */
     .kpi-box {
         background: #F4F5F7;
         border-left: 5px solid #EA3323;
@@ -854,7 +865,7 @@ elif keuze == "Visualisations":
         align-items: center;
         gap: 8px;
         font-size: 13px;
-        color: #555 !important;
+        color: #555555 !important;
         margin-bottom: 1px;
     }
 
@@ -871,74 +882,16 @@ elif keuze == "Visualisations":
         object-fit: contain;
     }
 
-    /* White Select buses trigger */
-    .st-key-chart_card [data-testid="stPopover"] button {
-        background: #FFFFFF !important;
-        color: #222222 !important;
-        border: 1px solid #EA3323 !important;
-        border-radius: 10px !important;
-    }
-    .st-key-chart_card [data-testid="stPopover"] button:hover {
-        background: #F8F9FA !important;
-    }
-    .st-key-chart_card [data-testid="stPopover"] button * {
-        color: #222222 !important;
-    }
 
-    /* Planning selection beside Bus planning title */
-    .st-key-chart_card [data-testid="stRadio"] label p {
-        color: #222222 !important;
-        font-size: 13px !important;
-        white-space: nowrap;
-    }
+    /* =========================================
+       GANTT CHART HEADER
+    ========================================= */
 
-    .st-key-chart_card [data-testid="stRadio"] {
-        margin: 0 !important;
-    }
-
-    /* Header spanning the full width of the Gantt card */
     .st-key-chart_header {
+        position: relative;
         border-bottom: 2px solid #E5E5E5 !important;
         padding-bottom: 12px !important;
         margin-bottom: 15px !important;
-    }
-
-    /* Bus planning title */
-    .chart-header-title {
-        font-size: 26px;
-        font-weight: 700;
-        color: #1F1F1F;
-        white-space: nowrap;
-    }
-
-    /* Radio container neemt volledige breedte in */
-    .st-key-chart_header [data-testid="stHorizontalBlock"] {
-        width: 100% !important;
-    }
-
-    /* Radioknoppen rechts uitlijnen */
-    .st-key-planning_choice {
-        width: 100% !important;
-    }
-
-    .st-key-planning_choice [data-testid="stRadioGroup"] {
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        justify-content: flex-end !important;
-        width: 100% !important;
-        gap: 20px !important;
-    }
-
-    /* Radio text */
-    .st-key-chart_header [data-testid="stRadio"] label p {
-        font-size: 13px !important;
-        color: #222222 !important;
-        white-space: nowrap;
-    }
-
-    .st-key-chart_header {
-    position: relative;
     }
 
     .st-key-chart_header::after {
@@ -952,73 +905,181 @@ elif keuze == "Visualisations":
         border-radius: 3px;
     }
 
-    /* Radiobolletjes helemaal rechts */
+    .chart-header-title {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1F1F1F;
+        white-space: nowrap;
+    }
+
+    .st-key-chart_header [data-testid="stHorizontalBlock"] {
+        width: 100% !important;
+    }
+
+
+    /* =========================================
+       PLANNING RADIO BUTTONS
+    ========================================= */
+
+    .st-key-planning_choice {
+        width: 100% !important;
+    }
+
     .st-key-planning_choice [data-testid="stRadioGroup"] {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         justify-content: flex-end !important;
         width: 100% !important;
-        padding-right: 0 important;
+        padding-right: 0 !important;
         gap: 20px !important;
     }
 
-    /* Radiobolletje standaard wit met zwarte rand */
+    .st-key-chart_header [data-testid="stRadio"] label p {
+        font-size: 13px !important;
+        color: #222222 !important;
+        white-space: nowrap;
+    }
+
+    .st-key-chart_card [data-testid="stRadio"] {
+        margin: 0 !important;
+    }
+
+    /* Unselected radio */
     .st-key-planning_choice [data-testid="stRadioOption"]
     > div > div:first-child {
-        background: white !important;
-        border: 2px solid black !important;
+        background: #FFFFFF !important;
+        border: 2px solid #000000 !important;
         border-radius: 50% !important;
     }
 
-    /* Radiobolletje zwart bij hover */
+    /* Hover radio */
     .st-key-planning_choice [data-testid="stRadioOption"]:hover
     > div > div:first-child {
-        background: black !important;
-        border-color: black !important;
+        background: #000000 !important;
+        border-color: #000000 !important;
     }
 
-    /* Geselecteerd radiobolletje zwart */
+    /* Selected radio */
     .st-key-planning_choice [data-testid="stRadioOption"][data-selected="true"]
     > div > div:first-child {
-        background: black !important;
-        border-color: black !important;
+        background: #000000 !important;
+        border-color: #000000 !important;
     }
 
-    /* Popover itself: white, with an off-white inner panel */
+
+    /* =========================================
+       SELECT BUSES POPOVER BUTTON
+    ========================================= */
+
+    .st-key-chart_card [data-testid="stPopover"] button {
+        background: #FFFFFF !important;
+        color: #222222 !important;
+        border: 1px solid #EA3323 !important;
+        border-radius: 10px !important;
+    }
+
+    .st-key-chart_card [data-testid="stPopover"] button:hover {
+        background: #F8F9FA !important;
+    }
+
+    .st-key-chart_card [data-testid="stPopover"] button * {
+        color: #222222 !important;
+    }
+
+
+    /* =========================================
+       POPOVER PANEL
+    ========================================= */
+
     [data-testid="stPopoverBody"],
     [data-testid="stPopoverBody"] > div,
     [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"] {
         background-color: #FFFFFF !important;
         color: #222222 !important;
     }
+
     [data-testid="stPopoverBody"] {
         border: 1px solid #E5E7EB !important;
         border-radius: 12px !important;
     }
+
     [data-testid="stPopoverBody"] p,
-    [data-testid="stPopoverBody"] label,
-    [data-testid="stPopoverBody"] span {
+    [data-testid="stPopoverBody"] label {
         color: #222222 !important;
     }
 
-    /* Multiselect: pale background, dark text */
-    [data-testid="stPopoverBody"] [data-baseweb="select"],
-    [data-testid="stPopoverBody"] [data-baseweb="select"] > div,
-    [data-testid="stPopoverBody"] [data-baseweb="select"] [data-baseweb="input"] {
-        background-color: #F8F9FA !important;
+
+    /* =========================================
+       MULTISELECT - LIGHT THEME
+    ========================================= */
+
+    /* Main selection field */
+    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
+    [data-baseweb="select"] > div,
+    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
+    [data-baseweb="select"] > div:first-child {
+        background: #FFFFFF !important;
+        background-color: #FFFFFF !important;
         color: #222222 !important;
-    }
-    [data-testid="stPopoverBody"] [data-baseweb="select"] > div {
-        border: 1px solid #DADDE2 !important;
+        border: 1px solid #EA3323 !important;
         border-radius: 8px !important;
     }
-    [data-testid="stPopoverBody"] input {
+
+    /* Inner multiselect elements */
+    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
+    [data-baseweb="select"] [data-baseweb="input"],
+    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
+    [data-baseweb="select"] input {
+        background: transparent !important;
+        background-color: transparent !important;
         color: #222222 !important;
         -webkit-text-fill-color: #222222 !important;
     }
 
-    /* BaseWeb listbox may be rendered in a portal */
+    /* BaseWeb's inner value container */
+    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
+    [data-baseweb="select"] > div > div:first-child {
+        background-color: transparent !important;
+    }
+
+    /* Selected bus chips */
+    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
+    [data-baseweb="tag"] {
+        background: #EA3323 !important;
+        background-color: #EA3323 !important;
+        color: #FFFFFF !important;
+        border-radius: 6px !important;
+    }
+
+    /* Text inside chips */
+    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
+    [data-baseweb="tag"] span,
+    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
+    [data-baseweb="tag"] span * {
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+    }
+
+    /* Remove icons inside chips */
+    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
+    [data-baseweb="tag"] svg {
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
+    }
+
+    /* Dropdown arrow and clear icon */
+    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
+    [data-baseweb="select"] > div > div:last-child svg {
+        color: #374151 !important;
+        fill: #374151 !important;
+    }
+
+
+    /* =========================================
+       DROPDOWN OPTIONS
+    ========================================= */
+
     [data-baseweb="popover"],
     [data-baseweb="popover"] > div,
     [data-baseweb="menu"],
@@ -1027,31 +1088,26 @@ elif keuze == "Visualisations":
         background-color: #FFFFFF !important;
         color: #222222 !important;
     }
+
     [role="option"] {
         background-color: #FFFFFF !important;
         color: #222222 !important;
     }
+
     [role="option"]:hover,
     [role="option"][aria-selected="true"] {
         background-color: #F3F4F6 !important;
     }
+
     [role="option"] * {
         color: #222222 !important;
     }
 
-    /* Only the selected bus chips are red */
-    [data-testid="stPopoverBody"] [data-baseweb="tag"],
-    [data-testid="stPopoverBody"] [data-baseweb="tag"] > span {
-        background-color: #EA3323 !important;
-        color: #FFFFFF !important;
-    }
-    [data-testid="stPopoverBody"] [data-baseweb="tag"] *,
-    [data-testid="stPopoverBody"] [data-baseweb="tag"] svg {
-        color: #FFFFFF !important;
-        fill: #FFFFFF !important;
-    }
 
-    /* Apply button */
+    /* =========================================
+       APPLY SELECTION BUTTON
+    ========================================= */
+
     [data-testid="stPopoverBody"] button[kind="primary"],
     [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"] {
         background-color: #EA3323 !important;
@@ -1059,84 +1115,21 @@ elif keuze == "Visualisations":
         border: 1px solid #EA3323 !important;
         border-radius: 8px !important;
     }
+
     [data-testid="stPopoverBody"] button[kind="primary"] *,
     [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"] * {
         color: #FFFFFF !important;
     }
 
-    /* Multiselect invoervak: gebroken wit */
-    div[data-testid="stPopoverBody"] [data-baseweb="select"] > div,
-    div[data-testid="stPopoverBody"] [data-baseweb="select"] [data-baseweb="select"] {
-        background-color: #F8F9FA !important;
-        color: #222222 !important;
-    }
-
-    /* Ook de binnenste invoeronderdelen licht maken */
-    div[data-testid="stPopoverBody"] [data-baseweb="select"] input {
-        background-color: transparent !important;
-        color: #222222 !important;
-    }
-
-    /* Dropdownlijst wit */
-    div[data-baseweb="menu"],
-    ul[role="listbox"] {
-        background-color: #FFFFFF !important;
-        color: #222222 !important;
-    }
-
-    /* Geselecteerde busnummers blijven rood */
-    div[data-testid="stPopoverBody"] [data-baseweb="tag"] {
-        background-color: #FF4545 !important;
-        color: #FFFFFF !important;
-    }
-
-    /* Pijltje en kruisje donker */
-    div[data-testid="stPopoverBody"] [data-baseweb="select"] svg {
-        fill: #333333 !important;
-    }
-        
-    /* ===== BUS SELECTION MULTISELECT ===== */
-
-    /* White background for multiselect */
-    div[data-testid="stMultiSelect"] div[data-baseweb="select"] > div {
-        background-color: #FFFFFF !important;
-        border: 1px solid #FF4545 !important;
-        border-radius: 8px !important;
-    }
-
-    /* Text color */
-    div[data-testid="stMultiSelect"] input {
-        color: #111827 !important;
-        -webkit-text-fill-color: #111827 !important;
-    }
-
-    /* Selected bus tags */
-    div[data-testid="stMultiSelect"] span[data-baseweb="tag"] {
-        background-color: #FF4545 !important;
-        color: #FFFFFF !important;
-        border-radius: 6px !important;
-    }
-
-    /* Selected tag text and remove icons */
-    div[data-testid="stMultiSelect"] span[data-baseweb="tag"] * {
-        color: #FFFFFF !important;
-        fill: #FFFFFF !important;
-    }
-
-    /* Dropdown and clear icons */
-    div[data-testid="stMultiSelect"] svg {
-        color: #374151 !important;
-        fill: #374151 !important;
-    }
-
-    /* Dropdown menu background */
-    div[data-baseweb="popover"] ul {
-        background-color: #FFFFFF !important;
-        color: #111827 !important;
+    [data-testid="stPopoverBody"] button[kind="primary"]:hover,
+    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"]:hover {
+        background-color: #D92D20 !important;
+        border-color: #D92D20 !important;
     }
 
     </style>
     """, unsafe_allow_html=True)
+
 
     if (
         'bp' in st.session_state
