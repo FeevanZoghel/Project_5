@@ -401,10 +401,13 @@ def gantt_chart_bus(bp, title = 'improved bus plan', selected_buses=None):
         }})();
         </script>
         """
-        # Display in Streamlit
+
+        chart_height = max(250, min(650, 130 + len(group) * 20))
+
         components.html(
             fullscreen_html,
-            height=850,
+            height=chart_height,
             scrolling=False
         )
+
         plt.close(fig)
