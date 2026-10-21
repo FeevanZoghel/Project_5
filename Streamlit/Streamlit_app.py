@@ -635,7 +635,7 @@ if keuze == "Data Check":
         with st.container(border=True, key="box_feasibility"):
 
             col_title, col_radio, col_logo = st.columns(
-                [3.5, 2.5, 1],
+                [3.5, 3, 0.5],
                 vertical_alignment="center"
             )
 
@@ -663,7 +663,7 @@ if keuze == "Data Check":
             }
             </style>
             """, unsafe_allow_html=True)
-            
+
             with col_radio:
                 planning_choice = st.radio(
                     "Select bus planning",
