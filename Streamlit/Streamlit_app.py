@@ -832,6 +832,19 @@ elif keuze == "Visualisations":
        2. KPI AND CHART CARDS
     ========================================= */
 
+    /* Voorkom dat de Gantt-kolom wordt uitgerekt */
+    [data-testid="stColumn"]:has(.st-key-chart_card) {
+        align-self: flex-start !important;
+        height: auto !important;
+    }
+    
+    /* Gantt-kaart: hoogte aanpassen aan inhoud */
+    .st-key-chart_card {
+        height: fit-content !important;
+        min-height: 0 !important;
+        align-self: flex-start !important;
+    }
+
     .st-key-kpi_card,
     .st-key-chart_card,
     .st-key-kpi_difference {
@@ -1397,10 +1410,10 @@ elif keuze == "Visualisations":
                     use_container_width=True
                 )
 
-            # KPI + Gantt chart
             col_kpi, col_chart = st.columns(
                 [4, 7],
-                gap="medium"
+                gap="medium",
+                vertical_alignment="top"
             )
 
             # KPI CARD
