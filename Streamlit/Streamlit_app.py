@@ -1124,6 +1124,34 @@ elif keuze == "Visualisations":
         border-color: #D92D20 !important;
     }
 
+    /* Bus selection: light background */
+
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"] > div {
+        background: #FFFFFF !important;
+        background-color: #FFFFFF !important;
+        border: 1px solid #EA3323 !important;
+        border-radius: 8px !important;
+    }
+
+    div[class*="st-key-bus_multiselect_"] input {
+        color: #222222 !important;
+        -webkit-text-fill-color: #222222 !important;
+        background: transparent !important;
+    }
+
+    /* Selected bus numbers */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] {
+        background-color: #EA3323 !important;
+    }
+
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] span {
+        color: #FFFFFF !important;
+    }
+
+    /* Dropdown icons */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"] svg {
+        color: #374151 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -1523,7 +1551,8 @@ elif keuze == "Visualisations":
                             selected_buses = st.multiselect(
                                 "Select buses to display",
                                 options=all_buses,
-                                default=st.session_state[selection_key]
+                                default=st.session_state[selection_key],
+                                key=f"bus_multiselect_{planning_choice}"
                             )
 
                             apply_selection = st.form_submit_button(
