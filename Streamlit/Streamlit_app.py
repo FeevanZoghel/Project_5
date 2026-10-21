@@ -1227,6 +1227,26 @@ elif keuze == "Visualisations":
     """, unsafe_allow_html=True)
 
 
+    st.markdown(f"""
+    <style>
+    /* Bus icon in compact selection toolbar */
+    .st-key-bus_toolbar [data-testid="stPopover"] button::before {{
+        content: "";
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        flex-shrink: 0;
+
+        background-image: url("data:image/png;base64,{bus_sidebar_icon}");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+
+        margin-right: 8px;
+    }}
+    
+    </style>
+    """, unsafe_allow_html = True)
 
     if (
         'bp' in st.session_state
@@ -1623,7 +1643,7 @@ elif keuze == "Visualisations":
 
                         with col_select:
                             with st.popover(
-                                f"🚌  {len(st.session_state[selection_key])} buses selected",
+                                f"{len(st.session_state[selection_key])} buses selected",
                                 use_container_width=True
                             ):
 
