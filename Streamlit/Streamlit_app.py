@@ -481,7 +481,7 @@ if keuze == "Data Check":
     if bestand3 is not None:
         st.session_state['dm'] = pd.read_excel(bestand3)
 
-    col_energy, col_SoH = st.columns([5, 1], vertical_alignment="center")
+    col_energy, col_SoH = st.columns([3, 3], vertical_alignment="center")
 
     with col_energy:
         energy_method = st.selectbox(
