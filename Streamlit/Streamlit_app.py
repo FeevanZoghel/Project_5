@@ -632,12 +632,10 @@ if keuze == "Data Check":
         </style>
         """, unsafe_allow_html=True)
 
-        validate_bus_planning(validation_df)
-        
         with st.container(border=True, key="box_feasibility"):
 
             col_title, col_radio, col_logo = st.columns(
-                [3, 3, 1],
+                [3.5, 2.5, 1],
                 vertical_alignment="center"
             )
 
@@ -680,7 +678,7 @@ if keuze == "Data Check":
                     validation_df[col]
                 ).dt.strftime('%H:%M:%S')
 
-
+            validate_bus_planning(validation_df)
 
             # Calculate feasibility results
             feasibility_results = {
