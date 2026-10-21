@@ -630,20 +630,19 @@ if keuze == "Data Check":
             st.error(f"Solver failed: {e}")
 
     if 'improved_bp' in st.session_state:
-        improved_bp = st.session_state['improved_bp'][[
-            'start location', 'end location', 'start time', 'end time',
-            'activity', 'line', 'energy consumption', 'bus'
+
+        export_bp = st.session_state['improved_bp'][[
+            'start location',
+            'end location',
+            'start time',
+            'end time',
+            'activity',
+            'line',
+            'energy consumption',
+            'bus'
         ]].copy()
-        improved_bp['bus'] = improved_bp['bus'].astype(int)
 
-        for col in ['start time', 'end time']:
-            improved_bp[col] = pd.to_datetime(
-                improved_bp[col]
-            ).dt.strftime('%H:%M:%S')
-
-        st.session_state['improved_bp'] = improved_bp
-
-        export_bp = improved_bp.copy()
+        export_bp['bus'] = export_bp['bus'].astype(int)
 
         for col in ['start time', 'end time']:
             export_bp[col] = pd.to_datetime(
@@ -651,6 +650,7 @@ if keuze == "Data Check":
             ).dt.strftime('%H:%M:%S')
 
         output = BytesIO()
+
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
             export_bp.to_excel(
                 writer,
