@@ -634,7 +634,10 @@ if keuze == "Data Check":
 
         with st.container(border=True, key="box_feasibility"):
 
-            col_title, col_logo = st.columns([5, 1], vertical_alignment="center")
+            col_title, col_radio, col_logo = st.columns(
+                [3, 3, 1],
+                vertical_alignment="center"
+            )
 
             with col_title:
                 st.markdown("""
@@ -643,12 +646,20 @@ if keuze == "Data Check":
                 </div>
                 """, unsafe_allow_html=True)
 
+            with col_radio:
+                planning_choice = st.radio(
+                    "Select bus planning",
+                    ["Original planning", "Improved planning"],
+                    horizontal=True,
+                    label_visibility="collapsed",
+                    key="feasibility_planning_choice"
+                )
+
             with col_logo:
                 st.image(
                     "https://www.transdev.com/uploads/2026/09/logo.png",
                     width=80
                 )
-
             # Select bus planning
             planning_choice = st.radio(
                 "Select bus planning",
