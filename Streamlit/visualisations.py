@@ -242,7 +242,7 @@ def gantt_chart_bus(bp, title = 'improved bus plan', selected_buses=None):
         # Titles
         ax.set_title(
             title,
-            fontsize=30,           # Lettergrootte
+            fontsize=26,           # Lettergrootte
             fontweight='bold',     # Vetgedrukt
             color='#333333'        # Tekstkleur
         )
