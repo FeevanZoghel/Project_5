@@ -254,7 +254,26 @@ keuze = st.sidebar.radio(
 st.sidebar.divider()
 
 
+st.markdown("""
+<style>
+/* Sidebar open: normale breedte */
+.stApp:has([data-testid="stSidebar"][aria-expanded="true"]) .block-container {
+    max-width: 85% !important;
+    width: 85% !important;
+}
 
+/* Sidebar ingeklapt: bredere inhoud */
+.stApp:has([data-testid="stSidebar"][aria-expanded="false"]) .block-container {
+    max-width: 95% !important;
+    width: 95% !important;
+}
+
+/* Soepele overgang */
+.block-container {
+    transition: max-width 0.3s ease, width 0.3s ease;
+}
+</style>
+""", unsafe_allow_html=True)
 
 st.sidebar.markdown(
     f"""
@@ -649,11 +668,6 @@ if keuze == "Data Check":
         st.markdown("### Improved planning feasibility")
         st.markdown("""
         <style>
-        .block-container {
-            max-width: 80%;
-            padding-left: 2rem;
-            padding-right: 2rem;
-        }
         .st-key-error_details {
             max-height: 360px;
             overflow-y: auto;
