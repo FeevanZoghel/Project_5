@@ -1507,14 +1507,23 @@ elif keuze == "Visualisations":
 
                     # Display Gantt chart
                     if st.session_state[selection_key]:
+
+                        chart_title = (
+                            "Original bus plan"
+                            if planning_choice == "Original planning"
+                            else "Improved bus plan"
+                        )
+
                         gantt_chart_bus(
                             bp,
-                            title = 'improved bus plan',
-                            st.session_state[selection_key]
+                            title=chart_title,
+                            selected_buses=st.session_state[selection_key]
                         )
-                    else:
-                        st.info("Select buses and click Apply selection to display the Gantt chart.")
 
+                    else:
+                        st.info(
+                            "Select buses and click Apply selection to display the Gantt chart."
+                        )
     else:
         st.warning(
             "Upload the bus planning, timetable and distance matrix "
