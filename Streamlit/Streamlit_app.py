@@ -449,53 +449,120 @@ body,
 """, unsafe_allow_html=True)
 
 if keuze == "Data Check":
-
     st.title("Transdev Planning Checker")
-    st.write('Upload the planning files below to validate the schedule and view the feasibility results.')
+    st.write("Upload the planning files below to validate the schedule and view the feasibility results.")
 
-    bestand1 = st.file_uploader(
-        'Upload busplanning',
-        type=['xlsx'],
-        accept_multiple_files=False
+    bestand1 = st.file_uploader("Upload busplanning", type=['xlsx'], accept_multiple_files=False)
+    bestand2 = st.file_uploader("Upload timetable", type=['xlsx'], accept_multiple_files=False)
+    bestand3 = st.file_uploader("Upload distance matrix", type=['xlsx'], accept_multiple_files=False)
+
+    uploaded_files = {'bp': bestand1, 'tt': bestand2, 'dm': bestand3}
+    file_signatures = tuple(
+        (key, file.file_id if file is not None else None)
+        for key, file in uploaded_files.items()
     )
 
-    bestand2 = st.file_uploader(
-        'Upload timetable',
-        type=['xlsx'],
-        accept_multiple_files=False
-    )
+    if st.session_state.get("data_check_file_signatures") != file_signatures:
+        st.session_state["data_check_file_signatures"] = file_signatures
+        st.session_state.pop("improved_bp", None)
+        st.session_state.pop("improved_soh", None)
+        for key, file in uploaded_files.items():
+            st.session_state.pop(key, None)
+            if file is not None:
+                try:
+                    df = pd.read_excel(file)
+                    df.columns = df.columns.astype(str).str.strip().str.lower()
+                    if key == 'bp':
+                        df = df.rename(columns={'unnamed: 5': 'line'})
+                    st.session_state[key] = df
+                except Exception as e:
+                    st.error(f"Could not read {key}: {e}")
 
-    bestand3 = st.file_uploader(
-        'Upload distance matrix',
-        type=['xlsx'],
-        accept_multiple_files=False
-    )
+    files_ready = all(key in st.session_state for key in ['bp', 'tt', 'dm'])
+    data_valid = False
 
-    if bestand1 is not None:
-        bp = pd.read_excel(bestand1)
-        bp.columns = bp.columns.astype(str).str.strip().str.lower()
-        bp = bp.rename(columns={'unnamed: 5': 'line'})
-        if 'bus' in bp.columns:
-            bp['bus'] = pd.to_numeric(bp['bus'], errors='coerce').astype('Int64')
-        st.session_state['bp'] = bp
+    if files_ready:
+        bp = st.session_state['bp']
+        tt = st.session_state['tt']
+        dm = st.session_state['dm']
+        input_errors = []
 
-    if bestand2 is not None:
-        st.session_state['tt'] = pd.read_excel(bestand2)
+        if bp.empty:
+            input_errors.append("Bus planning is empty.")
+        if tt.empty:
+            input_errors.append("Timetable is empty.")
+        if dm.empty:
+            input_errors.append("Distance matrix is empty.")
 
-    if bestand3 is not None:
-        st.session_state['dm'] = pd.read_excel(bestand3)
+        required_bp = [
+            'start location', 'end location', 'start time', 'end time',
+            'activity', 'line', 'energy consumption', 'bus'
+        ]
+        required_tt = ['line', 'start', 'end']
+        required_dm = ['line', 'start', 'end', 'distance_m']
+
+        for name, df, required in [
+            ('Bus planning', bp, required_bp),
+            ('Timetable', tt, required_tt),
+            ('Distance matrix', dm, required_dm)
+        ]:
+            missing = [col for col in required if col not in df.columns]
+            if missing:
+                input_errors.append(f"{name}: missing columns: {', '.join(missing)}.")
+            if df.columns.duplicated().any():
+                input_errors.append(f"{name}: duplicate column names.")
+
+        if not input_errors:
+            bus_numbers = pd.to_numeric(bp['bus'], errors='coerce')
+            invalid_buses = bus_numbers.isna() | (bus_numbers % 1 != 0) | (bus_numbers <= 0)
+            for index in bp.index[invalid_buses]:
+                input_errors.append(f"Row {index + 2}: invalid bus number.")
+
+            energy = pd.to_numeric(bp['energy consumption'], errors='coerce')
+            for index in bp.index[energy.isna()]:
+                input_errors.append(f"Row {index + 2}: invalid energy consumption.")
+
+            for col in ['start location', 'end location', 'activity']:
+                invalid = bp[col].isna() | bp[col].astype(str).str.strip().eq('')
+                for index in bp.index[invalid]:
+                    input_errors.append(f"Row {index + 2}: missing {col}.")
+
+            for name, df in [('Timetable', tt), ('Distance matrix', dm)]:
+                for col in ['start', 'end']:
+                    invalid = df[col].isna() | df[col].astype(str).str.strip().eq('')
+                    for index in df.index[invalid]:
+                        input_errors.append(f"{name}, row {index + 2}: missing {col}.")
+
+            invalid_tt_lines = tt['line'].isna()
+            for index in tt.index[invalid_tt_lines]:
+                input_errors.append(f"Timetable, row {index + 2}: missing line.")
+
+            distances = pd.to_numeric(dm['distance_m'], errors='coerce')
+            invalid_distances = distances.isna() | (distances < 0)
+            for index in dm.index[invalid_distances]:
+                input_errors.append(f"Distance matrix, row {index + 2}: invalid distance.")
+
+        if input_errors:
+            st.error("The uploaded data contains errors.")
+            with st.expander("Click here for details", expanded=True):
+                with st.container(height=400):
+                    for error in input_errors:
+                        st.error(error)
+        else:
+            validation_bp = bp.copy()
+            validation_bp['bus'] = bus_numbers.astype(int)
+            validation_bp['energy consumption'] = energy
+            data_valid = validate_bus_planning(validation_bp)
+            if data_valid:
+                st.session_state['bp'] = validation_bp
 
     col_energy, col_SoH = st.columns([2, 4], vertical_alignment="center")
-
     with col_energy:
         energy_method = st.selectbox(
             "Select an energy estimation method for material trips",
             ["Mean", "Min", "Max"],
             index=0
-        )
-
-        energy_method = energy_method.lower()
-
+        ).lower()
     with col_SoH:
         SoH = st.slider(
             "Select the State of Health (SoH) (%)",
@@ -507,55 +574,30 @@ if keuze == "Data Check":
 
     st.markdown("### Improve bus planning")
 
-    files_ready = all(
-        key in st.session_state for key in ['bp', 'tt', 'dm']
-    )
-
-    if st.button("Optimize", type="primary", disabled=not files_ready):
-
-        progress_bar = st.progress(
-            0,
-            text="Preparing optimization..."
-        )
-
+    if st.button("Optimize", type="primary", disabled=not data_valid):
+        progress_bar = st.progress(0, text="Preparing optimization...")
         start_time = time.monotonic()
 
         def update_progress(completed, total, phase):
-
             if phase == "Completed":
-                progress_bar.progress(
-                    100,
-                    text="Optimization completed!"
-                )
+                progress_bar.progress(100, text="Optimization completed!")
                 return
-
             if phase == "Returning buses to the garage":
-                progress_bar.progress(
-                    95,
-                    text="95% — Returning buses to the garage..."
-                )
+                progress_bar.progress(95, text="95% — Returning buses to the garage...")
                 return
-
             percentage = int(95 * completed / max(total, 1))
-
             elapsed = time.monotonic() - start_time
-
             if completed > 0:
                 remaining = elapsed / completed * (total - completed)
                 remaining_text = f"Estimated {remaining:.0f} seconds remaining"
             else:
                 remaining_text = "Calculating remaining time..."
-
             progress_bar.progress(
                 percentage,
-                text=(
-                    f"Optimizing bus planning... {percentage}% "
-                    f"— {remaining_text}"
-                )
+                text=f"Optimizing bus planning... {percentage}% — {remaining_text}"
             )
 
         try:
-
             improved_bp = solve_bus_planning(
                 st.session_state["bp"],
                 st.session_state["dm"],
@@ -564,53 +606,28 @@ if keuze == "Data Check":
                 energy_method=energy_method,
                 progress_callback=update_progress
             )
-
             improved_bp['bus'] = improved_bp['bus'].astype(int)
             st.session_state["improved_bp"] = improved_bp
             st.session_state["improved_soh"] = SoH
-
-            material_trips = improved_bp[
-                improved_bp["activity"] == "material trip"
-            ]
-
+            material_trips = improved_bp[improved_bp["activity"] == "material trip"]
             total_time = time.monotonic() - start_time
-
-            progress_bar.progress(
-                100,
-                text=f"Optimization completed in {total_time:.1f} seconds!"
-            )
-
-            st.success(
-                "Improved bus planning generated successfully!"
-            )
-
+            progress_bar.progress(100, text=f"Optimization completed in {total_time:.1f} seconds!")
+            st.success("Improved bus planning generated successfully!")
         except Exception as e:
             progress_bar.empty()
             st.error(f"Solver failed: {e}")
 
-    if 'improved_bp' in st.session_state:
-
+    if data_valid and 'improved_bp' in st.session_state:
         export_bp = st.session_state['improved_bp'][[
             'start location', 'end location', 'start time', 'end time',
             'activity', 'line', 'energy consumption', 'bus'
         ]].copy()
-
         export_bp['bus'] = export_bp['bus'].astype(int)
-
         for col in ['start time', 'end time']:
-            export_bp[col] = pd.to_datetime(
-                export_bp[col]
-            ).dt.strftime('%H:%M:%S')
-
+            export_bp[col] = pd.to_datetime(export_bp[col], errors='coerce').dt.strftime('%H:%M:%S')
         output = BytesIO()
-
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            export_bp.to_excel(
-                writer,
-                sheet_name='Improved Planning',
-                index=False
-            )
-
+            export_bp.to_excel(writer, sheet_name='Improved Planning', index=False)
         st.download_button(
             label="Download improved bus planning",
             data=output.getvalue(),
@@ -618,10 +635,8 @@ if keuze == "Data Check":
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
-    if 'improved_bp' in st.session_state:
-
+    if data_valid and 'improved_bp' in st.session_state:
         st.markdown("### Improved planning feasibility")
-
         st.markdown("""
         <style>
         .block-container {
@@ -629,7 +644,6 @@ if keuze == "Data Check":
             padding-left: 2rem;
             padding-right: 2rem;
         }
-
         .st-key-error_details {
             max-height: 360px;
             overflow-y: auto;
@@ -638,18 +652,9 @@ if keuze == "Data Check":
         """, unsafe_allow_html=True)
 
         with st.container(border=True, key="box_feasibility"):
-
-            col_title, col_radio, col_logo = st.columns(
-                [4.5, 2, 0.5],
-                vertical_alignment="center"
-            )
-
+            col_title, col_radio, col_logo = st.columns([4.5, 2, 0.5], vertical_alignment="center")
             with col_title:
-                st.markdown("""
-                <div class="feasibility-title">
-                    Feasibility checks
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown('<div class="feasibility-title">Feasibility checks</div>', unsafe_allow_html=True)
 
             st.markdown("""
             <style>
@@ -677,12 +682,8 @@ if keuze == "Data Check":
                     label_visibility="collapsed",
                     key="feasibility_planning_choice"
                 )
-
             with col_logo:
-                st.image(
-                    "https://www.transdev.com/uploads/2026/09/logo.png",
-                    width=80
-                )
+                st.image("https://www.transdev.com/uploads/2026/09/logo.png", width=80)
 
             if planning_choice == 'Original planning':
                 df1 = st.session_state['bp']
@@ -695,15 +696,9 @@ if keuze == "Data Check":
                 'start location', 'end location', 'start time', 'end time',
                 'activity', 'line', 'energy consumption', 'bus'
             ]].copy()
-
             for col in ['start time', 'end time']:
-                validation_df[col] = pd.to_datetime(
-                    validation_df[col]
-                ).dt.strftime('%H:%M:%S')
+                validation_df[col] = pd.to_datetime(validation_df[col], errors='coerce').dt.strftime('%H:%M:%S')
 
-            validate_bus_planning(validation_df)
-
-            # Calculate feasibility results
             feasibility_results = {
                 "Minimum SOC": validate_minimum_soc(df1, check_soh),
                 "SOH": validate_soh(check_soh),
@@ -717,103 +712,41 @@ if keuze == "Data Check":
                 df2 = st.session_state['tt']
                 feasibility_results["Required trips"] = validate_required_trips(df1, df2)
 
-            # De echte cards
             with st.container(key="check_cards"):
-
                 col1, col2 = st.columns(2)
-
                 with col1:
-                    st.markdown("""
-                    <div class="column-title">
-                        🔋 Battery & charging
-                    </div>
-                    """, unsafe_allow_html=True)
-
-                    status_check(
-                        "Minimum SOC is maintained (10%)",
-                        feasibility_results["Minimum SOC"]
-                    )
-
-                    status_check(
-                        "SOH is correct (between 85% and 95%)",
-                        feasibility_results["SOH"]
-                    )
-
-                    status_check(
-                        "Minimum charging time (15 minutes)",
-                        feasibility_results["Minimum charging time"]
-                    )
-
-                    status_check(
-                        "Charging speed is correct",
-                        feasibility_results["Charging speed"]
-                    )
-
+                    st.markdown('<div class="column-title">🔋 Battery & charging</div>', unsafe_allow_html=True)
+                    status_check("Minimum SOC is maintained (10%)", feasibility_results["Minimum SOC"])
+                    status_check("SOH is correct (between 85% and 95%)", feasibility_results["SOH"])
+                    status_check("Minimum charging time (15 minutes)", feasibility_results["Minimum charging time"])
+                    status_check("Charging speed is correct", feasibility_results["Charging speed"])
                 with col2:
-                    st.markdown("""
-                    <div class="column-title">
-                        📍 Planning
-                    </div>
-                    """, unsafe_allow_html=True)
-
-                    status_check(
-                        "Start and end locations match",
-                        feasibility_results["Location continuity"]
-                    )
-
-                    status_check(
-                        "No overlapping trips",
-                        feasibility_results["Overlapping trips"]
-                    )
-
+                    st.markdown('<div class="column-title">📍 Planning</div>', unsafe_allow_html=True)
+                    status_check("Start and end locations match", feasibility_results["Location continuity"])
+                    status_check("No overlapping trips", feasibility_results["Overlapping trips"])
                     if "Required trips" in feasibility_results:
-                        status_check(
-                            "All required trips",
-                            feasibility_results["Required trips"]
-                        )
+                        status_check("All required trips", feasibility_results["Required trips"])
                     else:
                         st.info("Upload the timetable to check all required trips.")
 
-            # Feasibility error messages
             if not all(feasibility_results.values()):
-
                 st.error("The bus planning is not feasible.")
-
                 with st.expander("Click here for details"):
-
                     with st.container(key="error_details"):
-
                         if not feasibility_results["Minimum SOC"]:
                             show_minimum_soc_errors(df1, check_soh)
-
                         if not feasibility_results["SOH"]:
                             st.error("SOH must be between 85% and 95%.")
-
                         if not feasibility_results["Minimum charging time"]:
                             show_minimum_charging_time_errors(df1)
-
                         if not feasibility_results["Charging speed"]:
                             show_charging_speed_errors(df1, check_soh)
-
                         if not feasibility_results["Location continuity"]:
                             show_location_continuity_errors(df1)
-
                         if not feasibility_results["Overlapping trips"]:
                             show_overlapping_trip_errors(df1)
-
-                        if (
-                            "Required trips" in feasibility_results
-                            and not feasibility_results["Required trips"]
-                        ):
+                        if "Required trips" in feasibility_results and not feasibility_results["Required trips"]:
                             show_required_trip_errors(df1, df2)
-
-    if bestand2 is not None:
-        st.session_state['tt'] = pd.read_excel(bestand2)
-        df2 = st.session_state['tt']
-
-    if bestand3 is not None:
-        st.session_state['dm'] = pd.read_excel(bestand3)
-        df3 = st.session_state['dm']
 
 elif keuze == "Visualisations":
 
