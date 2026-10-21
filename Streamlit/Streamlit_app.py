@@ -1135,6 +1135,94 @@ elif keuze == "Visualisations":
         border-color: #D92D20 !important;
     }
 
+    
+    /* =========================================
+    COMPACT BUS SELECTION TOOLBAR
+    ========================================= */
+
+    /* Toolbar layout */
+    .st-key-bus_toolbar {
+        background: transparent !important;
+        padding: 4px 0 8px 0 !important;
+    }
+
+    /* Main selection button */
+    .st-key-bus_toolbar [data-testid="stPopover"] button {
+        background: #FFFFFF !important;
+        color: #222222 !important;
+        border: 1px solid #DADDE2 !important;
+        border-radius: 8px !important;
+        min-height: 40px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        text-align: left !important;
+        box-shadow: none !important;
+    }
+
+    /* Selection button hover */
+    .st-key-bus_toolbar [data-testid="stPopover"] button:hover {
+        background: #F8F9FA !important;
+        border-color: #EA3323 !important;
+    }
+
+    /* Toolbar action buttons */
+    .st-key-bus_toolbar [data-testid="stButton"] button {
+        background: #F4F5F7 !important;
+        color: #374151 !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 8px !important;
+        min-height: 40px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        box-shadow: none !important;
+    }
+
+    /* Toolbar action button hover */
+    .st-key-bus_toolbar [data-testid="stButton"] button:hover {
+        background: #E9ECEF !important;
+        border-color: #CBD5E1 !important;
+        color: #222222 !important;
+    }
+
+    /* Popover panel */
+    [data-testid="stPopoverBody"] {
+        background: #FFFFFF !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 12px !important;
+    }
+
+    /* Bus multiselect background */
+    div[class*="st-key-bus_multiselect_"] [data-rac],
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"],
+    div[class*="st-key-bus_multiselect_"] [data-testid="stMultiSelectTagsContainer"] {
+        background-color: #FFFFFF !important;
+    }
+
+    /* Selected bus tags */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] {
+        background-color: #EA3323 !important;
+        border-radius: 5px !important;
+    }
+
+    /* Selected bus text */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] span {
+        color: #FFFFFF !important;
+    }
+
+    /* Apply selection button */
+    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"] {
+        background: #EA3323 !important;
+        color: #FFFFFF !important;
+        border: 1px solid #EA3323 !important;
+        border-radius: 8px !important;
+    }
+
+    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"]:hover {
+        background: #D92D20 !important;
+        border-color: #D92D20 !important;
+    }
+
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -1509,7 +1597,7 @@ elif keuze == "Visualisations":
 
                     # Bus selection
                     all_buses = sorted(
-                        bp['bus'].dropna().unique().tolist()
+                        bp["bus"].dropna().unique().tolist()
                     )
 
                     selection_key = f"selected_buses_{planning_choice}"
@@ -1524,30 +1612,62 @@ elif keuze == "Visualisations":
                         if bus in all_buses
                     ]
 
-                    # Bus selection popover
-                    with st.popover(
-                        f"Select buses ({len(st.session_state[selection_key])}/{len(all_buses)} selected)",
-                        use_container_width=True
-                    ):
+                    # Compact toolbar
+                    with st.container(key="bus_toolbar"):
 
-                        with st.form(key=f"bus_form_{planning_choice}"):
+                        col_select, col_all, col_clear = st.columns(
+                            [5, 1.4, 1.4],
+                            gap="small",
+                            vertical_alignment="center"
+                        )
 
-                            selected_buses = st.multiselect(
-                                "Select buses to display",
-                                options=all_buses,
-                                default=st.session_state[selection_key],
-                                key=f"bus_multiselect_{planning_choice}"
-                            )
-
-                            apply_selection = st.form_submit_button(
-                                "Apply selection",
-                                type="primary",
+                        with col_select:
+                            with st.popover(
+                                f"🚌  {len(st.session_state[selection_key])} buses selected",
                                 use_container_width=True
-                            )
+                            ):
 
-                        if apply_selection:
-                            st.session_state[selection_key] = selected_buses.copy()
-                            st.rerun()
+                                st.markdown("**Select buses to display**")
+
+                                with st.form(key=f"bus_form_{planning_choice}"):
+
+                                    selected_buses = st.multiselect(
+                                        "Select buses",
+                                        options=all_buses,
+                                        default=st.session_state[selection_key],
+                                        label_visibility="collapsed",
+                                        key=f"bus_multiselect_{planning_choice}"
+                                    )
+
+                                    apply_selection = st.form_submit_button(
+                                        "Apply selection",
+                                        type="primary",
+                                        use_container_width=True
+                                    )
+
+                                if apply_selection:
+                                    st.session_state[selection_key] = selected_buses.copy()
+                                    st.rerun()
+
+                        with col_all:
+                            if st.button(
+                                "Select all",
+                                key=f"select_all_{planning_choice}",
+                                use_container_width=True
+                            ):
+                                st.session_state[selection_key] = all_buses.copy()
+                                st.rerun()
+
+                        with col_clear:
+                            if st.button(
+                                "Clear",
+                                key=f"clear_buses_{planning_choice}",
+                                use_container_width=True
+                            ):
+                                st.session_state[selection_key] = []
+                                st.rerun()
+
+                
 
                     # Display Gantt chart
                     if st.session_state[selection_key]:
