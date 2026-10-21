@@ -286,10 +286,6 @@ Fontys · Applied Mathematics
     unsafe_allow_html=True
 )
 
-
-
-
-
 st.markdown("""
 <style>
 
@@ -452,9 +448,7 @@ body,
 </style>
 """, unsafe_allow_html=True)
 
-
 if keuze == "Data Check":
-
 
     st.title("Transdev Planning Checker")
     st.write('Upload the planning files below to validate the schedule and view the feasibility results.')
@@ -487,21 +481,25 @@ if keuze == "Data Check":
     if bestand3 is not None:
         st.session_state['dm'] = pd.read_excel(bestand3)
 
-    energy_method = st.selectbox(
-        "Select an energy estimation method for material trips",
-        ["Mean", "Min", "Max"],
-        index=0
-    )
+    col_energy, col_SoH = st.columns([5, 1], vertical_alignment="center")
 
-    energy_method = energy_method.lower()
+    with col_energy:
+        energy_method = st.selectbox(
+            "Select an energy estimation method for material trips",
+            ["Mean", "Min", "Max"],
+            index=0
+        )
 
-    SoH = st.slider(
-        "Select the State of Health (SoH) (%)",
-        min_value=0,
-        max_value=100,
-        value=85,
-        step=5
-    )
+        energy_method = energy_method.lower()
+
+    with col_SoH:
+        SoH = st.slider(
+            "Select the State of Health (SoH) (%)",
+            min_value=0,
+            max_value=100,
+            value=85,
+            step=5
+        )
 
     st.markdown("### Improve bus planning")
 
