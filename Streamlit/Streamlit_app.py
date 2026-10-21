@@ -1,5 +1,5 @@
 #URL:
-#https://project5groep5optimizationtool.streamlit.app/ 
+# https://project5-improvedtool.streamlit.app/
 
 from solver import solve_bus_planning
 from io import BytesIO
@@ -769,14 +769,14 @@ if keuze == "Data Check":
 
 elif keuze == "Visualisations":
 
+
     st.markdown("""
     <style>
 
     /* =========================================
-       MAIN DASHBOARD
+       1. MAIN DASHBOARD
     ========================================= */
 
-    /* Wider Visualisations page */
     .block-container {
         max-width: 95% !important;
         padding-top: 2rem !important;
@@ -784,7 +784,6 @@ elif keuze == "Visualisations":
         padding-right: 2rem !important;
     }
 
-    /* Main white dashboard */
     .st-key-results_dashboard {
         background: #FFFFFF !important;
         border-radius: 14px !important;
@@ -793,7 +792,6 @@ elif keuze == "Visualisations":
         box-shadow: 0 5px 20px rgba(0,0,0,0.20) !important;
     }
 
-    /* Dashboard text */
     .st-key-results_dashboard h1,
     .st-key-results_dashboard h2,
     .st-key-results_dashboard h3,
@@ -803,7 +801,6 @@ elif keuze == "Visualisations":
         color: #1F1F1F !important;
     }
 
-    /* Subtitle */
     .results-subtitle {
         color: #667085 !important;
         font-size: 17px;
@@ -813,7 +810,7 @@ elif keuze == "Visualisations":
 
 
     /* =========================================
-       KPI AND CHART CARDS
+       2. KPI AND CHART CARDS
     ========================================= */
 
     .st-key-kpi_card,
@@ -826,7 +823,6 @@ elif keuze == "Visualisations":
         box-shadow: 0 3px 12px rgba(0,0,0,0.08) !important;
     }
 
-    /* Section titles */
     .section-title {
         font-size: 26px;
         font-weight: 700;
@@ -848,7 +844,6 @@ elif keuze == "Visualisations":
         border-radius: 3px;
     }
 
-    /* KPI boxes */
     .kpi-box {
         background: #F4F5F7;
         border-left: 5px solid #EA3323;
@@ -881,7 +876,7 @@ elif keuze == "Visualisations":
 
 
     /* =========================================
-       GANTT CHART HEADER
+       3. GANTT CHART HEADER
     ========================================= */
 
     .st-key-chart_header {
@@ -915,7 +910,7 @@ elif keuze == "Visualisations":
 
 
     /* =========================================
-       PLANNING RADIO BUTTONS
+       4. PLANNING RADIO BUTTONS
     ========================================= */
 
     .st-key-planning_choice {
@@ -942,7 +937,6 @@ elif keuze == "Visualisations":
         margin: 0 !important;
     }
 
-    /* Unselected radio */
     .st-key-planning_choice [data-testid="stRadioOption"]
     > div > div:first-child {
         background: #FFFFFF !important;
@@ -950,14 +944,12 @@ elif keuze == "Visualisations":
         border-radius: 50% !important;
     }
 
-    /* Hover radio */
     .st-key-planning_choice [data-testid="stRadioOption"]:hover
     > div > div:first-child {
         background: #000000 !important;
         border-color: #000000 !important;
     }
 
-    /* Selected radio */
     .st-key-planning_choice [data-testid="stRadioOption"][data-selected="true"]
     > div > div:first-child {
         background: #000000 !important;
@@ -966,7 +958,7 @@ elif keuze == "Visualisations":
 
 
     /* =========================================
-       SELECT BUSES POPOVER BUTTON
+       5. SELECT BUSES POPOVER BUTTON
     ========================================= */
 
     .st-key-chart_card [data-testid="stPopover"] button {
@@ -986,7 +978,7 @@ elif keuze == "Visualisations":
 
 
     /* =========================================
-       POPOVER PANEL
+       6. POPOVER PANEL
     ========================================= */
 
     [data-testid="stPopoverBody"],
@@ -1008,73 +1000,59 @@ elif keuze == "Visualisations":
 
 
     /* =========================================
-       MULTISELECT - LIGHT THEME
+       7. BUS MULTISELECT - WHITE BACKGROUND
     ========================================= */
 
-    /* Main selection field */
-    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
-    [data-baseweb="select"] > div,
-    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
-    [data-baseweb="select"] > div:first-child {
-        background: #FFFFFF !important;
+    /* The actual combobox from DevTools */
+    div[class*="st-key-bus_multiselect_"] [data-rac] {
         background-color: #FFFFFF !important;
+        background-image: none !important;
         color: #222222 !important;
         border: 1px solid #EA3323 !important;
         border-radius: 8px !important;
     }
 
-    /* Inner multiselect elements */
-    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
-    [data-baseweb="select"] [data-baseweb="input"],
-    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
-    [data-baseweb="select"] input {
+    /* Inner select and tag container */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"],
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"] > div,
+    div[class*="st-key-bus_multiselect_"] [data-testid="stMultiSelectTagsContainer"] {
+        background-color: #FFFFFF !important;
+        background-image: none !important;
+    }
+
+    /* Input text */
+    div[class*="st-key-bus_multiselect_"] input {
         background: transparent !important;
-        background-color: transparent !important;
         color: #222222 !important;
         -webkit-text-fill-color: #222222 !important;
     }
 
-    /* BaseWeb's inner value container */
-    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
-    [data-baseweb="select"] > div > div:first-child {
-        background-color: transparent !important;
-    }
-
-    /* Selected bus chips */
-    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
-    [data-baseweb="tag"] {
-        background: #EA3323 !important;
+    /* Selected bus tags */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] {
         background-color: #EA3323 !important;
-        color: #FFFFFF !important;
         border-radius: 6px !important;
     }
 
-    /* Text inside chips */
-    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
-    [data-baseweb="tag"] span,
-    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
-    [data-baseweb="tag"] span * {
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] span {
         color: #FFFFFF !important;
         -webkit-text-fill-color: #FFFFFF !important;
     }
 
-    /* Remove icons inside chips */
-    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
-    [data-baseweb="tag"] svg {
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] svg {
         color: #FFFFFF !important;
         fill: #FFFFFF !important;
     }
 
-    /* Dropdown arrow and clear icon */
-    [data-testid="stPopoverBody"] [data-testid="stMultiSelect"]
-    [data-baseweb="select"] > div > div:last-child svg {
+    /* Clear and dropdown buttons */
+    div[class*="st-key-bus_multiselect_"] button,
+    div[class*="st-key-bus_multiselect_"] button svg {
         color: #374151 !important;
         fill: #374151 !important;
     }
 
 
     /* =========================================
-       DROPDOWN OPTIONS
+       8. DROPDOWN OPTIONS
     ========================================= */
 
     [data-baseweb="popover"],
@@ -1102,7 +1080,7 @@ elif keuze == "Visualisations":
 
 
     /* =========================================
-       APPLY SELECTION BUTTON
+       9. APPLY SELECTION BUTTON
     ========================================= */
 
     [data-testid="stPopoverBody"] button[kind="primary"],
@@ -1124,77 +1102,9 @@ elif keuze == "Visualisations":
         border-color: #D92D20 !important;
     }
 
-    /* Bus selection: light background */
-
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"] > div {
-        background: #FFFFFF !important;
-        background-color: #FFFFFF !important;
-        border: 1px solid #EA3323 !important;
-        border-radius: 8px !important;
-    }
-
-    div[class*="st-key-bus_multiselect_"] input {
-        color: #222222 !important;
-        -webkit-text-fill-color: #222222 !important;
-        background: transparent !important;
-    }
-
-    /* Selected bus numbers */
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] {
-        background-color: #EA3323 !important;
-    }
-
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] span {
-        color: #FFFFFF !important;
-    }
-
-    /* Dropdown icons */
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"] svg {
-        color: #374151 !important;
-    }
-
-    
-    /* ===== FORCE LIGHT BUS SELECTION BOX ===== */
-
-    /* Entire multiselect box, including inner containers */
-    .st-key-results_dashboard
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"],
-    .st-key-results_dashboard
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"] > div,
-    .st-key-results_dashboard
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"] > div > div {
-        background-color: #FFFFFF !important;
-        background-image: none !important;
-    }
-
-    /* Also target the BaseWeb input wrapper */
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="input"],
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="input"] > div {
-        background-color: #FFFFFF !important;
-    }
-
-    /* Input text */
-    div[class*="st-key-bus_multiselect_"] input {
-        background-color: transparent !important;
-        color: #222222 !important;
-        -webkit-text-fill-color: #222222 !important;
-    }
-
-    /* Selected bus chips stay red */
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"],
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] > span {
-        background-color: #EA3323 !important;
-        color: #FFFFFF !important;
-    }
-
-    /* Chip text */
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] span {
-        color: #FFFFFF !important;
-        -webkit-text-fill-color: #FFFFFF !important;
-    }
-
     </style>
     """, unsafe_allow_html=True)
+
 
 
     if (
