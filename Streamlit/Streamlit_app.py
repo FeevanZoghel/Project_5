@@ -253,6 +253,9 @@ keuze = st.sidebar.radio(
 
 st.sidebar.divider()
 
+
+
+
 st.sidebar.markdown(
     f"""
 <div class="sidebar-about-title">About this tool</div>
@@ -446,97 +449,224 @@ body,
 """, unsafe_allow_html=True)
 
 if keuze == "Data Check":
+
+    st.markdown("""
+    <style>
+    /* ===== FEASIBILITY HEADER ===== */
+
+    .st-key-feasibility_header {
+        position: relative;
+        border-bottom: 2px solid #E5E5E5 !important;
+        padding-bottom: 12px !important;
+        margin-bottom: 15px !important;
+    }
+
+    .st-key-feasibility_header::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 65px;
+        height: 4px;
+        background: #EA3323;
+        border-radius: 3px;
+    }
+
+    .feasibility-header-title {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1F1F1F;
+        white-space: nowrap;
+    }
+
+    .st-key-feasibility_header [data-testid="stRadioGroup"] {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-end !important;
+        width: 100% !important;
+        gap: 20px !important;
+    }
+
+    .st-key-feasibility_header [data-testid="stRadio"] label p {
+        font-size: 13px !important;
+        color: #222222 !important;
+        white-space: nowrap;
+    }
+    </style>
+    """, unsafe_allow_html= True)
+
     st.title("Transdev Planning Checker")
-    st.write("Upload the planning files below to validate the schedule and view the feasibility results.")
+    st.write('Upload the planning files below to validate the schedule and view the feasibility results.')
 
-    bestand1 = st.file_uploader("Upload busplanning", type=["xlsx"], accept_multiple_files=False)
-    bestand2 = st.file_uploader("Upload timetable", type=["xlsx"], accept_multiple_files=False)
-    bestand3 = st.file_uploader("Upload distance matrix", type=["xlsx"], accept_multiple_files=False)
+    bestand1 = st.file_uploader(
+        'Upload busplanning',
+        type=['xlsx'],
+        accept_multiple_files=False
+    )
 
+    bestand2 = st.file_uploader(
+        'Upload timetable',
+        type=['xlsx'],
+        accept_multiple_files=False
+    )
+
+    bestand3 = st.file_uploader(
+        'Upload distance matrix',
+        type=['xlsx'],
+        accept_multiple_files=False
+    )
+
+    # Bestanden apart opslaan
     if bestand1 is not None:
-        st.session_state["bp"] = pd.read_excel(bestand1)
+        st.session_state['bp'] = pd.read_excel(bestand1)
+
     if bestand2 is not None:
-        st.session_state["tt"] = pd.read_excel(bestand2)
+        st.session_state['tt'] = pd.read_excel(bestand2)
+
     if bestand3 is not None:
-        st.session_state["dm"] = pd.read_excel(bestand3)
+        st.session_state['dm'] = pd.read_excel(bestand3)
 
     col_energy, col_SoH = st.columns([2, 4], vertical_alignment="center")
+
     with col_energy:
         energy_method = st.selectbox(
             "Select an energy estimation method for material trips",
             ["Mean", "Min", "Max"],
-            index=0,
-        ).lower()
+            index=0
+        )
+
+        energy_method = energy_method.lower()
+
     with col_SoH:
         SoH = st.slider(
             "Select the State of Health (SoH) (%)",
-            min_value=0, max_value=100, value=85, step=5,
+            min_value=0,
+            max_value=100,
+            value=85,
+            step=5
         )
 
     st.markdown("### Improve bus planning")
-    files_ready = all(key in st.session_state for key in ["bp", "tt", "dm"])
+
+    files_ready = all(
+        key in st.session_state for key in ['bp', 'tt', 'dm']
+    )
 
     if st.button("Optimize", type="primary", disabled=not files_ready):
-        progress_bar = st.progress(0, text="Preparing optimization...")
+
+        progress_bar = st.progress(
+            0,
+            text="Preparing optimization..."
+        )
+
         start_time = time.monotonic()
 
         def update_progress(completed, total, phase):
+
             if phase == "Completed":
-                progress_bar.progress(100, text="Optimization completed!")
+                progress_bar.progress(
+                    100,
+                    text="Optimization completed!"
+                )
                 return
+
             if phase == "Returning buses to the garage":
-                progress_bar.progress(95, text="95% — Returning buses to the garage...")
+                progress_bar.progress(
+                    95,
+                    text="95% — Returning buses to the garage..."
+                )
                 return
+
             percentage = int(95 * completed / max(total, 1))
+
             elapsed = time.monotonic() - start_time
+
             if completed > 0:
                 remaining = elapsed / completed * (total - completed)
                 remaining_text = f"Estimated {remaining:.0f} seconds remaining"
             else:
                 remaining_text = "Calculating remaining time..."
+
             progress_bar.progress(
                 percentage,
-                text=f"Optimizing bus planning... {percentage}% — {remaining_text}",
+                text=(
+                    f"Optimizing bus planning... {percentage}% "
+                    f"— {remaining_text}"
+                )
             )
 
         try:
+
             improved_bp = solve_bus_planning(
                 st.session_state["bp"],
                 st.session_state["dm"],
                 st.session_state["tt"],
-                assumed_battery_value=SoH,
-                energy_method=energy_method,
-                progress_callback=update_progress,
+                assumed_battery_value = SoH,
+                energy_method = energy_method,
+                progress_callback=update_progress
             )
+
             st.session_state["improved_bp"] = improved_bp
+
+            material_trips = improved_bp[
+                improved_bp["activity"] == "material trip"
+            ]
+
+
             total_time = time.monotonic() - start_time
+
             progress_bar.progress(
-                100, text=f"Optimization completed in {total_time:.1f} seconds!"
+                100,
+                text=f"Optimization completed in {total_time:.1f} seconds!"
             )
-            st.success("Improved bus planning generated successfully!")
+
+            st.success(
+                "Improved bus planning generated successfully!"
+            )
+
         except Exception as e:
             progress_bar.empty()
             st.error(f"Solver failed: {e}")
 
-    if "improved_bp" in st.session_state:
-        # Prepare an export copy without modifying the solver's original result.
-        export_bp = st.session_state["improved_bp"][[
-            "start location", "end location", "start time", "end time",
-            "activity", "line", "energy consumption", "bus",
+    if 'improved_bp' in st.session_state:
+        improved_bp = st.session_state['improved_bp'][[
+            'start location', 'end location', 'start time', 'end time',
+            'activity', 'line', 'energy consumption', 'bus'
         ]].copy()
-        export_bp["bus"] = export_bp["bus"].astype(int)
-        for col in ["start time", "end time"]:
-            export_bp[col] = pd.to_datetime(export_bp[col]).dt.strftime("%H:%M:%S")
+        improved_bp['bus'] = improved_bp['bus'].astype(int)
+
+        for col in ['start time', 'end time']:
+            improved_bp[col] = pd.to_datetime(
+                improved_bp[col]
+            ).dt.strftime('%H:%M:%S')
+
+        st.session_state['improved_bp'] = improved_bp
+
+        export_bp = improved_bp.copy()
+
+        for col in ['start time', 'end time']:
+            export_bp[col] = pd.to_datetime(
+                export_bp[col]
+            ).dt.strftime('%H:%M:%S')
 
         output = BytesIO()
-        with pd.ExcelWriter(output, engine="openpyxl") as writer:
-            export_bp.to_excel(writer, sheet_name="Improved Planning", index=False)
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            export_bp.to_excel(
+                writer,
+                sheet_name='Improved Planning',
+                index=False
+            )
+
         st.download_button(
             label="Download improved bus planning",
             data=output.getvalue(),
             file_name="Improved_Bus_Planning.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+
+    if 'improved_bp' in st.session_state:
+        st.markdown("### Improved planning feasibility")
 
         st.markdown("""
         <style>
@@ -545,139 +675,148 @@ if keuze == "Data Check":
             padding-left: 2rem;
             padding-right: 2rem;
         }
+
         .st-key-error_details {
             max-height: 360px;
             overflow-y: auto;
         }
-        /* Feasibility header matches the Bus planning header */
-        .st-key-feasibility_header {
-            position: relative;
-            border-bottom: 2px solid #E5E5E5 !important;
-            padding-bottom: 12px !important;
-            margin-bottom: 20px !important;
-        }
-        .st-key-feasibility_header::after {
-            content: "";
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 65px;
-            height: 4px;
-            background: #EA3323;
-            border-radius: 3px;
-        }
-        .feasibility-header-title {
-            font-size: 26px;
-            font-weight: 700;
-            color: #1F1F1F;
-            white-space: nowrap;
-        }
-        .st-key-feasibility_header [data-testid="stHorizontalBlock"] {
-            width: 100% !important;
-        }
-        .st-key-feasibility_planning_choice [data-testid="stRadioGroup"] {
-            display: flex !important;
-            flex-direction: row !important;
-            flex-wrap: nowrap !important;
-            justify-content: flex-end !important;
-            width: 100% !important;
-            gap: 20px !important;
-        }
-        .st-key-feasibility_header [data-testid="stRadio"] label p {
-            font-size: 13px !important;
-            color: #222222 !important;
-            white-space: nowrap;
-        }
-        /* Black radio controls, scoped to this section only */
-        .st-key-feasibility_planning_choice [data-testid="stRadio"] input {
-            accent-color: #000000 !important;
-        }
-        .st-key-feasibility_planning_choice [data-testid="stRadio"] label > div:first-child {
-            border-color: #000000 !important;
-        }
         </style>
-        """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-        # Only one radio group: placed next to the Feasibility checks title.
-        with st.container(key="feasibility_header"):
-            col_title, col_planning = st.columns([1, 3], vertical_alignment="center")
-            with col_title:
-                st.markdown(
-                    '<div class="feasibility-header-title">Feasibility checks</div>',
-                    unsafe_allow_html=True,
-                )
-            with col_planning:
-                planning_choice = st.radio(
-                    "Select bus planning",
-                    ["Original planning", "Improved planning"],
-                    horizontal=True,
-                    label_visibility="collapsed",
-                    key="feasibility_planning_choice",
+
+        with st.container(border=True, key="box_feasibility"):
+
+            # Feasibility checks header
+            with st.container(key="feasibility_header"):
+
+                col_title, col_planning = st.columns(
+                    [1, 3],
+                    vertical_alignment="center"
                 )
 
-        # Select the data BEFORE running any validations.
-        if planning_choice == "Original planning":
-            df1 = st.session_state["bp"]
-        else:
-            df1 = st.session_state["improved_bp"]
+                with col_title:
+                    st.markdown(
+                        '<div class="feasibility-header-title">Feasibility checks</div>',
+                        unsafe_allow_html=True
+                    )
 
-        validate_bus_planning(df1)
+                with col_planning:
+                    planning_choice = st.radio(
+                        "Select bus planning",
+                        ["Original planning", "Improved planning"],
+                        horizontal=True,
+                        label_visibility="collapsed",
+                        key="feasibility_planning_choice"
+                    )
 
-        with st.container(key="check_cards"):
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown(
-                    '<div class="column-title">🔋 Battery & charging</div>',
-                    unsafe_allow_html=True,
-                )
-                status_check("Minimum SOC is maintained (10%)", validate_minimum_soc(df1))
-                status_check("SOH is correct (between 85% and 95%)", validate_soh(85))
-                status_check("Minimum charging time (15 minutes)", validate_minimum_charging_time(df1))
-                status_check("Charging speed is correct", validate_charging_speed(df1))
+            # Selected planning
+            if planning_choice == "Original planning":
+                df1 = st.session_state["bp"]
+            else:
+                df1 = st.session_state["improved_bp"]
 
-            with col2:
-                st.markdown(
-                    '<div class="column-title">📍 Planning</div>',
-                    unsafe_allow_html=True,
-                )
-                status_check("Start and end locations match", validate_location_continuity(df1))
-                status_check("No overlapping trips", validate_no_overlapping_trips(df1))
-                if "tt" in st.session_state:
-                    df2 = st.session_state["tt"]
-                    status_check("All required trips", validate_required_trips(df1, df2))
-                else:
-                    st.info("Upload the timetable to check all required trips.")
+            validate_bus_planning(df1)
 
-        feasibility_results = {
-            "Minimum SOC": validate_minimum_soc(df1),
-            "SOH": validate_soh(ASSUMED_SOH),
-            "Minimum charging time": validate_minimum_charging_time(df1),
-            "Charging speed": validate_charging_speed(df1),
-            "Location continuity": validate_location_continuity(df1),
-            "Overlapping trips": validate_no_overlapping_trips(df1),
-        }
-        if "tt" in st.session_state:
-            df2 = st.session_state["tt"]
-            feasibility_results["Required trips"] = validate_required_trips(df1, df2)
+            # De echte cards
+            with st.container(key="check_cards"):
 
-        if not all(feasibility_results.values()):
-            st.error("The bus planning is not feasible.")
-            with st.expander("Click here for details"):
-                with st.container(key="error_details"):
-                    if not feasibility_results["Minimum SOC"]:
-                        show_minimum_soc_errors(df1)
-                    if not feasibility_results["SOH"]:
-                        st.error("SOH must be between 85% and 95%.")
-                    if not feasibility_results["Minimum charging time"]:
-                        show_minimum_charging_time_errors(df1)
-                    if not feasibility_results["Charging speed"]:
-                        show_charging_speed_errors(df1)
-                    if not feasibility_results["Location continuity"]:
-                        show_location_continuity_errors(df1)
-                    if not feasibility_results["Overlapping trips"]:
-                        show_overlapping_trip_errors(df1)
-                    if "Required trips" in feasibility_results and not feasibility_results["Required trips"]:
-                        show_required_trip_errors(df1, df2)
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.markdown("""
+                    <div class="column-title">
+                        🔋 Battery & charging
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                    status_check(
+                        "Minimum SOC is maintained (10%)",
+                        validate_minimum_soc(df1)
+                    )
+
+                    status_check(
+                        "SOH is correct (between 85% and 95%)",
+                        validate_soh(85)
+                    )
+
+                    status_check(
+                        "Minimum charging time (15 minutes)",
+                        validate_minimum_charging_time(df1)
+                    )
+
+                    status_check(
+                        "Charging speed is correct",
+                        validate_charging_speed(df1)
+                    )
+
+                with col2:
+                    st.markdown("""
+                    <div class="column-title">
+                        📍 Planning
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                    status_check(
+                        "Start and end locations match",
+                        validate_location_continuity(df1)
+                    )
+
+                    status_check(
+                        "No overlapping trips",
+                        validate_no_overlapping_trips(df1)
+                    )
+
+                    if "tt" in st.session_state:
+                        df2 = st.session_state["tt"]
+
+                        status_check(
+                            "All required trips",
+                            validate_required_trips(df1, df2)
+                        )
+
+                    else:
+                        st.info("Upload the timetable to check all required trips.")
+
+                                # Feasibility error messages
+            feasibility_results = {
+                "Minimum SOC": validate_minimum_soc(df1),
+                "SOH": validate_soh(ASSUMED_SOH),
+                "Minimum charging time": validate_minimum_charging_time(df1),
+                "Charging speed": validate_charging_speed(df1),
+                "Location continuity": validate_location_continuity(df1),
+                "Overlapping trips": validate_no_overlapping_trips(df1)
+            }
+
+            if "tt" in st.session_state:
+                df2 = st.session_state["tt"]
+                feasibility_results["Required trips"] = validate_required_trips(df1, df2)
+
+            if not all(feasibility_results.values()):
+                st.error("The bus planning is not feasible.")
+                with st.expander("Click here for details"):
+                    with st.container(key="error_details"):
+                        if not feasibility_results["Minimum SOC"]:
+                            show_minimum_soc_errors(df1)
+                        if not feasibility_results["SOH"]:
+                            st.error("SOH must be between 85% and 95%.")
+                        if not feasibility_results["Minimum charging time"]:
+                            show_minimum_charging_time_errors(df1)
+                        if not feasibility_results["Charging speed"]:
+                            show_charging_speed_errors(df1)
+                        if not feasibility_results["Location continuity"]:
+                            show_location_continuity_errors(df1)
+                        if not feasibility_results["Overlapping trips"]:
+                            show_overlapping_trip_errors(df1)
+                        if "Required trips" in feasibility_results and not feasibility_results["Required trips"]:
+                            show_required_trip_errors(df1, df2)
+
+    if bestand2 is not None:
+        st.session_state['tt'] = pd.read_excel(bestand2)
+        df2 = st.session_state['tt']
+
+    if bestand3 is not None:
+        st.session_state['dm'] = pd.read_excel(bestand3)
+        df3 = st.session_state['dm']
 
 elif keuze == "Visualisations":
 
