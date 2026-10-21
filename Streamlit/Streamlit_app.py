@@ -23,7 +23,9 @@ from feasibility_checks import (
     show_minimum_charging_time_errors,
     show_charging_speed_errors,
     show_overlapping_trip_errors,
-    status_check
+    status_check,
+    validate_battery_balance,
+    show_battery_balance_errors
 )
 
 from calculations import (
