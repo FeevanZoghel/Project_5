@@ -1511,6 +1511,7 @@ elif keuze == "Visualisations":
                             bp,
                             st.session_state[selection_key]
                         )
+                        st.write(st.session_state[selection_key])
                     else:
                         st.info("Select buses and click Apply selection to display the Gantt chart.")
 
