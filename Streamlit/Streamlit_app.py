@@ -281,19 +281,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<style>
-/* Succesmeldingen: groene rand */
-[data-testid="stAlert"][data-baseweb="notification"]:has([data-testid="stNotificationContentSuccess"]) {
-    border: 2px solid #00C853 !important;
-}
-
-/* Alternatieve selector voor Streamlit */
-[data-testid="stAlert"]:has([data-testid="stNotificationContentSuccess"]) {
-    border: 2px solid #00C853 !important;
-}
-</style>
-""", unsafe_allow_html=True)
 
 st.sidebar.markdown(
     f"""
@@ -419,8 +406,17 @@ body,
 
 /* ===== ERROR + DETAILS ===== */
 [data-testid="stAlert"] {
-    border: 3px solid #EA3323 !important;
     border-radius: 14px !important;
+}
+
+/* Foutmeldingen: rode rand */
+[data-testid="stAlert"]:has([data-testid="stNotificationContentError"]) {
+    border: 3px solid #EA3323 !important;
+}
+
+/* Succesmeldingen: geen rand */
+[data-testid="stAlert"]:has([data-testid="stNotificationContentSuccess"]) {
+    border: none !important;
 }
 
 [data-testid="stExpander"] {
