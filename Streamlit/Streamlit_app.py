@@ -1250,7 +1250,7 @@ elif keuze == "Visualisations":
 
             planning_choice = st.session_state.get(
                 "planning_choice",
-                "Original planning"
+                "Improved planning"
             )
 
             if planning_choice == "Improved planning":
