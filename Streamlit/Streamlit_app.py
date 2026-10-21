@@ -1152,6 +1152,47 @@ elif keuze == "Visualisations":
     div[class*="st-key-bus_multiselect_"] [data-baseweb="select"] svg {
         color: #374151 !important;
     }
+
+    
+    /* ===== FORCE LIGHT BUS SELECTION BOX ===== */
+
+    /* Entire multiselect box, including inner containers */
+    .st-key-results_dashboard
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"],
+    .st-key-results_dashboard
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"] > div,
+    .st-key-results_dashboard
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"] > div > div {
+        background-color: #FFFFFF !important;
+        background-image: none !important;
+    }
+
+    /* Also target the BaseWeb input wrapper */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="input"],
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="input"] > div {
+        background-color: #FFFFFF !important;
+    }
+
+    /* Input text */
+    div[class*="st-key-bus_multiselect_"] input {
+        background-color: transparent !important;
+        color: #222222 !important;
+        -webkit-text-fill-color: #222222 !important;
+    }
+
+    /* Selected bus chips stay red */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"],
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] > span {
+        background-color: #EA3323 !important;
+        color: #FFFFFF !important;
+    }
+
+    /* Chip text */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] span {
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+    }
+
     </style>
     """, unsafe_allow_html=True)
 
