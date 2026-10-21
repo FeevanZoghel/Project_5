@@ -645,18 +645,18 @@ if keuze == "Data Check":
                     Feasibility checks
                 </div>
                 """, unsafe_allow_html=True)
-
+                
             st.markdown("""
             <style>
-            div[data-testid="stRadio"]:has(input[name="feasibility_planning_choice"]) label[data-baseweb="radio"] > div:first-child {
+            div[data-testid="stRadio"] label[data-baseweb="radio"] > div:first-child {
                 border-color: black !important;
             }
-            div[data-testid="stRadio"]:has(input[name="feasibility_planning_choice"]) label[data-baseweb="radio"] > div:first-child > div {
+            div[data-testid="stRadio"] label[data-baseweb="radio"] > div:first-child > div {
                 background-color: black !important;
             }
             </style>
             """, unsafe_allow_html=True)
-            
+
             with col_radio:
                 planning_choice = st.radio(
                     "Select bus planning",
