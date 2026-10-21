@@ -6,6 +6,7 @@ import mpld3
 from mpld3 import plugins
 import streamlit.components.v1 as components
 from html import escape
+
 def gantt_chart_bus(bp, title = 'improved bus plan', selected_buses=None):
     """Creates interactive Gantt charts of the bus planning."""
     if selected_buses is not None:
