@@ -495,8 +495,8 @@ if keuze == "Data Check":
     with col_SoH:
         SoH = st.slider(
             "Select the State of Health (SoH) (%)",
-            min_value=85,
-            max_value=95,
+            min_value=0,
+            max_value=100,
             value=85,
             step=5
         )
