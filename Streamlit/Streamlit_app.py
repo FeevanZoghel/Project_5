@@ -474,6 +474,7 @@ if keuze == "Data Check":
     # Bestanden apart opslaan
     if bestand1 is not None:
         st.session_state['bp'] = pd.read_excel(bestand1)
+        st.session_state['bp']['bus'] = st.session_state['bp']['bus'].astype(int)
 
     if bestand2 is not None:
         st.session_state['tt'] = pd.read_excel(bestand2)
@@ -561,6 +562,7 @@ if keuze == "Data Check":
                 progress_callback=update_progress
             )
 
+            improved_bp['bus'] = improved_bp['bus'].astype(int)
             st.session_state["improved_bp"] = improved_bp
             st.session_state["improved_soh"] = SoH
 
