@@ -1000,55 +1000,88 @@ elif keuze == "Visualisations":
 
 
     /* =========================================
-       7. BUS MULTISELECT - WHITE BACKGROUND
+    7. BUS MULTISELECT - CLEAN LIGHT DESIGN
     ========================================= */
 
-    /* The actual combobox from DevTools */
-    div[class*="st-key-bus_multiselect_"] [data-rac] {
+    /* Main selection field: one subtle border */
+    div[class*="st-key-bus_multiselect_"] [data-rac=""],
+    div[class*="st-key-bus_multiselect_"] [data-rac=""] > div {
         background-color: #FFFFFF !important;
         background-image: none !important;
-        color: #222222 !important;
-        border: 1px solid #EA3323 !important;
+        border: 1px solid #DADDE2 !important;
         border-radius: 8px !important;
+        color: #222222 !important;
     }
 
-    /* Inner select and tag container */
+    /* Remove extra borders from inner containers */
     div[class*="st-key-bus_multiselect_"] [data-baseweb="select"],
     div[class*="st-key-bus_multiselect_"] [data-baseweb="select"] > div,
     div[class*="st-key-bus_multiselect_"] [data-testid="stMultiSelectTagsContainer"] {
         background-color: #FFFFFF !important;
-        background-image: none !important;
+        border: none !important;
+        box-shadow: none !important;
     }
 
-    /* Input text */
+    /* Space between selected buses */
+    div[class*="st-key-bus_multiselect_"] [data-testid="stMultiSelectTagsContainer"] {
+        gap: 5px !important;
+        padding: 3px 5px !important;
+    }
+
+    /* Selected bus chips */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] {
+        background-color: #EA3323 !important;
+        border: none !important;
+        border-radius: 5px !important;
+        margin: 2px !important;
+    }
+
+    /* White text and remove crosses on bus chips */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] span,
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] svg {
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+    }
+
+    /* Input field */
     div[class*="st-key-bus_multiselect_"] input {
         background: transparent !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
         color: #222222 !important;
         -webkit-text-fill-color: #222222 !important;
     }
 
-    /* Selected bus tags */
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] {
-        background-color: #EA3323 !important;
-        border-radius: 6px !important;
+    /* Clear-all and dropdown buttons */
+    div[class*="st-key-bus_multiselect_"] [data-rac] button {
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+        padding: 4px !important;
     }
 
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] span {
-        color: #FFFFFF !important;
-        -webkit-text-fill-color: #FFFFFF !important;
+    /* Dark gray icons */
+    div[class*="st-key-bus_multiselect_"] [data-rac] button svg {
+        color: #667085 !important;
+        fill: #667085 !important;
     }
 
-    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] svg {
-        color: #FFFFFF !important;
-        fill: #FFFFFF !important;
+    /* Subtle hover effect */
+    div[class*="st-key-bus_multiselect_"] [data-rac] button:hover {
+        background-color: #F3F4F6 !important;
+        border-radius: 5px !important;
     }
 
-    /* Clear and dropdown buttons */
-    div[class*="st-key-bus_multiselect_"] button,
-    div[class*="st-key-bus_multiselect_"] button svg {
-        color: #374151 !important;
-        fill: #374151 !important;
+    /* Remove focus borders on inner elements */
+    div[class*="st-key-bus_multiselect_"] [data-rac] *:focus {
+        outline: none !important;
+        box-shadow: none !important;
     }
+
 
 
     /* =========================================
