@@ -115,12 +115,23 @@ def calculate_waiting_time_kpis(bp, deployed_buses_count):
 
     return tot_waiting_time_min, tot_waiting_time_hours, avg_waiting_time_per_bus
 
+
 def calculate_charging_time_kpis(bp):
-    """Calculates total charging time."""
-    start_time = pd.to_timedelta(bp['start time'].astype(str))
-    end_time = pd.to_timedelta(bp['end time'].astype(str))
-    charging = bp[bp['activity'] == 'charging']
-    charging_time = end_time[charging.index] - start_time[charging.index]
+    """Calculates total charging time, including charging across midnight."""
+
+    charging = bp[bp['activity'] == 'charging'].copy()
+
+    start_time = convert_time_to_timedelta(charging['start time'])
+    end_time = convert_time_to_timedelta(charging['end time'])
+
+    charging_time = end_time - start_time
+
+    charging_time = charging_time.where(
+        charging_time >= pd.Timedelta(0),
+        charging_time + pd.Timedelta(days=1)
+    )
+
     total_charging_time_min = charging_time.dt.total_seconds().sum() / 60
     total_charging_time_hours = total_charging_time_min / 60
+
     return total_charging_time_min, total_charging_time_hours
