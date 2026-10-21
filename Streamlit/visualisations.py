@@ -16,6 +16,7 @@ def gantt_chart_bus(bp, title = 'improved bus plan', selected_buses=None):
         return
     # Prepare planning
     planning = bp.sort_values(['bus', 'start time']).copy()
+    planning['bus'] = planning['bus'].astype(int)
     start_times = convert_time_to_timedelta(planning['start time'])
     end_times = convert_time_to_timedelta(planning['end time'])
     if start_times.isna().any() or end_times.isna().any():
