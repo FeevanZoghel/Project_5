@@ -1094,6 +1094,47 @@ elif keuze == "Visualisations":
     div[data-testid="stPopoverBody"] [data-baseweb="select"] svg {
         fill: #333333 !important;
     }
+        
+    /* ===== BUS SELECTION MULTISELECT ===== */
+
+    /* White background for multiselect */
+    div[data-testid="stMultiSelect"] div[data-baseweb="select"] > div {
+        background-color: #FFFFFF !important;
+        border: 1px solid #FF4545 !important;
+        border-radius: 8px !important;
+    }
+
+    /* Text color */
+    div[data-testid="stMultiSelect"] input {
+        color: #111827 !important;
+        -webkit-text-fill-color: #111827 !important;
+    }
+
+    /* Selected bus tags */
+    div[data-testid="stMultiSelect"] span[data-baseweb="tag"] {
+        background-color: #FF4545 !important;
+        color: #FFFFFF !important;
+        border-radius: 6px !important;
+    }
+
+    /* Selected tag text and remove icons */
+    div[data-testid="stMultiSelect"] span[data-baseweb="tag"] * {
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
+    }
+
+    /* Dropdown and clear icons */
+    div[data-testid="stMultiSelect"] svg {
+        color: #374151 !important;
+        fill: #374151 !important;
+    }
+
+    /* Dropdown menu background */
+    div[data-baseweb="popover"] ul {
+        background-color: #FFFFFF !important;
+        color: #111827 !important;
+    }
+
     </style>
     """, unsafe_allow_html=True)
 
