@@ -2,6 +2,7 @@
 import pandas as pd
 import streamlit as st
 
+
 # ============================================================
 # CONSTANTS
 # ============================================================
@@ -51,6 +52,7 @@ def get_operational_minutes(time_values):
                 value.hour * 60
                 + value.minute
                 + value.second / 60
+                + value.microsecond / 60000000
             )
 
         else:
@@ -70,8 +72,10 @@ def get_operational_minutes(time_values):
 
     return time_values.apply(convert_time)
 
+
 def sort_bus_planning(df):
     """Sorts activities by bus and operational start time."""
+
     planning = df.copy()
 
     planning["_start_minutes"] = get_operational_minutes(
@@ -97,6 +101,7 @@ def get_activity_duration_minutes(start_time, end_time):
                 value.hour * 60
                 + value.minute
                 + value.second / 60
+                + value.microsecond / 60000000
             )
 
         time_str = str(value)
@@ -128,6 +133,7 @@ def calculate_expected_charging_energy(
     Fast charging: 450 kW up to 90% SOC.
     Slow charging: 60 kW from 90% to 100% SOC.
     """
+
     max_battery = get_max_battery(assumed_soh)
     charging_limit = 0.90 * max_battery
 
@@ -164,15 +170,18 @@ def calculate_expected_charging_energy(
 
 def validate_minimum_soc(df, assumed_soh=ASSUMED_SOH):
     """Checks whether every bus remains above the minimum SOC."""
+
     minimum_battery = get_minimum_battery(assumed_soh)
     max_battery = get_max_battery(assumed_soh)
 
     planning = sort_bus_planning(df)
 
     for bus, bus_data in planning.groupby("bus"):
+
         battery = max_battery
 
         for energy in bus_data["energy consumption"]:
+
             battery -= float(energy)
             battery = min(battery, max_battery)
 
@@ -184,22 +193,26 @@ def validate_minimum_soc(df, assumed_soh=ASSUMED_SOH):
 
 def show_minimum_soc_errors(df, assumed_soh=ASSUMED_SOH):
     """Displays buses that drop below the minimum allowed SOC."""
+
     minimum_battery = get_minimum_battery(assumed_soh)
     max_battery = get_max_battery(assumed_soh)
 
     planning = sort_bus_planning(df)
 
     for bus, bus_data in planning.groupby("bus"):
+
         battery = max_battery
         lowest_battery = max_battery
 
         for energy in bus_data["energy consumption"]:
+
             battery -= float(energy)
             battery = min(battery, max_battery)
 
             lowest_battery = min(lowest_battery, battery)
 
         if lowest_battery < minimum_battery - ENERGY_TOLERANCE:
+
             st.error(
                 f"Bus {bus}: battery dropped to "
                 f"{lowest_battery:.2f} kWh "
@@ -214,6 +227,7 @@ def show_minimum_soc_errors(df, assumed_soh=ASSUMED_SOH):
 
 def validate_soh(assumed_soh):
     """Checks whether SoH is between 85% and 95%."""
+
     return 85 <= assumed_soh <= 95
 
 
@@ -223,12 +237,15 @@ def validate_soh(assumed_soh):
 
 def validate_location_continuity(df):
     """Checks whether consecutive activities have matching locations."""
+
     planning = sort_bus_planning(df)
 
     for bus, bus_data in planning.groupby("bus"):
+
         bus_data = bus_data.reset_index(drop=True)
 
         for i in range(len(bus_data) - 1):
+
             end_location = bus_data.loc[i, "end location"]
             next_start = bus_data.loc[i + 1, "start location"]
 
@@ -240,16 +257,20 @@ def validate_location_continuity(df):
 
 def show_location_continuity_errors(df):
     """Displays every location mismatch."""
+
     planning = sort_bus_planning(df)
 
     for bus, bus_data in planning.groupby("bus"):
+
         bus_data = bus_data.reset_index(drop=True)
 
         for i in range(len(bus_data) - 1):
+
             end_location = bus_data.loc[i, "end location"]
             next_start = bus_data.loc[i + 1, "start location"]
 
             if end_location != next_start:
+
                 st.error(
                     f"Bus {bus}: location mismatch "
                     f"({end_location} → {next_start})."
@@ -262,6 +283,7 @@ def show_location_continuity_errors(df):
 
 def validate_required_trips(df, timetable):
     """Checks whether all required service trips are included."""
+
     required_trips = len(timetable)
 
     planned_trips = len(
@@ -273,6 +295,7 @@ def validate_required_trips(df, timetable):
 
 def show_required_trip_errors(df, timetable):
     """Displays missing or extra service trips."""
+
     required_trips = len(timetable)
 
     planned_trips = len(
@@ -282,12 +305,14 @@ def show_required_trip_errors(df, timetable):
     difference = required_trips - planned_trips
 
     if difference > 0:
+
         st.error(
             f"{difference} required service trip(s) missing "
             f"({planned_trips}/{required_trips} planned)."
         )
 
     elif difference < 0:
+
         st.error(
             f"{abs(difference)} extra service trip(s) planned "
             f"({planned_trips}/{required_trips} required)."
@@ -300,9 +325,11 @@ def show_required_trip_errors(df, timetable):
 
 def validate_minimum_charging_time(df):
     """Checks whether every charging activity lasts at least 15 minutes."""
+
     charging = df[df["activity"] == "charging"]
 
     for _, row in charging.iterrows():
+
         duration = get_activity_duration_minutes(
             row["start time"],
             row["end time"]
@@ -316,15 +343,18 @@ def validate_minimum_charging_time(df):
 
 def show_minimum_charging_time_errors(df):
     """Displays charging activities shorter than 15 minutes."""
+
     charging = df[df["activity"] == "charging"]
 
     for _, row in charging.iterrows():
+
         duration = get_activity_duration_minutes(
             row["start time"],
             row["end time"]
         )
 
         if duration < MINIMUM_CHARGING_TIME - TIME_TOLERANCE:
+
             st.error(
                 f"Bus {row['bus']}: charging lasted "
                 f"{duration:.2f} min "
@@ -338,75 +368,116 @@ def show_minimum_charging_time_errors(df):
 
 def get_charging_speed_errors(df, assumed_soh=ASSUMED_SOH):
     """
-    Checks whether charging energy matches the charging duration.
+    Simulates battery charging using the original charging logic.
 
-    Uses:
-    - Selected SoH
-    - 450 kW fast charging up to 90% SOC
-    - 60 kW slow charging above 90% SOC
-    - Correct operational-day sorting
-    - Correct midnight handling
+    Fast charging: 450 kW up to 90% SOC.
+    Slow charging: 60 kW from 90% to 100% SOC.
+
+    Uses the selected SoH and correct operational-day sorting.
     """
+
     errors = []
 
     max_battery = get_max_battery(assumed_soh)
+    charging_limit = 0.90 * max_battery
+    minimum_battery = get_minimum_battery(assumed_soh)
+
     planning = sort_bus_planning(df)
 
     for bus, bus_data in planning.groupby("bus"):
+
         battery = max_battery
 
         for _, row in bus_data.iterrows():
-            energy = float(row["energy consumption"])
 
             if row["activity"] == "charging":
+
                 duration = get_activity_duration_minutes(
                     row["start time"],
                     row["end time"]
                 )
 
-                if duration <= 0:
+                if duration < MINIMUM_CHARGING_TIME - TIME_TOLERANCE:
+
                     errors.append(
-                        f"Bus {bus}: invalid charging duration "
-                        f"({duration:.2f} min)."
+                        f"Bus {bus}: charging duration is "
+                        f"{duration:.2f} minutes "
+                        f"(minimum: {MINIMUM_CHARGING_TIME} minutes)."
                     )
+
                     continue
 
-                battery_start = battery
+                time_available = duration
 
-                expected_energy = calculate_expected_charging_energy(
-                    battery_start,
-                    duration,
-                    assumed_soh
-                )
+                # Fast charging up to 90% SOC
+                if battery < charging_limit:
 
-                actual_energy = -energy
+                    needed_energy = charging_limit - battery
+                    time_needed = needed_energy / QUICK_CHARGING_SPEED
 
-                difference = abs(
-                    actual_energy - expected_energy
-                )
+                    if time_available <= time_needed:
 
-                if difference > ENERGY_TOLERANCE:
-                    errors.append(
-                        f"Bus {bus}: charged "
-                        f"{actual_energy:.2f} kWh "
-                        f"(expected: {expected_energy:.2f} kWh). "
-                        f"Difference: {difference:.2f} kWh. "
-                        f"SoH: {assumed_soh}%. "
-                        f"Duration: {duration:.2f} min. "
-                        f"Battery before charging: "
-                        f"{battery_start:.2f} kWh."
+                        battery += time_available * QUICK_CHARGING_SPEED
+                        time_available = 0
+
+                    else:
+
+                        battery = charging_limit
+                        time_available -= time_needed
+
+                # Slow charging from 90% to 100% SOC
+                if time_available > 0 and battery < max_battery:
+
+                    battery += min(
+                        time_available * SLOW_CHARGING_SPEED,
+                        max_battery - battery
                     )
 
-            # Positive energy = consumption
-            # Negative energy = charging
-            battery -= energy
+            else:
 
-            # Battery cannot exceed maximum usable capacity
-            battery = min(battery, max_battery)
+                battery -= float(row["energy consumption"])
+
+            if battery < minimum_battery - ENERGY_TOLERANCE:
+
+                errors.append(
+                    f"Bus {bus}: battery dropped to "
+                    f"{battery:.2f} kWh "
+                    f"(minimum: {minimum_battery:.2f} kWh)."
+                )
+
+            if battery > max_battery + ENERGY_TOLERANCE:
+
+                errors.append(
+                    f"Bus {bus}: battery exceeded maximum capacity "
+                    f"({battery:.2f}/{max_battery:.2f} kWh)."
+                )
 
     return errors
 
+
+def validate_charging_speed(df, assumed_soh=ASSUMED_SOH):
+    """Returns True when the charging simulation is feasible."""
+
+    return len(
+        get_charging_speed_errors(df, assumed_soh)
+    ) == 0
+
+
+def show_charging_speed_errors(df, assumed_soh=ASSUMED_SOH):
+    """Displays charging simulation errors."""
+
+    errors = get_charging_speed_errors(df, assumed_soh)
+
+    for error in errors:
+        st.error(error)
+
+
+# ============================================================
+# 7. BATTERY BALANCE
+# ============================================================
+
 def get_battery_balance_errors(df, assumed_soh=ASSUMED_SOH):
+    """Compares calculated battery levels with solver battery levels."""
 
     errors = []
 
@@ -452,6 +523,7 @@ def get_battery_balance_errors(df, assumed_soh=ASSUMED_SOH):
 
 
 def validate_battery_balance(df, assumed_soh=ASSUMED_SOH):
+    """Checks whether solver and calculated battery levels match."""
 
     return len(
         get_battery_balance_errors(df, assumed_soh)
@@ -459,38 +531,29 @@ def validate_battery_balance(df, assumed_soh=ASSUMED_SOH):
 
 
 def show_battery_balance_errors(df, assumed_soh=ASSUMED_SOH):
+    """Displays all battery balance errors."""
 
     for error in get_battery_balance_errors(df, assumed_soh):
         st.error(error)
 
-def validate_charging_speed(df, assumed_soh=ASSUMED_SOH):
-    """Returns True when all charging activities are valid."""
-    return len(
-        get_charging_speed_errors(df, assumed_soh)
-    ) == 0
-
-
-def show_charging_speed_errors(df, assumed_soh=ASSUMED_SOH):
-    """Displays all charging speed errors."""
-    errors = get_charging_speed_errors(df, assumed_soh)
-
-    for error in errors:
-        st.error(error)
-
 
 # ============================================================
-# 7. OVERLAPPING TRIPS
+# 8. OVERLAPPING TRIPS
 # ============================================================
 
 def get_overlapping_trip_errors(df):
     """Finds overlapping activities for each bus."""
+
     errors = []
+
     planning = sort_bus_planning(df)
 
     for bus, bus_data in planning.groupby("bus"):
+
         previous_end = None
 
         for _, row in bus_data.iterrows():
+
             start = float(row["_start_minutes"])
 
             duration = get_activity_duration_minutes(
@@ -504,6 +567,7 @@ def get_overlapping_trip_errors(df):
                 previous_end is not None
                 and start < previous_end - TIME_TOLERANCE
             ):
+
                 errors.append(
                     f"Bus {bus}: overlapping activity "
                     f"starting at {row['start time']}."
@@ -519,21 +583,24 @@ def get_overlapping_trip_errors(df):
 
 def validate_no_overlapping_trips(df):
     """Checks whether activities assigned to a bus overlap."""
+
     return len(get_overlapping_trip_errors(df)) == 0
 
 
 def show_overlapping_trip_errors(df):
     """Displays all overlapping activity errors."""
+
     for error in get_overlapping_trip_errors(df):
         st.error(error)
 
 
 # ============================================================
-# 8. STATUS CHECK DISPLAY
+# 9. STATUS CHECK DISPLAY
 # ============================================================
 
 def status_check(text, is_valid):
     """Displays a green check mark or a red cross."""
+
     if is_valid:
         color = "#4CAF50"
         symbol = "✓"
