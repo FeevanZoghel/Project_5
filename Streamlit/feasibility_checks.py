@@ -1,14 +1,14 @@
 import pandas as pd
 import streamlit as st
 
-ASSUMED_SOH = 85
+
 INITIAL_BATTERY_CAPACITY = 300
 MINIMUM_SOC = 0.10
 QUICK_CHARGING_SPEED = 450 / 60
 SLOW_CHARGING_SPEED = 60 / 60
 MINIMUM_CHARGING_TIME = 15
 
-def validate_minimum_soc(df):
+def validate_minimum_soc(df, ASSUMED_SOH):
     """Checks whether every bus remains above the minimum allowed SOC."""
     minimum_battery_value = (INITIAL_BATTERY_CAPACITY / ASSUMED_SOH * 100) * MINIMUM_SOC
     planning = df.sort_values(['bus', 'start time'])
@@ -20,7 +20,7 @@ def validate_minimum_soc(df):
                 return False
     return True
 
-def show_minimum_soc_errors(df):
+def show_minimum_soc_errors(df, ASSUMED_SOH):
     """Displays buses that drop below the minimum allowed SOC."""
     minimum_battery_value = (INITIAL_BATTERY_CAPACITY / ASSUMED_SOH * 100) * MINIMUM_SOC
     planning = df.sort_values(['bus', 'start time'])
@@ -97,7 +97,7 @@ def show_minimum_charging_time_errors(df):
             if duration < MINIMUM_CHARGING_TIME:
                 st.error(f'Bus {row['bus']}: charging lasted {duration:.1f} min (minimum: 15 min).')
 
-def get_charging_speed_errors(df):
+def get_charging_speed_errors(df, ASSUMED_SOH):
     """Checks charging energy using fast and slow charging phases."""
     errors = []
     max_battery = INITIAL_BATTERY_CAPACITY * ASSUMED_SOH / 100
