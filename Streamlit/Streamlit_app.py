@@ -1509,9 +1509,9 @@ elif keuze == "Visualisations":
                     if st.session_state[selection_key]:
                         gantt_chart_bus(
                             bp,
+                            title = 'improved bus plan',
                             st.session_state[selection_key]
                         )
-                        st.write(st.session_state[selection_key])
                     else:
                         st.info("Select buses and click Apply selection to display the Gantt chart.")
 

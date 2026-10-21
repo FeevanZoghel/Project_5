@@ -7,7 +7,7 @@ import streamlit.components.v1 as components
 from html import escape
 
 
-def gantt_chart_bus(bp, selected_buses=None):
+def gantt_chart_bus(bp, title = 'improved bus plan', selected_buses=None):
     """Creates interactive Gantt charts of the bus planning."""
 
     if selected_buses is not None:
@@ -241,7 +241,7 @@ def gantt_chart_bus(bp, selected_buses=None):
                       color = '#333333')
         # Titles
         ax.set_title(
-            'Improved bus plan',
+            title,
             fontsize=30,           # Lettergrootte
             fontweight='bold',     # Vetgedrukt
             color='#333333'        # Tekstkleur
