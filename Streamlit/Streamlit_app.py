@@ -268,8 +268,8 @@ st.markdown("""
 [data-testid="stAppViewContainer"]:not(:has(
     [data-testid="stSidebar"][aria-expanded="true"]
 )) [data-testid="stMainBlockContainer"] {
-    max-width: 95% !important;
-    width: 95% !important;
+    max-width: 85% !important;
+    width: 85% !important;
 }
 
 /* Algemene instellingen */
