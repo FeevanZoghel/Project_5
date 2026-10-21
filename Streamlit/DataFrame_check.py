@@ -136,7 +136,7 @@ def validate_bus_planning(df):
     else:
         st.error("The bus planning contains errors.")
         with st.expander("Click here for details"):
-            with st.container(height=400):
+            with st.container():
                 show_column_errors(df)
                 show_time_format_errors(df)
                 show_energy_consumption_errors(df)

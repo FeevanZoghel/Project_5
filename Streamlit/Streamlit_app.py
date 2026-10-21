@@ -542,6 +542,16 @@ if keuze == "Data Check":
             for index in dm.index[invalid_distances]:
                 input_errors.append(f"Distance matrix, row {index + 2}: invalid distance.")
 
+        st.markdown("""
+        <style>
+        [data-testid="stExpanderDetails"] [data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) {
+            height: auto !important;
+            max-height: 400px !important;
+            overflow-y: auto !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
         if input_errors:
             st.error("The uploaded data contains errors.")
             with st.expander("Click here for details", expanded=True):
