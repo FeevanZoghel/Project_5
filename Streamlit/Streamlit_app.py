@@ -450,52 +450,6 @@ body,
 
 if keuze == "Data Check":
 
-    st.markdown("""
-    <style>
-    /* ===== FEASIBILITY HEADER ===== */
-
-    .st-key-feasibility_header {
-        position: relative;
-        border-bottom: 2px solid #E5E5E5 !important;
-        padding-bottom: 12px !important;
-        margin-bottom: 15px !important;
-    }
-
-    .st-key-feasibility_header::after {
-        content: "";
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 65px;
-        height: 4px;
-        background: #EA3323;
-        border-radius: 3px;
-    }
-
-    .feasibility-header-title {
-        font-size: 26px;
-        font-weight: 700;
-        color: #1F1F1F;
-        white-space: nowrap;
-    }
-
-    .st-key-feasibility_header [data-testid="stRadioGroup"] {
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        justify-content: flex-end !important;
-        width: 100% !important;
-        gap: 20px !important;
-    }
-
-    .st-key-feasibility_header [data-testid="stRadio"] label p {
-        font-size: 13px !important;
-        color: #222222 !important;
-        white-space: nowrap;
-    }
-    </style>
-    """, unsafe_allow_html= True)
-
     st.title("Transdev Planning Checker")
     st.write('Upload the planning files below to validate the schedule and view the feasibility results.')
 
@@ -630,19 +584,20 @@ if keuze == "Data Check":
             st.error(f"Solver failed: {e}")
 
     if 'improved_bp' in st.session_state:
-
-        export_bp = st.session_state['improved_bp'][[
-            'start location',
-            'end location',
-            'start time',
-            'end time',
-            'activity',
-            'line',
-            'energy consumption',
-            'bus'
+        improved_bp = st.session_state['improved_bp'][[
+            'start location', 'end location', 'start time', 'end time',
+            'activity', 'line', 'energy consumption', 'bus'
         ]].copy()
+        improved_bp['bus'] = improved_bp['bus'].astype(int)
 
-        export_bp['bus'] = export_bp['bus'].astype(int)
+        for col in ['start time', 'end time']:
+            improved_bp[col] = pd.to_datetime(
+                improved_bp[col]
+            ).dt.strftime('%H:%M:%S')
+
+        st.session_state['improved_bp'] = improved_bp
+
+        export_bp = improved_bp.copy()
 
         for col in ['start time', 'end time']:
             export_bp[col] = pd.to_datetime(
@@ -650,7 +605,6 @@ if keuze == "Data Check":
             ).dt.strftime('%H:%M:%S')
 
         output = BytesIO()
-
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
             export_bp.to_excel(
                 writer,
@@ -684,39 +638,34 @@ if keuze == "Data Check":
     """, unsafe_allow_html=True)
 
 
+        planning_choice = st.radio(
+            "Select bus planning",
+            ["Original planning", "Improved planning"],
+            horizontal=True)
+
+        if planning_choice == 'Original planning':
+            df1 = st.session_state['bp']
+        else:
+            df1 = st.session_state['improved_bp']
+
+        validate_bus_planning(df1)
+
         with st.container(border=True, key="box_feasibility"):
 
-            # Feasibility checks header
-            with st.container(key="feasibility_header"):
+            col_title, col_logo = st.columns([5, 1], vertical_alignment="center")
 
-                col_title, col_planning = st.columns(
-                    [1, 3],
-                    vertical_alignment="center"
+            with col_title:
+                st.markdown("""
+                <div class="feasibility-title">
+                    Feasibility checks
+                </div>
+                """, unsafe_allow_html=True)
+
+            with col_logo:
+                st.image(
+                    "https://www.transdev.com/uploads/2026/09/logo.png",
+                    width=80
                 )
-
-                with col_title:
-                    st.markdown(
-                        '<div class="feasibility-header-title">Feasibility checks</div>',
-                        unsafe_allow_html=True
-                    )
-
-                with col_planning:
-                    planning_choice = st.radio(
-                        "Select bus planning",
-                        ["Original planning", "Improved planning"],
-                        horizontal=True,
-                        label_visibility="collapsed",
-                        key="feasibility_planning_choice"
-                    )
-
-            # Selected planning
-            if planning_choice == "Original planning":
-                df1 = st.session_state["bp"]
-            else:
-                df1 = st.session_state["improved_bp"]
-
-            validate_bus_planning(df1)
-
             # De echte cards
             with st.container(key="check_cards"):
 
@@ -821,7 +770,6 @@ if keuze == "Data Check":
 elif keuze == "Visualisations":
 
 
-    
     st.markdown("""
     <style>
 
@@ -1010,50 +958,21 @@ elif keuze == "Visualisations":
 
 
     /* =========================================
-       5. COMPACT BUS TOOLBAR
+       5. SELECT BUSES POPOVER BUTTON
     ========================================= */
 
-    .st-key-bus_toolbar {
-        background: transparent !important;
-        padding: 4px 0 8px 0 !important;
-    }
-
-    /* Main selection button */
-    .st-key-bus_toolbar [data-testid="stPopover"] button {
+    .st-key-chart_card [data-testid="stPopover"] button {
         background: #FFFFFF !important;
         color: #222222 !important;
-        border: 1px solid #DADDE2 !important;
-        border-radius: 8px !important;
-        min-height: 40px !important;
-        font-size: 13px !important;
-        font-weight: 500 !important;
-        box-shadow: none !important;
+        border: 1px solid #EA3323 !important;
+        border-radius: 10px !important;
     }
 
-    .st-key-bus_toolbar [data-testid="stPopover"] button:hover {
+    .st-key-chart_card [data-testid="stPopover"] button:hover {
         background: #F8F9FA !important;
-        border-color: #EA3323 !important;
     }
 
-    .st-key-bus_toolbar [data-testid="stPopover"] button * {
-        color: #222222 !important;
-    }
-
-    /* Select all and Clear buttons */
-    .st-key-bus_toolbar [data-testid="stButton"] button {
-        background: #F4F5F7 !important;
-        color: #374151 !important;
-        border: 1px solid #E5E7EB !important;
-        border-radius: 8px !important;
-        min-height: 40px !important;
-        font-size: 12px !important;
-        font-weight: 500 !important;
-        box-shadow: none !important;
-    }
-
-    .st-key-bus_toolbar [data-testid="stButton"] button:hover {
-        background: #E9ECEF !important;
-        border-color: #CBD5E1 !important;
+    .st-key-chart_card [data-testid="stPopover"] button * {
         color: #222222 !important;
     }
 
@@ -1062,16 +981,16 @@ elif keuze == "Visualisations":
        6. POPOVER PANEL
     ========================================= */
 
-    [data-testid="stPopoverBody"] {
-        background: #FFFFFF !important;
-        border: 1px solid #E5E7EB !important;
-        border-radius: 12px !important;
+    [data-testid="stPopoverBody"],
+    [data-testid="stPopoverBody"] > div,
+    [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"] {
+        background-color: #FFFFFF !important;
         color: #222222 !important;
     }
 
-    [data-testid="stPopoverBody"] > div,
-    [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"] {
-        background: transparent !important;
+    [data-testid="stPopoverBody"] {
+        border: 1px solid #E5E7EB !important;
+        border-radius: 12px !important;
     }
 
     [data-testid="stPopoverBody"] p,
@@ -1081,112 +1000,88 @@ elif keuze == "Visualisations":
 
 
     /* =========================================
-       7. BUS MULTISELECT - LIGHT GRAY DESIGN
+    7. BUS MULTISELECT - CLEAN LIGHT DESIGN
     ========================================= */
 
-    /*
-       Actual Streamlit structure:
-       stMultiSelect
-         > div[data-rac]
-           > div[data-rac][role="group"]
-             > stMultiSelectTagsContainer
-               > selected tags + input
-    */
-
-    /* Outer combobox: one light-gray background */
-    div[class*="st-key-bus_multiselect_"]
-    [data-testid="stMultiSelect"] > div[data-rac] {
-        background: #F3F4F6 !important;
+    /* Main selection field: one subtle border */
+    div[class*="st-key-bus_multiselect_"] [data-rac=""],
+    div[class*="st-key-bus_multiselect_"] [data-rac=""] > div {
+        background-color: #FFFFFF !important;
+        background-image: none !important;
         border: 1px solid #DADDE2 !important;
         border-radius: 8px !important;
-        box-shadow: none !important;
+        color: #222222 !important;
     }
 
-    /* Inner group: no extra border */
-    div[class*="st-key-bus_multiselect_"]
-    [data-testid="stMultiSelect"] > div[data-rac]
-    > div[role="group"] {
-        background: transparent !important;
+    /* Remove extra borders from inner containers */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"],
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"] > div,
+    div[class*="st-key-bus_multiselect_"] [data-testid="stMultiSelectTagsContainer"] {
+        background-color: #FFFFFF !important;
         border: none !important;
         box-shadow: none !important;
     }
 
-    /* Tags container */
-    div[class*="st-key-bus_multiselect_"]
-    [data-testid="stMultiSelectTagsContainer"] {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
+    /* Space between selected buses */
+    div[class*="st-key-bus_multiselect_"] [data-testid="stMultiSelectTagsContainer"] {
         gap: 5px !important;
         padding: 3px 5px !important;
     }
 
-    /* Remove visual styling from empty input */
-    div[class*="st-key-bus_multiselect_"]
-    [data-testid="stMultiSelectTagsContainer"] input {
-        background: transparent !important;
-        background-color: transparent !important;
-        background-image: none !important;
+    /* Selected bus chips */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] {
+        background-color: #EA3323 !important;
         border: none !important;
-        border-radius: 0 !important;
+        border-radius: 5px !important;
+        margin: 2px !important;
+    }
+
+    /* White text and remove crosses on bus chips */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] span,
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] svg {
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+    }
+
+    /* Input field */
+    div[class*="st-key-bus_multiselect_"] input {
+        background: transparent !important;
+        border: none !important;
         outline: none !important;
         box-shadow: none !important;
         color: #222222 !important;
         -webkit-text-fill-color: #222222 !important;
     }
 
-    /* Focused input */
-    div[class*="st-key-bus_multiselect_"]
-    [data-testid="stMultiSelectTagsContainer"] input:focus {
-        background: transparent !important;
-        border: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-    }
-
-    /* Selected bus chips */
-    div[class*="st-key-bus_multiselect_"]
-    [data-baseweb="tag"] {
-        background: #EA3323 !important;
-        border: none !important;
-        border-radius: 5px !important;
-        margin: 2px !important;
-    }
-
-    /* Chip text */
-    div[class*="st-key-bus_multiselect_"]
-    [data-baseweb="tag"] span {
-        color: #FFFFFF !important;
-        -webkit-text-fill-color: #FFFFFF !important;
-    }
-
-    /* Chip remove icons */
-    div[class*="st-key-bus_multiselect_"]
-    [data-baseweb="tag"] svg {
-        color: #FFFFFF !important;
-        fill: #FFFFFF !important;
-    }
-
     /* Clear-all and dropdown buttons */
-    div[class*="st-key-bus_multiselect_"]
-    [data-rac] button {
+    div[class*="st-key-bus_multiselect_"] [data-rac] button {
         background: transparent !important;
         border: none !important;
-        border-radius: 5px !important;
+        border-radius: 0 !important;
         box-shadow: none !important;
+        outline: none !important;
         padding: 4px !important;
     }
 
-    div[class*="st-key-bus_multiselect_"]
-    [data-rac] button svg {
+    /* Dark gray icons */
+    div[class*="st-key-bus_multiselect_"] [data-rac] button svg {
         color: #667085 !important;
         fill: #667085 !important;
     }
 
-    div[class*="st-key-bus_multiselect_"]
-    [data-rac] button:hover {
-        background: #E5E7EB !important;
+    /* Subtle hover effect */
+    div[class*="st-key-bus_multiselect_"] [data-rac] button:hover {
+        background-color: #F3F4F6 !important;
+        border-radius: 5px !important;
     }
+
+    /* Remove focus borders on inner elements */
+    div[class*="st-key-bus_multiselect_"] [data-rac] *:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
 
 
     /* =========================================
@@ -1221,33 +1116,121 @@ elif keuze == "Visualisations":
        9. APPLY SELECTION BUTTON
     ========================================= */
 
-    [data-testid="stPopoverBody"]
-    [data-testid="stBaseButton-primary"] {
+    [data-testid="stPopoverBody"] button[kind="primary"],
+    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"] {
+        background-color: #EA3323 !important;
+        color: #FFFFFF !important;
+        border: 1px solid #EA3323 !important;
+        border-radius: 8px !important;
+    }
+
+    [data-testid="stPopoverBody"] button[kind="primary"] *,
+    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"] * {
+        color: #FFFFFF !important;
+    }
+
+    [data-testid="stPopoverBody"] button[kind="primary"]:hover,
+    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"]:hover {
+        background-color: #D92D20 !important;
+        border-color: #D92D20 !important;
+    }
+
+    
+    /* =========================================
+    COMPACT BUS SELECTION TOOLBAR
+    ========================================= */
+
+    /* Toolbar layout */
+    .st-key-bus_toolbar {
+        background: transparent !important;
+        padding: 4px 0 8px 0 !important;
+    }
+
+    /* Main selection button */
+    .st-key-bus_toolbar [data-testid="stPopover"] button {
+        background: #FFFFFF !important;
+        color: #222222 !important;
+        border: 1px solid #DADDE2 !important;
+        border-radius: 8px !important;
+        min-height: 40px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        text-align: left !important;
+        box-shadow: none !important;
+    }
+
+    /* Selection button hover */
+    .st-key-bus_toolbar [data-testid="stPopover"] button:hover {
+        background: #F8F9FA !important;
+        border-color: #EA3323 !important;
+    }
+
+    /* Toolbar action buttons */
+    .st-key-bus_toolbar [data-testid="stButton"] button {
+        background: #F4F5F7 !important;
+        color: #374151 !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 8px !important;
+        min-height: 40px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        box-shadow: none !important;
+    }
+
+    /* Toolbar action button hover */
+    .st-key-bus_toolbar [data-testid="stButton"] button:hover {
+        background: #E9ECEF !important;
+        border-color: #CBD5E1 !important;
+        color: #222222 !important;
+    }
+
+    /* Popover panel */
+    [data-testid="stPopoverBody"] {
+        background: #FFFFFF !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 12px !important;
+    }
+
+    /* Bus multiselect background */
+    div[class*="st-key-bus_multiselect_"] [data-rac],
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="select"],
+    div[class*="st-key-bus_multiselect_"] [data-testid="stMultiSelectTagsContainer"] {
+        background-color: #FFFFFF !important;
+    }
+
+    /* Selected bus tags */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] {
+        background-color: #EA3323 !important;
+        border-radius: 5px !important;
+    }
+
+    /* Selected bus text */
+    div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] span {
+        color: #FFFFFF !important;
+    }
+
+    /* Apply selection button */
+    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"] {
         background: #EA3323 !important;
         color: #FFFFFF !important;
         border: 1px solid #EA3323 !important;
         border-radius: 8px !important;
     }
 
-    [data-testid="stPopoverBody"]
-    [data-testid="stBaseButton-primary"] * {
-        color: #FFFFFF !important;
-    }
-
-    [data-testid="stPopoverBody"]
-    [data-testid="stBaseButton-primary"]:hover {
+    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"]:hover {
         background: #D92D20 !important;
         border-color: #D92D20 !important;
     }
+
+    
 
     </style>
     """, unsafe_allow_html=True)
 
 
-    # Custom bus icon in compact toolbar
     st.markdown(f"""
     <style>
-
+    /* Bus icon in compact selection toolbar */
     .st-key-bus_toolbar [data-testid="stPopover"] button::before {{
         content: "";
         display: inline-block;
@@ -1262,10 +1245,9 @@ elif keuze == "Visualisations":
 
         margin-right: 8px;
     }}
-
+    
     </style>
-    """, unsafe_allow_html=True)
-
+    """, unsafe_allow_html = True)
 
     if (
         'bp' in st.session_state
