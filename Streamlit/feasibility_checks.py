@@ -39,22 +39,36 @@ def get_minimum_battery(assumed_soh=ASSUMED_SOH):
 
 
 def get_operational_minutes(time_values):
-    """
-    Converts clock times into minutes since midnight.
+    """Converts timestamps and clock times into operational minutes."""
 
-    Times before 05:07 are assigned to the next operational day.
-    """
-    minutes = (
-        pd.to_timedelta(time_values.astype(str))
-        .dt.total_seconds()
-        / 60
-    )
+    def convert_time(value):
 
-    return minutes.where(
-        minutes >= OPERATIONAL_DAY_START,
-        minutes + 1440
-    )
+        if isinstance(value, pd.Timedelta):
+            minutes = value.total_seconds() / 60
 
+        elif isinstance(value, pd.Timestamp):
+            minutes = (
+                value.hour * 60
+                + value.minute
+                + value.second / 60
+            )
+
+        else:
+            time_str = str(value)
+
+            if " " in time_str:
+                time_str = time_str.split(" ")[-1]
+
+            minutes = (
+                pd.to_timedelta(time_str).total_seconds() / 60
+            )
+
+        if minutes < OPERATIONAL_DAY_START:
+            minutes += 1440
+
+        return minutes
+
+    return time_values.apply(convert_time)
 
 def sort_bus_planning(df):
     """Sorts activities by bus and operational start time."""
@@ -71,14 +85,31 @@ def sort_bus_planning(df):
 
 
 def get_activity_duration_minutes(start_time, end_time):
-    """
-    Calculates activity duration in minutes,
-    including activities crossing midnight.
-    """
-    start = pd.to_timedelta(str(start_time))
-    end = pd.to_timedelta(str(end_time))
+    """Calculates activity duration, including midnight."""
 
-    duration = (end - start).total_seconds() / 60
+    def convert_time(value):
+
+        if isinstance(value, pd.Timedelta):
+            return value.total_seconds() / 60
+
+        if isinstance(value, pd.Timestamp):
+            return (
+                value.hour * 60
+                + value.minute
+                + value.second / 60
+            )
+
+        time_str = str(value)
+
+        if " " in time_str:
+            time_str = time_str.split(" ")[-1]
+
+        return pd.to_timedelta(time_str).total_seconds() / 60
+
+    start = convert_time(start_time)
+    end = convert_time(end_time)
+
+    duration = end - start
 
     if duration < 0:
         duration += 1440
