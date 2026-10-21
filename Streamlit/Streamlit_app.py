@@ -471,10 +471,13 @@ if keuze == "Data Check":
         accept_multiple_files=False
     )
 
-    # Bestanden apart opslaan
     if bestand1 is not None:
-        st.session_state['bp'] = pd.read_excel(bestand1)
-        st.session_state['bp']['bus'] = st.session_state['bp']['bus'].astype(int)
+        bp = pd.read_excel(bestand1)
+        bp.columns = bp.columns.astype(str).str.strip().str.lower()
+        bp = bp.rename(columns={'unnamed: 5': 'line'})
+        if 'bus' in bp.columns:
+            bp['bus'] = pd.to_numeric(bp['bus'], errors='coerce').astype('Int64')
+        st.session_state['bp'] = bp
 
     if bestand2 is not None:
         st.session_state['tt'] = pd.read_excel(bestand2)
