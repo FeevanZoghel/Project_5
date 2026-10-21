@@ -718,6 +718,7 @@ if keuze == "Data Check":
                 planning_choice = st.radio(
                     "Select bus planning",
                     ["Original planning", "Improved planning"],
+                    index = 1,
                     horizontal=True,
                     label_visibility="collapsed",
                     key="feasibility_planning_choice"
@@ -1594,6 +1595,7 @@ elif keuze == "Visualisations":
                                 st.radio(
                                     "Select bus planning",
                                     ["Original planning", "Improved planning"],
+                                    index = 1,
                                     horizontal=True,
                                     label_visibility="collapsed",
                                     key="planning_choice"
