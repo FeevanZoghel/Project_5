@@ -657,11 +657,17 @@ if keuze == "Data Check":
 
         validate_bus_planning(validation_df)
 
+
         feasibility_results = {
             "Minimum SOC": validate_minimum_soc(df1, check_soh),
             "SOH": validate_soh(check_soh),
             "Minimum charging time": validate_minimum_charging_time(df1),
             "Charging speed": validate_charging_speed(df1, check_soh),
+            "Battery balance": (
+                validate_battery_balance(df1, check_soh)
+                if planning_choice == "Improved planning"
+                else True
+            ),
             "Location continuity": validate_location_continuity(df1),
             "Overlapping trips": validate_no_overlapping_trips(df1)
         }
@@ -719,6 +725,11 @@ if keuze == "Data Check":
                         feasibility_results["Charging speed"]
                     )
 
+                    if planning_choice == "Improved planning":
+                        status_check(
+                            "Battery balance is correct",
+                            feasibility_results["Battery balance"]
+                        )
                 with col2:
                     st.markdown("""
                     <div class="column-title">
@@ -764,6 +775,9 @@ if keuze == "Data Check":
 
                         if not feasibility_results["Charging speed"]:
                             show_charging_speed_errors(df1, check_soh)
+
+                        if not feasibility_results["Battery balance"]:
+                            show_battery_balance_errors(df1, check_soh)
 
                         if not feasibility_results["Location continuity"]:
                             show_location_continuity_errors(df1)
