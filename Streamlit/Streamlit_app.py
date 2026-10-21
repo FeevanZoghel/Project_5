@@ -495,7 +495,7 @@ if keuze == "Data Check":
     with col_SoH:
         SoH = st.slider(
             "Select the State of Health (SoH) (%)",
-            min_value= 0,
+            min_value=0,
             max_value=100,
             value=85,
             step=5
@@ -632,25 +632,6 @@ if keuze == "Data Check":
         </style>
         """, unsafe_allow_html=True)
 
-        if planning_choice == 'Original planning':
-            df1 = st.session_state['bp']
-            check_soh = 85
-        else:
-            df1 = st.session_state['improved_bp']
-            check_soh = st.session_state.get('improved_soh', 85)
-
-        validation_df = df1[[
-            'start location', 'end location', 'start time', 'end time',
-            'activity', 'line', 'energy consumption', 'bus'
-        ]].copy()
-
-        for col in ['start time', 'end time']:
-            validation_df[col] = pd.to_datetime(
-                validation_df[col]
-            ).dt.strftime('%H:%M:%S')
-
-        validate_bus_planning(validation_df)
-
         with st.container(border=True, key="box_feasibility"):
 
             col_title, col_logo = st.columns([5, 1], vertical_alignment="center")
@@ -661,13 +642,6 @@ if keuze == "Data Check":
                     Feasibility checks
                 </div>
                 """, unsafe_allow_html=True)
-                
-            planning_choice = st.radio(
-                "Select bus planning",
-                ["Original planning", "Improved planning"],
-                horizontal=True,
-                key="feasibility_planning_choice"
-            )
 
             with col_logo:
                 st.image(
@@ -675,13 +649,32 @@ if keuze == "Data Check":
                     width=80
                 )
 
+            # Select bus planning
+            planning_choice = st.radio(
+                "Select bus planning",
+                ["Original planning", "Improved planning"],
+                horizontal=True,
+                key="feasibility_planning_choice"
+            )
 
-            if planning_choice == "Original planning":
-                df1 = st.session_state["bp"]
+            if planning_choice == 'Original planning':
+                df1 = st.session_state['bp']
                 check_soh = 85
             else:
-                df1 = st.session_state["improved_bp"]
-                check_soh = st.session_state.get("improved_soh", 85)
+                df1 = st.session_state['improved_bp']
+                check_soh = st.session_state.get('improved_soh', 85)
+
+            validation_df = df1[[
+                'start location', 'end location', 'start time', 'end time',
+                'activity', 'line', 'energy consumption', 'bus'
+            ]].copy()
+
+            for col in ['start time', 'end time']:
+                validation_df[col] = pd.to_datetime(
+                    validation_df[col]
+                ).dt.strftime('%H:%M:%S')
+
+            validate_bus_planning(validation_df)
 
             # Calculate feasibility results
             feasibility_results = {
@@ -690,11 +683,12 @@ if keuze == "Data Check":
                 "Minimum charging time": validate_minimum_charging_time(df1),
                 "Charging speed": validate_charging_speed(df1, check_soh),
                 "Location continuity": validate_location_continuity(df1),
-                "Overlapping trips": validate_no_overlapping_trips(df1),
-                "Required trips": validate_required_trips(
-                    df1, st.session_state["tt"]
-                )
+                "Overlapping trips": validate_no_overlapping_trips(df1)
             }
+
+            if 'tt' in st.session_state:
+                df2 = st.session_state['tt']
+                feasibility_results["Required trips"] = validate_required_trips(df1, df2)
 
             # De echte cards
             with st.container(key="check_cards"):
@@ -780,7 +774,10 @@ if keuze == "Data Check":
                         if not feasibility_results["Overlapping trips"]:
                             show_overlapping_trip_errors(df1)
 
-                        if "Required trips" in feasibility_results and not feasibility_results["Required trips"]:
+                        if (
+                            "Required trips" in feasibility_results
+                            and not feasibility_results["Required trips"]
+                        ):
                             show_required_trip_errors(df1, df2)
 
     if bestand2 is not None:
