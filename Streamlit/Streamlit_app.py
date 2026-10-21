@@ -680,7 +680,7 @@ if keuze == "Data Check":
 
                     status_check(
                         "Minimum SOC is maintained (10%)",
-                        validate_minimum_soc(df1, SoH)
+                        validate_minimum_soc(df1)
                     )
 
                     status_check(
@@ -728,8 +728,8 @@ if keuze == "Data Check":
 
                                 # Feasibility error messages
             feasibility_results = {
-                "Minimum SOC": validate_minimum_soc(df1, SoH),
-                "SOH": validate_soh(SoH),
+                "Minimum SOC": validate_minimum_soc(df1),
+                "SOH": validate_soh(ASSUMED_SOH),
                 "Minimum charging time": validate_minimum_charging_time(df1),
                 "Charging speed": validate_charging_speed(df1),
                 "Location continuity": validate_location_continuity(df1),
@@ -745,7 +745,7 @@ if keuze == "Data Check":
                 with st.expander("Click here for details"):
                     with st.container(key="error_details"):
                         if not feasibility_results["Minimum SOC"]:
-                            show_minimum_soc_errors(df1, SoH)
+                            show_minimum_soc_errors(df1)
                         if not feasibility_results["SOH"]:
                             st.error("SOH must be between 85% and 95%.")
                         if not feasibility_results["Minimum charging time"]:
