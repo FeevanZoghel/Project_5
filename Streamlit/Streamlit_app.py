@@ -1,9 +1,10 @@
 #URL:
-#https://project5groep5optimizationtool.streamlit.app/ 
+# https://project5-improvedtool.streamlit.app/
 
 from solver import solve_bus_planning
 from io import BytesIO
 import time
+import textwrap
 
 from DataFrame_check import validate_bus_planning
 
@@ -49,6 +50,9 @@ charging_time_path = image_path / "charging_time.png"
 energy_consumption_path = image_path / "energy_consumption.png"
 driving_distance_path = image_path / "driving_distance.png"
 logo_path = image_path / "Logo_Transdev.png"
+bar_chart_sidebar_path = image_path / "Bar_chart_sidebar.png"
+bus_sidebar_path = image_path / "Bus_sidebar.png"
+energy_sidebar_path = image_path / "energy_sidebar.png"
 
 with open(number_bus_used_path, "rb") as file:
     number_bus_used_icon = base64.b64encode(file.read()).decode()
@@ -70,6 +74,15 @@ with open(energy_consumption_path, "rb") as file:
 
 with open(driving_distance_path, "rb") as file:
     driving_distance_icon = base64.b64encode(file.read()).decode()
+
+with open(bar_chart_sidebar_path, "rb") as file:
+    bar_chart_sidebar_icon = base64.b64encode(file.read()).decode()
+
+with open(bus_sidebar_path, "rb") as file:
+    bus_sidebar_icon = base64.b64encode(file.read()).decode()
+
+with open(energy_sidebar_path, "rb") as file:
+    energy_sidebar_icon = base64.b64encode(file.read()).decode()
 
 data_check_icon = base64.b64encode(
     (image_path / "data_check_icon.png").read_bytes()
@@ -172,7 +185,54 @@ st.markdown(f'''
         color: white !important;
         font-weight: 600 !important;
     }}
+        
+    /* ===== ABOUT THIS TOOL ===== */
 
+    .sidebar-about-title {{
+        color: #FFFFFF;
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }}
+
+    .sidebar-about-description {{
+        color: #B7BEC8;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 18px;
+    }}
+
+    .sidebar-about-card {{
+        background-color: #222B35;
+        border: 1px solid #303B47;
+        border-radius: 10px;
+        padding: 16px;
+    }}
+
+    .sidebar-about-item {{
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #E5E7EB;
+        font-size: 14px;
+        padding: 9px 0;
+    }}
+
+
+    .sidebar-about-icon {{
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+        flex-shrink: 0;
+    }}
+
+
+    .sidebar-footer {{
+        color: #89939F;
+        font-size: 12px;
+        text-align: center;
+        margin-top: 24px;
+    }}
 
 </style>
 ''', unsafe_allow_html=True)
@@ -181,9 +241,9 @@ st.sidebar.markdown("""
 <div class="sidebar-title">
     Menu
 </div>
-<div class="sidebar-line"></div>
 """, unsafe_allow_html=True)
 
+st.sidebar.divider()
 
 keuze = st.sidebar.radio(
     "Navigation",
@@ -193,14 +253,64 @@ keuze = st.sidebar.radio(
 
 st.sidebar.divider()
 
-assumed_battery = st.sidebar.slider(
-    "Assumed battery capacity (kWh)",
-    min_value=200,
-    max_value=400,
-    value=300,
-    step=10
-)
 
+st.markdown("""
+<style>
+/* Sidebar open */
+[data-testid="stAppViewContainer"]:has(
+    [data-testid="stSidebar"][aria-expanded="true"]
+) [data-testid="stMainBlockContainer"] {
+    max-width: 85% !important;
+    width: 85% !important;
+}
+
+/* Sidebar ingeklapt */
+[data-testid="stAppViewContainer"]:not(:has(
+    [data-testid="stSidebar"][aria-expanded="true"]
+)) [data-testid="stMainBlockContainer"] {
+    max-width: 85% !important;
+    width: 85% !important;
+}
+
+/* Algemene instellingen */
+[data-testid="stMainBlockContainer"] {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    transition: max-width 0.3s ease, width 0.3s ease;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+st.sidebar.markdown(
+    f"""
+<div class="sidebar-about-title">About this tool</div>
+
+<div class="sidebar-about-description">
+A planning optimization dashboard for electric bus operations.
+</div>
+
+<div class="sidebar-about-card">
+<div class="sidebar-about-item">
+<img src="data:image/png;base64,{bus_sidebar_icon}" class="sidebar-about-icon">
+<span>Electric bus scheduling</span>
+</div>
+<div class="sidebar-about-item">
+<img src="data:image/png;base64,{energy_sidebar_icon}" class="sidebar-about-icon">
+<span>Battery feasibility</span>
+</div>
+<div class="sidebar-about-item">
+<img src="data:image/png;base64,{bar_chart_sidebar_icon}" class="sidebar-about-icon">
+<span>Performance analysis</span>
+</div>
+</div>
+
+<div class="sidebar-footer">
+Fontys · Applied Mathematics
+</div>
+""",
+    unsafe_allow_html=True
+)
 
 st.markdown("""
 <style>
@@ -296,8 +406,17 @@ body,
 
 /* ===== ERROR + DETAILS ===== */
 [data-testid="stAlert"] {
-    border: 3px solid #EA3323 !important;
     border-radius: 14px !important;
+}
+
+/* Foutmeldingen: rode rand */
+[data-testid="stAlert"]:has([data-testid="stNotificationContentError"]) {
+    border: 3px solid #EA3323 !important;
+}
+
+/* Succesmeldingen: geen rand */
+[data-testid="stAlert"]:has([data-testid="stNotificationContentSuccess"]) {
+    border: none !important;
 }
 
 [data-testid="stExpander"] {
@@ -364,88 +483,163 @@ body,
 </style>
 """, unsafe_allow_html=True)
 
-
 if keuze == "Data Check":
-
-
     st.title("Transdev Planning Checker")
-    st.write('Upload the planning files below to validate the schedule and view the feasibility results.')
+    st.write("Upload the planning files below to validate the schedule and view the feasibility results.")
 
-    bestand1 = st.file_uploader(
-        'Upload busplanning',
-        type=['xlsx'],
-        accept_multiple_files=False
+    bestand1 = st.file_uploader("Upload busplanning", type=['xlsx'], accept_multiple_files=False)
+    bestand2 = st.file_uploader("Upload timetable", type=['xlsx'], accept_multiple_files=False)
+    bestand3 = st.file_uploader("Upload distance matrix", type=['xlsx'], accept_multiple_files=False)
+
+    uploaded_files = {'bp': bestand1, 'tt': bestand2, 'dm': bestand3}
+    file_signatures = tuple(
+        (key, file.file_id if file is not None else None)
+        for key, file in uploaded_files.items()
     )
 
-    bestand2 = st.file_uploader(
-        'Upload timetable',
-        type=['xlsx'],
-        accept_multiple_files=False
-    )
+    if st.session_state.get("data_check_file_signatures") != file_signatures:
+        st.session_state["data_check_file_signatures"] = file_signatures
+        st.session_state.pop("improved_bp", None)
+        st.session_state.pop("improved_soh", None)
+        for key, file in uploaded_files.items():
+            st.session_state.pop(key, None)
+            if file is not None:
+                try:
+                    df = pd.read_excel(file)
+                    df.columns = df.columns.astype(str).str.strip().str.lower()
+                    if key == 'bp':
+                        df = df.rename(columns={'unnamed: 5': 'line'})
+                    st.session_state[key] = df
+                except Exception as e:
+                    st.error(f"Could not read {key}: {e}")
 
-    bestand3 = st.file_uploader(
-        'Upload distance matrix',
-        type=['xlsx'],
-        accept_multiple_files=False
-    )
+    files_ready = all(key in st.session_state for key in ['bp', 'tt', 'dm'])
+    data_valid = False
 
-    # Bestanden apart opslaan
-    if bestand1 is not None:
-        st.session_state['bp'] = pd.read_excel(bestand1)
+    if files_ready:
+        bp = st.session_state['bp']
+        tt = st.session_state['tt']
+        dm = st.session_state['dm']
+        input_errors = []
 
-    if bestand2 is not None:
-        st.session_state['tt'] = pd.read_excel(bestand2)
+        if bp.empty:
+            input_errors.append("Bus planning is empty.")
+        if tt.empty:
+            input_errors.append("Timetable is empty.")
+        if dm.empty:
+            input_errors.append("Distance matrix is empty.")
 
-    if bestand3 is not None:
-        st.session_state['dm'] = pd.read_excel(bestand3)
+        required_bp = [
+            'start location', 'end location', 'start time', 'end time',
+            'activity', 'line', 'energy consumption', 'bus'
+        ]
+        required_tt = ['line', 'start', 'end']
+        required_dm = ['line', 'start', 'end', 'distance_m']
+
+        for name, df, required in [
+            ('Bus planning', bp, required_bp),
+            ('Timetable', tt, required_tt),
+            ('Distance matrix', dm, required_dm)
+        ]:
+            missing = [col for col in required if col not in df.columns]
+            if missing:
+                input_errors.append(f"{name}: missing columns: {', '.join(missing)}.")
+            if df.columns.duplicated().any():
+                input_errors.append(f"{name}: duplicate column names.")
+
+        if not input_errors:
+            bus_numbers = pd.to_numeric(bp['bus'], errors='coerce')
+            invalid_buses = bus_numbers.isna() | (bus_numbers % 1 != 0) | (bus_numbers <= 0)
+            for index in bp.index[invalid_buses]:
+                input_errors.append(f"Row {index + 2}: invalid bus number.")
+
+            energy = pd.to_numeric(bp['energy consumption'], errors='coerce')
+            for index in bp.index[energy.isna()]:
+                input_errors.append(f"Row {index + 2}: invalid energy consumption.")
+
+            for col in ['start location', 'end location', 'activity']:
+                invalid = bp[col].isna() | bp[col].astype(str).str.strip().eq('')
+                for index in bp.index[invalid]:
+                    input_errors.append(f"Row {index + 2}: missing {col}.")
+
+            for name, df in [('Timetable', tt), ('Distance matrix', dm)]:
+                for col in ['start', 'end']:
+                    invalid = df[col].isna() | df[col].astype(str).str.strip().eq('')
+                    for index in df.index[invalid]:
+                        input_errors.append(f"{name}, row {index + 2}: missing {col}.")
+
+            invalid_tt_lines = tt['line'].isna()
+            for index in tt.index[invalid_tt_lines]:
+                input_errors.append(f"Timetable, row {index + 2}: missing line.")
+
+            distances = pd.to_numeric(dm['distance_m'], errors='coerce')
+            invalid_distances = distances.isna() | (distances < 0)
+            for index in dm.index[invalid_distances]:
+                input_errors.append(f"Distance matrix, row {index + 2}: invalid distance.")
+
+        st.markdown("""
+        <style>
+        [data-testid="stExpanderDetails"] [data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) {
+            height: auto !important;
+            max-height: 400px !important;
+            overflow-y: auto !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        if input_errors:
+            st.error("The uploaded data contains errors.")
+            with st.expander("Click here for details", expanded=True):
+                with st.container(height=400):
+                    for error in input_errors:
+                        st.error(error)
+        else:
+            validation_bp = bp.copy()
+            validation_bp['bus'] = bus_numbers.astype(int)
+            validation_bp['energy consumption'] = energy
+            data_valid = validate_bus_planning(validation_bp)
+            if data_valid:
+                st.session_state['bp'] = validation_bp
+
+    col_energy, col_SoH = st.columns([2, 4], vertical_alignment="center")
+    with col_energy:
+        energy_method = st.selectbox(
+            "Select an energy estimation method for material trips",
+            ["Mean", "Min", "Max"],
+            index=0
+        ).lower()
+    with col_SoH:
+        SoH = st.slider(
+            "Select the State of Health (SoH) (%)",
+            min_value=0,
+            max_value=100,
+            value=85,
+            step=5
+        )
 
     st.markdown("### Improve bus planning")
 
-    files_ready = all(
-        key in st.session_state for key in ['bp', 'tt', 'dm']
-    )
-
-    if st.button("Optimize", type="primary", disabled=not files_ready):
-
-        progress_bar = st.progress(
-            0,
-            text="Preparing optimization..."
-        )
-
+    if st.button("Optimize", type="primary", disabled=not data_valid):
+        progress_bar = st.progress(0, text="Preparing optimization...")
         start_time = time.monotonic()
 
         def update_progress(completed, total, phase):
-
             if phase == "Completed":
-                progress_bar.progress(
-                    100,
-                    text="Optimization completed!"
-                )
+                progress_bar.progress(100, text="Optimization completed!")
                 return
-
             if phase == "Returning buses to the garage":
-                progress_bar.progress(
-                    95,
-                    text="95% — Returning buses to the garage..."
-                )
+                progress_bar.progress(95, text="95% — Returning buses to the garage...")
                 return
-
             percentage = int(95 * completed / max(total, 1))
-
             elapsed = time.monotonic() - start_time
-
             if completed > 0:
                 remaining = elapsed / completed * (total - completed)
                 remaining_text = f"Estimated {remaining:.0f} seconds remaining"
             else:
                 remaining_text = "Calculating remaining time..."
-
             progress_bar.progress(
                 percentage,
-                text=(
-                    f"Optimizing bus planning... {percentage}% "
-                    f"— {remaining_text}"
-                )
+                text=f"Optimizing bus planning... {percentage}% — {remaining_text}"
             )
 
         try:
@@ -453,59 +647,32 @@ if keuze == "Data Check":
                 st.session_state["bp"],
                 st.session_state["dm"],
                 st.session_state["tt"],
+                assumed_battery_value=SoH,
+                energy_method=energy_method,
                 progress_callback=update_progress
             )
-
+            improved_bp['bus'] = improved_bp['bus'].astype(int)
             st.session_state["improved_bp"] = improved_bp
-
+            st.session_state["improved_soh"] = SoH
+            material_trips = improved_bp[improved_bp["activity"] == "material trip"]
             total_time = time.monotonic() - start_time
-
-            progress_bar.progress(
-                100,
-                text=f"Optimization completed in {total_time:.1f} seconds!"
-            )
-
-            st.success(
-                "Improved bus planning generated successfully!"
-            )
-
+            progress_bar.progress(100, text=f"Optimization completed in {total_time:.1f} seconds!")
+            st.success("Improved bus planning generated successfully!")
         except Exception as e:
             progress_bar.empty()
             st.error(f"Solver failed: {e}")
 
-        except Exception as e:
-            progress_bar.empty()
-            st.error(f"Solver failed: {e}")
-
-    if 'improved_bp' in st.session_state:
-        improved_bp = st.session_state['improved_bp'][[
+    if data_valid and 'improved_bp' in st.session_state:
+        export_bp = st.session_state['improved_bp'][[
             'start location', 'end location', 'start time', 'end time',
             'activity', 'line', 'energy consumption', 'bus'
         ]].copy()
-        improved_bp['bus'] = improved_bp['bus'].astype(int)
-
+        export_bp['bus'] = export_bp['bus'].astype(int)
         for col in ['start time', 'end time']:
-            improved_bp[col] = pd.to_datetime(
-                improved_bp[col]
-            ).dt.strftime('%H:%M:%S')
-
-        st.session_state['improved_bp'] = improved_bp
-
-        export_bp = improved_bp.copy()
-
-        for col in ['start time', 'end time']:
-            export_bp[col] = pd.to_datetime(
-                export_bp[col]
-            ).dt.strftime('%H:%M:%S')
-
+            export_bp[col] = pd.to_datetime(export_bp[col], errors='coerce').dt.strftime('%H:%M:%S')
         output = BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            export_bp.to_excel(
-                writer,
-                sheet_name='Improved Planning',
-                index=False
-            )
-
+            export_bp.to_excel(writer, sheet_name='Improved Planning', index=False)
         st.download_button(
             label="Download improved bus planning",
             data=output.getvalue(),
@@ -513,139 +680,108 @@ if keuze == "Data Check":
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
-    if 'improved_bp' in st.session_state:
+    if data_valid and 'improved_bp' in st.session_state:
         st.markdown("### Improved planning feasibility")
-
         st.markdown("""
         <style>
-        .block-container {
-            max-width: 80%;
-            padding-left: 2rem;
-            padding-right: 2rem;
-        }
-
         .st-key-error_details {
             max-height: 360px;
             overflow-y: auto;
         }
         </style>
-    """, unsafe_allow_html=True)
-
-
-        planning_choice = st.radio(
-            "Select bus planning",
-            ["Original planning", "Improved planning"],
-            horizontal=True)
-
-        if planning_choice == 'Original planning':
-            df1 = st.session_state['bp']
-        else:
-            df1 = st.session_state['improved_bp']
-
-        validate_bus_planning(df1)
+        """, unsafe_allow_html=True)
 
         with st.container(border=True, key="box_feasibility"):
-
-            col_title, col_logo = st.columns([5, 1], vertical_alignment="center")
-
+            col_title, col_radio, col_logo = st.columns([4.5, 2, 0.5], vertical_alignment="center")
             with col_title:
-                st.markdown("""
-                <div class="feasibility-title">
-                    Feasibility checks
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown('<div class="feasibility-title">Feasibility checks</div>', unsafe_allow_html=True)
 
-            with col_logo:
-                st.image(
-                    "https://www.transdev.com/uploads/2026/09/logo.png",
-                    width=80
+            st.markdown("""
+            <style>
+            .st-key-feasibility_planning_choice [data-testid="stRadioOption"] > div > div:first-child {
+                background: #FFFFFF !important;
+                border: 2px solid #000000 !important;
+                border-radius: 50% !important;
+            }
+            .st-key-feasibility_planning_choice [data-testid="stRadioOption"]:hover > div > div:first-child {
+                background: #000000 !important;
+                border-color: #000000 !important;
+            }
+            .st-key-feasibility_planning_choice [data-testid="stRadioOption"][data-selected="true"] > div > div:first-child {
+                background: #000000 !important;
+                border-color: #000000 !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
+            with col_radio:
+                planning_choice = st.radio(
+                    "Select bus planning",
+                    ["Original planning", "Improved planning"],
+                    index = 1,
+                    horizontal=True,
+                    label_visibility="collapsed",
+                    key="feasibility_planning_choice"
                 )
-            # De echte cards
-            with st.container(key="check_cards"):
+            with col_logo:
+                st.image("https://www.transdev.com/uploads/2026/09/logo.png", width=80)
 
-                col1, col2 = st.columns(2)
+            if planning_choice == 'Original planning':
+                df1 = st.session_state['bp']
+                check_soh = 85
+            else:
+                df1 = st.session_state['improved_bp']
+                check_soh = st.session_state.get('improved_soh', 85)
 
-                with col1:
-                    st.markdown("""
-                    <div class="column-title">
-                        🔋 Battery & charging
-                    </div>
-                    """, unsafe_allow_html=True)
+            validation_df = df1[[
+                'start location', 'end location', 'start time', 'end time',
+                'activity', 'line', 'energy consumption', 'bus'
+            ]].copy()
+            for col in ['start time', 'end time']:
+                validation_df[col] = pd.to_datetime(validation_df[col], errors='coerce').dt.strftime('%H:%M:%S')
 
-                    status_check(
-                        "Minimum SOC is maintained (10%)",
-                        validate_minimum_soc(df1)
-                    )
-
-                    status_check(
-                        "SOH is correct (between 85% and 95%)",
-                        validate_soh(85)
-                    )
-
-                    status_check(
-                        "Minimum charging time (15 minutes)",
-                        validate_minimum_charging_time(df1)
-                    )
-
-                    status_check(
-                        "Charging speed is correct",
-                        validate_charging_speed(df1)
-                    )
-
-                with col2:
-                    st.markdown("""
-                    <div class="column-title">
-                        📍 Planning
-                    </div>
-                    """, unsafe_allow_html=True)
-
-                    status_check(
-                        "Start and end locations match",
-                        validate_location_continuity(df1)
-                    )
-
-                    status_check(
-                        "No overlapping trips",
-                        validate_no_overlapping_trips(df1)
-                    )
-
-                    if "tt" in st.session_state:
-                        df2 = st.session_state["tt"]
-
-                        status_check(
-                            "All required trips",
-                            validate_required_trips(df1, df2)
-                        )
-
-                    else:
-                        st.info("Upload the timetable to check all required trips.")
-
-                                # Feasibility error messages
             feasibility_results = {
-                "Minimum SOC": validate_minimum_soc(df1),
-                "SOH": validate_soh(ASSUMED_SOH),
+                "Minimum SOC": validate_minimum_soc(df1, check_soh),
+                "SOH": validate_soh(check_soh),
                 "Minimum charging time": validate_minimum_charging_time(df1),
-                "Charging speed": validate_charging_speed(df1),
+                "Charging speed": validate_charging_speed(df1, check_soh),
                 "Location continuity": validate_location_continuity(df1),
                 "Overlapping trips": validate_no_overlapping_trips(df1)
             }
 
-            if "tt" in st.session_state:
-                df2 = st.session_state["tt"]
+            if 'tt' in st.session_state:
+                df2 = st.session_state['tt']
                 feasibility_results["Required trips"] = validate_required_trips(df1, df2)
+
+            with st.container(key="check_cards"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown('<div class="column-title">🔋 Battery & charging</div>', unsafe_allow_html=True)
+                    status_check("Minimum SOC is maintained (10%)", feasibility_results["Minimum SOC"])
+                    status_check("SOH is correct (between 85% and 95%)", feasibility_results["SOH"])
+                    status_check("Minimum charging time (15 minutes)", feasibility_results["Minimum charging time"])
+                    status_check("Charging speed is correct", feasibility_results["Charging speed"])
+                with col2:
+                    st.markdown('<div class="column-title">📍 Planning</div>', unsafe_allow_html=True)
+                    status_check("Start and end locations match", feasibility_results["Location continuity"])
+                    status_check("No overlapping trips", feasibility_results["Overlapping trips"])
+                    if "Required trips" in feasibility_results:
+                        status_check("All required trips", feasibility_results["Required trips"])
+                    else:
+                        st.info("Upload the timetable to check all required trips.")
 
             if not all(feasibility_results.values()):
                 st.error("The bus planning is not feasible.")
                 with st.expander("Click here for details"):
                     with st.container(key="error_details"):
                         if not feasibility_results["Minimum SOC"]:
-                            show_minimum_soc_errors(df1)
+                            show_minimum_soc_errors(df1, check_soh)
                         if not feasibility_results["SOH"]:
                             st.error("SOH must be between 85% and 95%.")
                         if not feasibility_results["Minimum charging time"]:
                             show_minimum_charging_time_errors(df1)
                         if not feasibility_results["Charging speed"]:
-                            show_charging_speed_errors(df1)
+                            show_charging_speed_errors(df1, check_soh)
                         if not feasibility_results["Location continuity"]:
                             show_location_continuity_errors(df1)
                         if not feasibility_results["Overlapping trips"]:
@@ -653,37 +789,28 @@ if keuze == "Data Check":
                         if "Required trips" in feasibility_results and not feasibility_results["Required trips"]:
                             show_required_trip_errors(df1, df2)
 
-    if bestand2 is not None:
-        st.session_state['tt'] = pd.read_excel(bestand2)
-        df2 = st.session_state['tt']
-
-    if bestand3 is not None:
-        st.session_state['dm'] = pd.read_excel(bestand3)
-        df3 = st.session_state['dm']
-
 elif keuze == "Visualisations":
 
+
+    
     st.markdown("""
     <style>
 
-    /* Visualisations page wider */
+    /* =========================================
+       1. MAIN DASHBOARD
+    ========================================= */
     .block-container {
-        max-width: 95% !important;
         padding-top: 2rem !important;
-        padding-left: 2rem !important;
-        padding-right: 2rem !important;
     }
 
-    /* Main white dashboard */
     .st-key-results_dashboard {
-        background: white !important;
+        background: #FFFFFF !important;
         border-radius: 14px !important;
         border-top: 7px solid #EA3323 !important;
         padding: 25px !important;
         box-shadow: 0 5px 20px rgba(0,0,0,0.20) !important;
     }
 
-    /* All text inside dashboard */
     .st-key-results_dashboard h1,
     .st-key-results_dashboard h2,
     .st-key-results_dashboard h3,
@@ -693,7 +820,6 @@ elif keuze == "Visualisations":
         color: #1F1F1F !important;
     }
 
-    /* Subtitle */
     .results-subtitle {
         color: #667085 !important;
         font-size: 17px;
@@ -701,7 +827,24 @@ elif keuze == "Visualisations":
         margin-bottom: 22px;
     }
 
-    /* KPI and chart cards */
+
+    /* =========================================
+       2. KPI AND CHART CARDS
+    ========================================= */
+
+    /* Voorkom dat de Gantt-kolom wordt uitgerekt */
+    [data-testid="stColumn"]:has(.st-key-chart_card) {
+        align-self: flex-start !important;
+        height: auto !important;
+    }
+    
+    /* Gantt-kaart: hoogte aanpassen aan inhoud */
+    .st-key-chart_card {
+        height: fit-content !important;
+        min-height: 0 !important;
+        align-self: flex-start !important;
+    }
+
     .st-key-kpi_card,
     .st-key-chart_card,
     .st-key-kpi_difference {
@@ -712,7 +855,6 @@ elif keuze == "Visualisations":
         box-shadow: 0 3px 12px rgba(0,0,0,0.08) !important;
     }
 
-    /* Section titles */
     .section-title {
         font-size: 26px;
         font-weight: 700;
@@ -734,7 +876,6 @@ elif keuze == "Visualisations":
         border-radius: 3px;
     }
 
-    /* Individual KPI blocks */
     .kpi-box {
         background: #F4F5F7;
         border-left: 5px solid #EA3323;
@@ -748,7 +889,7 @@ elif keuze == "Visualisations":
         align-items: center;
         gap: 8px;
         font-size: 13px;
-        color: #555 !important;
+        color: #555555 !important;
         margin-bottom: 1px;
     }
 
@@ -765,74 +906,16 @@ elif keuze == "Visualisations":
         object-fit: contain;
     }
 
-    /* White Select buses trigger */
-    .st-key-chart_card [data-testid="stPopover"] button {
-        background: #FFFFFF !important;
-        color: #222222 !important;
-        border: 1px solid #EA3323 !important;
-        border-radius: 10px !important;
-    }
-    .st-key-chart_card [data-testid="stPopover"] button:hover {
-        background: #F8F9FA !important;
-    }
-    .st-key-chart_card [data-testid="stPopover"] button * {
-        color: #222222 !important;
-    }
 
-    /* Planning selection beside Bus planning title */
-    .st-key-chart_card [data-testid="stRadio"] label p {
-        color: #222222 !important;
-        font-size: 13px !important;
-        white-space: nowrap;
-    }
+    /* =========================================
+       3. GANTT CHART HEADER
+    ========================================= */
 
-    .st-key-chart_card [data-testid="stRadio"] {
-        margin: 0 !important;
-    }
-
-    /* Header spanning the full width of the Gantt card */
     .st-key-chart_header {
+        position: relative;
         border-bottom: 2px solid #E5E5E5 !important;
         padding-bottom: 12px !important;
         margin-bottom: 15px !important;
-    }
-
-    /* Bus planning title */
-    .chart-header-title {
-        font-size: 26px;
-        font-weight: 700;
-        color: #1F1F1F;
-        white-space: nowrap;
-    }
-
-    /* Radio container neemt volledige breedte in */
-    .st-key-chart_header [data-testid="stHorizontalBlock"] {
-        width: 100% !important;
-    }
-
-    /* Radioknoppen rechts uitlijnen */
-    .st-key-planning_choice {
-        width: 100% !important;
-    }
-
-    .st-key-planning_choice [data-testid="stRadioGroup"] {
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        justify-content: flex-end !important;
-        width: 100% !important;
-        gap: 20px !important;
-    }
-
-    /* Radio text */
-    .st-key-chart_header [data-testid="stRadio"] label p {
-        font-size: 13px !important;
-        color: #222222 !important;
-        white-space: nowrap;
-    }
-
-    .st-key-chart_header {
-    position: relative;
     }
 
     .st-key-chart_header::after {
@@ -846,73 +929,250 @@ elif keuze == "Visualisations":
         border-radius: 3px;
     }
 
-    /* Radiobolletjes helemaal rechts */
+    .chart-header-title {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1F1F1F;
+        white-space: nowrap;
+    }
+
+    .st-key-chart_header [data-testid="stHorizontalBlock"] {
+        width: 100% !important;
+    }
+
+
+    /* =========================================
+       4. PLANNING RADIO BUTTONS
+    ========================================= */
+
+    .st-key-planning_choice {
+        width: 100% !important;
+    }
+
     .st-key-planning_choice [data-testid="stRadioGroup"] {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         justify-content: flex-end !important;
         width: 100% !important;
-        padding-right: 0 important;
+        padding-right: 0 !important;
         gap: 20px !important;
     }
 
-    /* Radiobolletje standaard wit met zwarte rand */
+    .st-key-chart_header [data-testid="stRadio"] label p {
+        font-size: 13px !important;
+        color: #222222 !important;
+        white-space: nowrap;
+    }
+
+    .st-key-chart_card [data-testid="stRadio"] {
+        margin: 0 !important;
+    }
+
     .st-key-planning_choice [data-testid="stRadioOption"]
     > div > div:first-child {
-        background: white !important;
-        border: 2px solid black !important;
+        background: #FFFFFF !important;
+        border: 2px solid #000000 !important;
         border-radius: 50% !important;
     }
 
-    /* Radiobolletje zwart bij hover */
     .st-key-planning_choice [data-testid="stRadioOption"]:hover
     > div > div:first-child {
-        background: black !important;
-        border-color: black !important;
+        background: #000000 !important;
+        border-color: #000000 !important;
     }
 
-    /* Geselecteerd radiobolletje zwart */
     .st-key-planning_choice [data-testid="stRadioOption"][data-selected="true"]
     > div > div:first-child {
-        background: black !important;
-        border-color: black !important;
+        background: #000000 !important;
+        border-color: #000000 !important;
     }
 
-    /* Popover itself: white, with an off-white inner panel */
-    [data-testid="stPopoverBody"],
-    [data-testid="stPopoverBody"] > div,
-    [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"] {
-        background-color: #FFFFFF !important;
-        color: #222222 !important;
-    }
-    [data-testid="stPopoverBody"] {
-        border: 1px solid #E5E7EB !important;
-        border-radius: 12px !important;
-    }
-    [data-testid="stPopoverBody"] p,
-    [data-testid="stPopoverBody"] label,
-    [data-testid="stPopoverBody"] span {
-        color: #222222 !important;
+
+    /* =========================================
+       5. COMPACT BUS TOOLBAR
+    ========================================= */
+
+    .st-key-bus_toolbar {
+        background: transparent !important;
+        padding: 4px 0 8px 0 !important;
     }
 
-    /* Multiselect: pale background, dark text */
-    [data-testid="stPopoverBody"] [data-baseweb="select"],
-    [data-testid="stPopoverBody"] [data-baseweb="select"] > div,
-    [data-testid="stPopoverBody"] [data-baseweb="select"] [data-baseweb="input"] {
-        background-color: #F8F9FA !important;
+    /* Main selection button */
+    .st-key-bus_toolbar [data-testid="stPopover"] button {
+        background: #FFFFFF !important;
         color: #222222 !important;
-    }
-    [data-testid="stPopoverBody"] [data-baseweb="select"] > div {
         border: 1px solid #DADDE2 !important;
         border-radius: 8px !important;
+        min-height: 40px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        box-shadow: none !important;
     }
-    [data-testid="stPopoverBody"] input {
+
+    .st-key-bus_toolbar [data-testid="stPopover"] button:hover {
+        background: #F8F9FA !important;
+        border-color: #EA3323 !important;
+    }
+
+    .st-key-bus_toolbar [data-testid="stPopover"] button * {
+        color: #222222 !important;
+    }
+
+    /* Select all and Clear buttons */
+    .st-key-bus_toolbar [data-testid="stButton"] button {
+        background: #F4F5F7 !important;
+        color: #374151 !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 8px !important;
+        min-height: 40px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        box-shadow: none !important;
+    }
+
+    .st-key-bus_toolbar [data-testid="stButton"] button:hover {
+        background: #E9ECEF !important;
+        border-color: #CBD5E1 !important;
+        color: #222222 !important;
+    }
+
+
+    /* =========================================
+       6. POPOVER PANEL
+    ========================================= */
+
+    [data-testid="stPopoverBody"] {
+        background: #FFFFFF !important;
+        border: 1px solid #E5E7EB !important;
+        border-radius: 12px !important;
+        color: #222222 !important;
+    }
+
+    [data-testid="stPopoverBody"] > div,
+    [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"] {
+        background: transparent !important;
+    }
+
+    [data-testid="stPopoverBody"] p,
+    [data-testid="stPopoverBody"] label {
+        color: #222222 !important;
+    }
+
+
+    /* =========================================
+       7. BUS MULTISELECT - LIGHT GRAY DESIGN
+    ========================================= */
+
+    /*
+       Actual Streamlit structure:
+       stMultiSelect
+         > div[data-rac]
+           > div[data-rac][role="group"]
+             > stMultiSelectTagsContainer
+               > selected tags + input
+    */
+
+    /* Outer combobox: one light-gray background */
+    div[class*="st-key-bus_multiselect_"]
+    [data-testid="stMultiSelect"] > div[data-rac] {
+        background: #F3F4F6 !important;
+        border: 1px solid #DADDE2 !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+    }
+
+    /* Inner group: no extra border */
+    div[class*="st-key-bus_multiselect_"]
+    [data-testid="stMultiSelect"] > div[data-rac]
+    > div[role="group"] {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Tags container */
+    div[class*="st-key-bus_multiselect_"]
+    [data-testid="stMultiSelectTagsContainer"] {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        gap: 5px !important;
+        padding: 3px 5px !important;
+    }
+
+    /* Remove visual styling from empty input */
+    div[class*="st-key-bus_multiselect_"]
+    [data-testid="stMultiSelectTagsContainer"] input {
+        background: transparent !important;
+        background-color: transparent !important;
+        background-image: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        outline: none !important;
+        box-shadow: none !important;
         color: #222222 !important;
         -webkit-text-fill-color: #222222 !important;
     }
 
-    /* BaseWeb listbox may be rendered in a portal */
+    /* Focused input */
+    div[class*="st-key-bus_multiselect_"]
+    [data-testid="stMultiSelectTagsContainer"] input:focus {
+        background: transparent !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Selected bus chips */
+    div[class*="st-key-bus_multiselect_"]
+    [data-baseweb="tag"] {
+        background: #EA3323 !important;
+        border: none !important;
+        border-radius: 5px !important;
+        margin: 2px !important;
+    }
+
+    /* Chip text */
+    div[class*="st-key-bus_multiselect_"]
+    [data-baseweb="tag"] span {
+        color: #FFFFFF !important;
+        -webkit-text-fill-color: #FFFFFF !important;
+    }
+
+    /* Chip remove icons */
+    div[class*="st-key-bus_multiselect_"]
+    [data-baseweb="tag"] svg {
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
+    }
+
+    /* Clear-all and dropdown buttons */
+    div[class*="st-key-bus_multiselect_"]
+    [data-rac] button {
+        background: transparent !important;
+        border: none !important;
+        border-radius: 5px !important;
+        box-shadow: none !important;
+        padding: 4px !important;
+    }
+
+    div[class*="st-key-bus_multiselect_"]
+    [data-rac] button svg {
+        color: #667085 !important;
+        fill: #667085 !important;
+    }
+
+    div[class*="st-key-bus_multiselect_"]
+    [data-rac] button:hover {
+        background: #E5E7EB !important;
+    }
+
+
+    /* =========================================
+       8. DROPDOWN OPTIONS
+    ========================================= */
+
     [data-baseweb="popover"],
     [data-baseweb="popover"] > div,
     [data-baseweb="menu"],
@@ -921,75 +1181,71 @@ elif keuze == "Visualisations":
         background-color: #FFFFFF !important;
         color: #222222 !important;
     }
+
     [role="option"] {
         background-color: #FFFFFF !important;
         color: #222222 !important;
     }
+
     [role="option"]:hover,
     [role="option"][aria-selected="true"] {
         background-color: #F3F4F6 !important;
     }
+
     [role="option"] * {
         color: #222222 !important;
     }
 
-    /* Only the selected bus chips are red */
-    [data-testid="stPopoverBody"] [data-baseweb="tag"],
-    [data-testid="stPopoverBody"] [data-baseweb="tag"] > span {
-        background-color: #EA3323 !important;
-        color: #FFFFFF !important;
-    }
-    [data-testid="stPopoverBody"] [data-baseweb="tag"] *,
-    [data-testid="stPopoverBody"] [data-baseweb="tag"] svg {
-        color: #FFFFFF !important;
-        fill: #FFFFFF !important;
-    }
 
-    /* Apply button */
-    [data-testid="stPopoverBody"] button[kind="primary"],
-    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"] {
-        background-color: #EA3323 !important;
+    /* =========================================
+       9. APPLY SELECTION BUTTON
+    ========================================= */
+
+    [data-testid="stPopoverBody"]
+    [data-testid="stBaseButton-primary"] {
+        background: #EA3323 !important;
         color: #FFFFFF !important;
         border: 1px solid #EA3323 !important;
         border-radius: 8px !important;
     }
-    [data-testid="stPopoverBody"] button[kind="primary"] *,
-    [data-testid="stPopoverBody"] [data-testid="stBaseButton-primary"] * {
+
+    [data-testid="stPopoverBody"]
+    [data-testid="stBaseButton-primary"] * {
         color: #FFFFFF !important;
     }
 
-    /* Multiselect invoervak: gebroken wit */
-    div[data-testid="stPopoverBody"] [data-baseweb="select"] > div,
-    div[data-testid="stPopoverBody"] [data-baseweb="select"] [data-baseweb="select"] {
-        background-color: #F8F9FA !important;
-        color: #222222 !important;
+    [data-testid="stPopoverBody"]
+    [data-testid="stBaseButton-primary"]:hover {
+        background: #D92D20 !important;
+        border-color: #D92D20 !important;
     }
 
-    /* Ook de binnenste invoeronderdelen licht maken */
-    div[data-testid="stPopoverBody"] [data-baseweb="select"] input {
-        background-color: transparent !important;
-        color: #222222 !important;
-    }
-
-    /* Dropdownlijst wit */
-    div[data-baseweb="menu"],
-    ul[role="listbox"] {
-        background-color: #FFFFFF !important;
-        color: #222222 !important;
-    }
-
-    /* Geselecteerde busnummers blijven rood */
-    div[data-testid="stPopoverBody"] [data-baseweb="tag"] {
-        background-color: #FF4545 !important;
-        color: #FFFFFF !important;
-    }
-
-    /* Pijltje en kruisje donker */
-    div[data-testid="stPopoverBody"] [data-baseweb="select"] svg {
-        fill: #333333 !important;
-    }
     </style>
     """, unsafe_allow_html=True)
+
+
+    # Custom bus icon in compact toolbar
+    st.markdown(f"""
+    <style>
+
+    .st-key-bus_toolbar [data-testid="stPopover"] button::before {{
+        content: "";
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        flex-shrink: 0;
+
+        background-image: url("data:image/png;base64,{bus_sidebar_icon}");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+
+        margin-right: 8px;
+    }}
+
+    </style>
+    """, unsafe_allow_html=True)
+
 
     if (
         'bp' in st.session_state
@@ -1007,7 +1263,7 @@ elif keuze == "Visualisations":
 
             planning_choice = st.session_state.get(
                 "planning_choice",
-                "Original planning"
+                "Improved planning"
             )
 
             if planning_choice == "Improved planning":
@@ -1154,10 +1410,10 @@ elif keuze == "Visualisations":
                     use_container_width=True
                 )
 
-            # KPI + Gantt chart
             col_kpi, col_chart = st.columns(
                 [4, 7],
-                gap="medium"
+                gap="medium",
+                vertical_alignment="top"
             )
 
             # KPI CARD
@@ -1304,7 +1560,7 @@ elif keuze == "Visualisations":
                                         <img src="data:image/png;base64,{charging_time_icon}" class="kpi-icon">
                                         Charging time
                                     </div>
-                                    <div class="kpi-value">+{charging_diff_perc:.1f}%</div>
+                                    <div class="kpi-value">{charging_diff_perc:.1f}%</div>
                                 </div>
                                 """, unsafe_allow_html=True)
 
@@ -1352,6 +1608,7 @@ elif keuze == "Visualisations":
                                 st.radio(
                                     "Select bus planning",
                                     ["Original planning", "Improved planning"],
+                                    index = 1,
                                     horizontal=True,
                                     label_visibility="collapsed",
                                     key="planning_choice"
@@ -1360,7 +1617,7 @@ elif keuze == "Visualisations":
 
                     # Bus selection
                     all_buses = sorted(
-                        bp['bus'].dropna().unique().tolist()
+                        bp["bus"].dropna().unique().tolist()
                     )
 
                     selection_key = f"selected_buses_{planning_choice}"
@@ -1375,39 +1632,82 @@ elif keuze == "Visualisations":
                         if bus in all_buses
                     ]
 
-                    # Bus selection popover
-                    with st.popover(
-                        f"Select buses ({len(st.session_state[selection_key])}/{len(all_buses)} selected)",
-                        use_container_width=True
-                    ):
+                    # Compact toolbar
+                    with st.container(key="bus_toolbar"):
 
-                        with st.form(key=f"bus_form_{planning_choice}"):
+                        col_select, col_all, col_clear = st.columns(
+                            [5, 1.4, 1.4],
+                            gap="small",
+                            vertical_alignment="center"
+                        )
 
-                            selected_buses = st.multiselect(
-                                "Select buses to display",
-                                options=all_buses,
-                                default=st.session_state[selection_key]
-                            )
-
-                            apply_selection = st.form_submit_button(
-                                "Apply selection",
-                                type="primary",
+                        with col_select:
+                            with st.popover(
+                                f"{len(st.session_state[selection_key])} buses selected",
                                 use_container_width=True
-                            )
+                            ):
 
-                        if apply_selection:
-                            st.session_state[selection_key] = selected_buses.copy()
-                            st.rerun()
+                                st.markdown("**Select buses to display**")
+
+                                with st.form(key=f"bus_form_{planning_choice}"):
+
+                                    selected_buses = st.multiselect(
+                                        "Select buses",
+                                        options=all_buses,
+                                        default=st.session_state[selection_key],
+                                        label_visibility="collapsed",
+                                        key=f"bus_multiselect_{planning_choice}"
+                                    )
+
+                                    apply_selection = st.form_submit_button(
+                                        "Apply selection",
+                                        type="primary",
+                                        use_container_width=True
+                                    )
+
+                                if apply_selection:
+                                    st.session_state[selection_key] = selected_buses.copy()
+                                    st.rerun()
+
+                        with col_all:
+                            if st.button(
+                                "Select all",
+                                key=f"select_all_{planning_choice}",
+                                use_container_width=True
+                            ):
+                                st.session_state[selection_key] = all_buses.copy()
+                                st.rerun()
+
+                        with col_clear:
+                            if st.button(
+                                "Clear",
+                                key=f"clear_buses_{planning_choice}",
+                                use_container_width=True
+                            ):
+                                st.session_state[selection_key] = []
+                                st.rerun()
+
+                
 
                     # Display Gantt chart
                     if st.session_state[selection_key]:
+
+                        chart_title = (
+                            "Original bus plan"
+                            if planning_choice == "Original planning"
+                            else "Improved bus plan"
+                        )
+
                         gantt_chart_bus(
                             bp,
-                            st.session_state[selection_key]
+                            title=chart_title,
+                            selected_buses=st.session_state[selection_key]
                         )
-                    else:
-                        st.info("Select buses and click Apply selection to display the Gantt chart.")
 
+                    else:
+                        st.info(
+                            "Select buses and click Apply selection to display the Gantt chart."
+                        )
     else:
         st.warning(
             "Upload the bus planning, timetable and distance matrix "
