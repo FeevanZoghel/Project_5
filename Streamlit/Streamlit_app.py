@@ -632,12 +632,6 @@ if keuze == "Data Check":
         </style>
         """, unsafe_allow_html=True)
 
-        planning_choice = st.radio(
-            "Select bus planning",
-            ["Original planning", "Improved planning"],
-            horizontal=True
-        )
-
         if planning_choice == 'Original planning':
             df1 = st.session_state['bp']
             check_soh = 85
@@ -657,19 +651,6 @@ if keuze == "Data Check":
 
         validate_bus_planning(validation_df)
 
-        feasibility_results = {
-            "Minimum SOC": validate_minimum_soc(df1, check_soh),
-            "SOH": validate_soh(check_soh),
-            "Minimum charging time": validate_minimum_charging_time(df1),
-            "Charging speed": validate_charging_speed(df1, check_soh),
-            "Location continuity": validate_location_continuity(df1),
-            "Overlapping trips": validate_no_overlapping_trips(df1)
-        }
-
-        if "tt" in st.session_state:
-            df2 = st.session_state["tt"]
-            feasibility_results["Required trips"] = validate_required_trips(df1, df2)
-
         with st.container(border=True, key="box_feasibility"):
 
             col_title, col_logo = st.columns([5, 1], vertical_alignment="center")
@@ -680,12 +661,40 @@ if keuze == "Data Check":
                     Feasibility checks
                 </div>
                 """, unsafe_allow_html=True)
+                
+            planning_choice = st.radio(
+                "Select bus planning",
+                ["Original planning", "Improved planning"],
+                horizontal=True,
+                key="feasibility_planning_choice"
+            )
 
             with col_logo:
                 st.image(
                     "https://www.transdev.com/uploads/2026/09/logo.png",
                     width=80
                 )
+
+
+            if planning_choice == "Original planning":
+                df1 = st.session_state["bp"]
+                check_soh = 85
+            else:
+                df1 = st.session_state["improved_bp"]
+                check_soh = st.session_state.get("improved_soh", 85)
+
+            # Calculate feasibility results
+            feasibility_results = {
+                "Minimum SOC": validate_minimum_soc(df1, check_soh),
+                "SOH": validate_soh(check_soh),
+                "Minimum charging time": validate_minimum_charging_time(df1),
+                "Charging speed": validate_charging_speed(df1, check_soh),
+                "Location continuity": validate_location_continuity(df1),
+                "Overlapping trips": validate_no_overlapping_trips(df1),
+                "Required trips": validate_required_trips(
+                    df1, st.session_state["tt"]
+                )
+            }
 
             # De echte cards
             with st.container(key="check_cards"):
