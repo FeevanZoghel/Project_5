@@ -1223,14 +1223,14 @@ elif keuze == "Visualisations":
     }
 
     
-    /* Lichtgrijze achtergrond van de busselectie */
-    div[class*="st-key-bus_multiselect_"] [data-rac],
+    /* Volledige busselectie lichtgrijs */
+    div[class*="st-key-bus_multiselect_"] [data-rac=""],
     div[class*="st-key-bus_multiselect_"] [data-testid="stMultiSelectTagsContainer"] {
+        background: #F3F4F6 !important;
         background-color: #F3F4F6 !important;
-        background-image: none !important;
     }
 
-    /* Verwijder de losse grijze rechthoek rondom het invoerveld */
+    /* Lege invoerrechthoek onzichtbaar maken */
     div[class*="st-key-bus_multiselect_"] input,
     div[class*="st-key-bus_multiselect_"] input:focus {
         background: transparent !important;
@@ -1239,16 +1239,19 @@ elif keuze == "Visualisations":
         box-shadow: none !important;
     }
 
-    /* Verwijder ook de rand van de binnenste invoercontainer */
-    div[class*="st-key-bus_multiselect_"] [data-testid="stMultiSelectTagsContainer"] > div:not([data-baseweb="tag"]) {
+    /* Binnenste invoerveld zonder eigen achtergrond of rand */
+    div[class*="st-key-bus_multiselect_"]
+    [data-testid="stMultiSelectTagsContainer"] > div:last-child {
         background: transparent !important;
         border: none !important;
+        outline: none !important;
         box-shadow: none !important;
     }
 
-    /* Behoud de rode buslabels */
+    /* Rode buslabels behouden */
     div[class*="st-key-bus_multiselect_"] [data-baseweb="tag"] {
-        background-color: #EA3323 !important;
+        background: #EA3323 !important;
+        border: none !important;
         border-radius: 5px !important;
     }
 
