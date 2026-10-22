@@ -42,14 +42,54 @@ min_battery_value = max_battery * 0.1
 
 def add_activity(ibp, bus, start_location, end_location, start_time, end_time,
                  activity, line, energy, battery_value, total_travel_time):
+    """Voeg een activiteit van een bus als nieuwe rij aan het busplan toe.
+
+    Args:
+        ibp: DataFrame met het busplan dat wordt bijgewerkt.
+        bus: Identificatie van de bus.
+        start_location: Vertreklocatie van de activiteit.
+        end_location: Aankomstlocatie van de activiteit.
+        start_time: Starttijd van de activiteit.
+        end_time: Eindtijd van de activiteit.
+        activity: Type activiteit, bijvoorbeeld een rit of laadbeurt.
+        line: Lijnnummer, of None als de activiteit niet bij een lijn hoort.
+        energy: Energieverbruik (negatief bij energie die wordt opgeladen).
+        battery_value: Batterijcapaciteit van de bus na de activiteit.
+        total_travel_time: Totale reistijd van de bus tot en met deze activiteit.
+    """
 
     new_index = len(ibp)
 
     ibp.loc[new_index] = [start_location, end_location, start_time, end_time, activity, line, energy, battery_value, total_travel_time, bus]
 
-def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_time,
+def charging_buses(bussen_opladen, ibp, battery, charging_start, start_time,
                          benodigde_energy, charging_limit, fast_charge_per_min,
                          slow_charge_per_min, max_battery, beschikbare_bussen, dm, bp, trip):
+    """Verwerk bussen die moeten laden en registreer laad- of materiaalritten.
+
+    Bussen die voldoende lang hebben geladen en genoeg energie hebben voor de
+    volgende rit worden aan ``beschikbare_bussen`` toegevoegd. De planning,
+    batterijlading en laadtijden worden waar nodig bijgewerkt.
+
+    Args:
+        bussen_opladen: Bus-ID's die voor de volgende rit worden gecontroleerd.
+        ibp: DataFrame met het busplan dat wordt bijgewerkt.
+        battery: Batterijlading per bus, bijgewerkt tijdens deze functie.
+        charging_start: Starttijd van het laden per bus, bijgewerkt tijdens
+            deze functie.
+        start_time: Geplande starttijd van de volgende rit.
+        benodigde_energy: Minimale energie die nodig is voor die rit.
+        charging_limit: Batterijniveau tot waar snel wordt geladen.
+        fast_charge_per_min: Snelheid van snel laden in energie-eenheden per
+            minuut.
+        slow_charge_per_min: Snelheid van langzaam laden in energie-eenheden
+            per minuut.
+        max_battery: Maximale batterijcapaciteit.
+        beschikbare_bussen: Lijst die wordt aangevuld met beschikbare bussen.
+        dm: DataFrame met reistijden tussen locaties.
+        bp: DataFrame met energieverbruik per rit.
+        trip: Volgende rit waarvoor een bus nodig is.
+    """
 
     for bus in bussen_opladen:
         bus_planning = ibp[ibp['bus'] == bus]
@@ -120,6 +160,21 @@ def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_tim
             charging_start[bus] = material_end_time
 
 def garage_to_trip(bus, trip, start_time, ibp, battery, dm, bp):
+    """Plan een materiaalrit van de garage naar de startlocatie van een rit.
+
+    Trekt het energieverbruik van de batterij af en registreert de
+    materiaalrit in het busplan. Er wordt niets toegevoegd als de busrit
+    vanuit de garage vertrekt.
+
+    Args:
+        bus: Identificatie van de bus.
+        trip: Volgende dienstregelingrit, met ten minste ``start`` en ``line``.
+        start_time: Starttijd van de dienstregelingrit.
+        ibp: DataFrame met het busplan dat wordt bijgewerkt.
+        battery: Batterijlading per bus, bijgewerkt voor de materiaalrit.
+        dm: DataFrame met reistijden tussen locaties.
+        bp: DataFrame met energieverbruik per materiaalrit.
+    """
     if trip['start'] == 'ehvgar':
             return
     
@@ -133,6 +188,26 @@ def garage_to_trip(bus, trip, start_time, ibp, battery, dm, bp):
     add_activity(ibp, bus, 'ehvgar', trip['start'], material_start_time, material_end_time, 'material trip', trip['line'], material_energy, battery[bus], material_travel_time)
     
 def check_material_trip(bus, last_activity, trip, ibp, battery, dm, bp, toevoegen=False):
+    """Bereken de benodigde materiaalrit naar de startlocatie van een rit.
+
+    Als ``toevoegen`` waar is en er een materiaalrit nodig is, wordt deze aan
+    het busplan toegevoegd en van de batterij afgetrokken.
+
+    Args:
+        bus: Identificatie van de bus.
+        last_activity: Laatste geplande activiteit van de bus.
+        trip: Volgende dienstregelingrit, met ten minste ``start``.
+        ibp: DataFrame met het busplan.
+        battery: Batterijlading per bus; alleen bijgewerkt als de rit wordt
+            toegevoegd.
+        dm: DataFrame met reistijden tussen locaties.
+        bp: DataFrame met energieverbruik per materiaalrit.
+        toevoegen: Bepaalt of een benodigde materiaalrit ook wordt
+            geregistreerd.
+
+    Returns:
+        Een tuple met de benodigde reistijd in minuten en het energieverbruik.
+    """
     if last_activity['end location'] == trip['start']:
         material_travel_time = 0
         material_energy = 0
@@ -149,7 +224,22 @@ def check_material_trip(bus, last_activity, trip, ibp, battery, dm, bp, toevoege
     return material_travel_time, material_energy
 
 def calculate_idle_time(bus, start_time, ibp, battery, toevoegen = False):
-    
+    """Bereken het energieverbruik terwijl een bus stilstaat.
+
+    Als ``toevoegen`` waar is, wordt de stilstand als activiteit geregistreerd
+    en wordt het energieverbruik van de batterij afgetrokken.
+
+    Args:
+        bus: Identificatie van de bus.
+        start_time: Tijd waarop de volgende activiteit begint.
+        ibp: DataFrame met het busplan.
+        battery: Batterijlading per bus; alleen bijgewerkt als de stilstand
+            wordt toegevoegd.
+        toevoegen: Bepaalt of de stilstand in het busplan wordt geregistreerd.
+
+    Returns:
+        Het energieverbruik tijdens de stilstand.
+    """
     last_activity = ibp[ibp['bus'] == bus].iloc[-1]
 
     idle_start = last_activity['end time']
@@ -169,7 +259,7 @@ def calculate_idle_time(bus, start_time, ibp, battery, toevoegen = False):
 
 
 
-
+# alle trips aan een bus toewijzen 
 for i in range(len(tt)):
     trip = tt.iloc[i,:]
     
@@ -237,7 +327,7 @@ for i in range(len(tt)):
                 if bus not in bussen_opladen:
                     bussen_opladen.append(bus)
 
-    check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_time, benodigde_energy, charging_limit, fast_charge_per_min, slow_charge_per_min, max_battery, beschikbare_bussen, dm, bp, trip)
+    charging_buses(bussen_opladen, ibp, battery, charging_start, start_time, benodigde_energy, charging_limit, fast_charge_per_min, slow_charge_per_min, max_battery, beschikbare_bussen, dm, bp, trip)
     
     
     
