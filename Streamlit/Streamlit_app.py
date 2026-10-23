@@ -1219,6 +1219,36 @@ elif keuze == "Visualisations":
         border-color: #D92D20 !important;
     }
 
+    /* ===== KPI AND DIFFERENCE ALIGNMENT ===== */
+
+    /* Keep KPI values and percentages on one line */
+    .st-key-kpi_difference .kpi-value {
+        font-size: 20px !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+    }
+
+    /* Consistent card heights */
+    .st-key-kpi_card .kpi-box,
+    .st-key-kpi_difference .kpi-box {
+        min-height: 110px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Consistent labels */
+    .st-key-kpi_card .kpi-label,
+    .st-key-kpi_difference .kpi-label {
+        min-height: 42px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    /* Avoid oversized spacing between cards */
+    .st-key-kpi_card .kpi-box,
+    .st-key-kpi_difference .kpi-box {
+        margin-bottom: 10px !important;
+    }
+
     </style>
     """, unsafe_allow_html=True)
 
@@ -1241,6 +1271,7 @@ elif keuze == "Visualisations":
 
         margin-right: 8px;
     }}
+
 
     </style>
     """, unsafe_allow_html=True)
