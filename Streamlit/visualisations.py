@@ -21,7 +21,11 @@ def format_time(value):
 def gantt_chart_bus(bp, title = 'improved bus plan', selected_buses=None):
     """Creates interactive Gantt charts of the bus planning."""
     if selected_buses is not None:
-        bp = bp[bp['bus'].isin(selected_buses)]
+        bp = bp[
+            pd.to_numeric(bp['bus'], errors='coerce').isin(
+                pd.to_numeric(pd.Series(selected_buses), errors='coerce')
+            )
+        ]
     if bp.empty:
         st.info("Select at least one bus to display the Gantt chart.")
         return
@@ -56,7 +60,8 @@ def gantt_chart_bus(bp, title = 'improved bus plan', selected_buses=None):
         for i in range(0, len(buses), 20)
     ]
     for group_index, group in enumerate(groups):
-        fig, ax = plt.subplots(figsize=(14, 7))
+        fig_height = max(3.5, 1.5 + len(group) * 0.35)
+        fig, ax = plt.subplots(figsize=(14, fig_height))
         group_planning = planning[
             planning['bus'].isin(group)
         ]
@@ -169,7 +174,7 @@ def gantt_chart_bus(bp, title = 'improved bus plan', selected_buses=None):
         ax.set_yticks(range(len(group)))
         ax.set_yticklabels([])
         # Bus 1 at the top
-        ax.set_ylim(len(group) - 0.5, -1.5)
+        ax.set_ylim(len(group) - 0.5, -0.8)
         # Draw bus labels manually
         for i, bus in enumerate(group):
             ax.text(
@@ -413,12 +418,11 @@ def gantt_chart_bus(bp, title = 'improved bus plan', selected_buses=None):
         </script>
         """
 
-        chart_height = max(250, min(650, 130 + len(group) * 20))
+        chart_height = int(fig_height * 100 + 60)
 
         components.html(
             fullscreen_html,
             height=chart_height,
             scrolling=False
         )
-
         plt.close(fig)
