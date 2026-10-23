@@ -790,6 +790,16 @@ if keuze == "Data Check":
                         if "Required trips" in feasibility_results and not feasibility_results["Required trips"]:
                             show_required_trip_errors(df1, df2)
 
+
+def format_kpi_difference(original, improved):
+    if original is None or improved is None:
+        return "N/A"
+    if original == 0:
+        return "0.0%" if improved == 0 else "N/A"
+    difference = (improved - original) / original * 100
+    return f"{difference:+.1f}%"
+
+
 elif keuze == "Visualisations":
 
 
@@ -1312,9 +1322,18 @@ elif keuze == "Visualisations":
 
         total_consumption = calculate_energy_consumption_kpis(bp)
 
-        # Differences between improved and original planning
-        if 'improved_bp' in st.session_state:
 
+        # Differences between improved and original planning
+        has_improved = 'improved_bp' in st.session_state
+
+        def percentage_difference(original, current):
+            if pd.isna(original) or pd.isna(current):
+                return "N/A"
+            if original == 0:
+                return "0.0%" if current == 0 else "N/A"
+            return f"{((current - original) / original * 100):+.1f}%"
+
+        if has_improved:
             (
                 _,
                 original_distance,
@@ -1325,17 +1344,15 @@ elif keuze == "Visualisations":
             ) = calculate_distances_and_kpis(original_bp, dm, tt)
 
             _, _, original_waiting = calculate_waiting_time_kpis(
-                original_bp,
-                original_buses
+                original_bp, original_buses
             )
+            _, original_charging = calculate_charging_time_kpis(original_bp)
+            original_energy = calculate_energy_consumption_kpis(original_bp)
 
-            _, original_charging = calculate_charging_time_kpis(
-                original_bp
-            )
-
-            original_energy = calculate_energy_consumption_kpis(
-                original_bp
-            )
+            original_activity_times = {
+                str(activity).strip().lower(): value
+                for activity, value in calculate_average_activity_times(original_bp).items()
+            }
 
             (
                 _,
@@ -1347,62 +1364,45 @@ elif keuze == "Visualisations":
             ) = calculate_distances_and_kpis(improved_bp, dm, tt)
 
             _, _, improved_waiting = calculate_waiting_time_kpis(
-                improved_bp,
-                improved_buses
+                improved_bp, improved_buses
             )
+            _, improved_charging = calculate_charging_time_kpis(improved_bp)
+            improved_energy = calculate_energy_consumption_kpis(improved_bp)
 
-            _, improved_charging = calculate_charging_time_kpis(
-                improved_bp
-            )
+            buses_diff = percentage_difference(original_buses, improved_buses)
+            waiting_diff = percentage_difference(original_waiting, improved_waiting)
+            material_diff = percentage_difference(original_material, improved_material)
+            charging_diff = percentage_difference(original_charging, improved_charging)
+            energy_diff = percentage_difference(original_energy, improved_energy)
 
-            improved_energy = calculate_energy_consumption_kpis(
-                improved_bp
+        # Reusable KPI card
+        def show_kpi(label, value, icon=None, difference=None):
+            icon_html = (
+                f'<img src="data:image/png;base64,{icon}" class="kpi-icon">'
+                if icon else ""
             )
-
-            buses_diff = original_buses - improved_buses
-            buses_diff_perc = 100 - (
-                improved_buses / original_buses * 100
+            difference_html = (
+                f'<span style="font-size:14px;color:#667085;font-weight:500;">'
+                f' ({difference})</span>'
+                if difference is not None else ""
             )
-
-            waiting_diff = original_waiting - improved_waiting
-            waiting_diff_perc = 100 - (
-                improved_waiting / original_waiting * 100
-            )
-
-            material_diff = original_material - improved_material
-            material_diff_perc = 100 - (
-                improved_material / original_material * 100
-            )
-
-            material_km_diff = (
-                original_material_km - improved_material_km
-            )
-            material_km_diff_perc = 100 - (
-                improved_material_km / original_material_km * 100
-            )
-
-            charging_diff = original_charging - improved_charging
-            charging_diff_perc = 100 - (
-                improved_charging / original_charging * 100
-            )
-
-            energy_diff = original_energy - improved_energy
-            energy_diff_perc = 100 - (
-                improved_energy / original_energy * 100
-            )
-
-            distance_diff = original_distance - improved_distance
-            distance_diff_perc = 100 - (
-                improved_distance / original_distance * 100
-            )
+            st.markdown(f"""
+            <div class="kpi-box">
+                <div class="kpi-label">
+                    {icon_html}
+                    {label}
+                </div>
+                <div class="kpi-value">
+                    {value}{difference_html}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
         # Main dashboard
         with st.container(key="results_dashboard"):
 
-            # Header
             col_title, col_logo = st.columns(
-                [8, 2],
-                vertical_alignment="center"
+                [8, 2], vertical_alignment="center"
             )
 
             with col_title:
@@ -1416,10 +1416,7 @@ elif keuze == "Visualisations":
                 )
 
             with col_logo:
-                st.image(
-                    logo_path,
-                    use_container_width=True
-                )
+                st.image(logo_path, use_container_width=True)
 
             col_kpi, col_chart = st.columns(
                 [4, 7],
@@ -1427,165 +1424,87 @@ elif keuze == "Visualisations":
                 vertical_alignment="top"
             )
 
-            # KPI CARD
+            # ===== MAIN KPIs =====
             with col_kpi:
-
                 with st.container(key="kpi_selection"):
-
-                    col_kpi_values, col_diff = st.columns([2, 2])
+                    if has_improved:
+                        col_kpi_values, col_diff = st.columns([2, 2])
+                    else:
+                        col_kpi_values = st.container()
 
                     with col_kpi_values:
-
-
                         with st.container(key="kpi_card"):
                             st.markdown(
                                 '<div class="section-title">KPIs</div>',
                                 unsafe_allow_html=True
                             )
 
-                            # ===== FIRST 5 KPIs =====
-                            st.markdown(f"""
-                            <div class="kpi-box">
-                                <div class="kpi-label">
-                                    <img src="data:image/png;base64,{number_bus_used_icon}" class="kpi-icon">
-                                    Number of buses used
-                                </div>
-                                <div class="kpi-value">{deployed_buses_count}</div>
-                            </div>
-                            """, unsafe_allow_html=True)
+                            show_kpi(
+                                "Number of buses used",
+                                f"{deployed_buses_count}",
+                                number_bus_used_icon
+                            )
+                            show_kpi(
+                                "Average waiting time",
+                                f"{avg_waiting_time_per_bus:.2f} min/bus",
+                                waiting_time_icon
+                            )
+                            show_kpi(
+                                "Material trips",
+                                f"{t_material_total} trips",
+                                material_icon
+                            )
+                            show_kpi(
+                                "Charging time",
+                                f"{total_charging_time_hours:.2f} hours",
+                                charging_time_icon
+                            )
+                            show_kpi(
+                                "Energy consumption",
+                                f"{total_consumption:.2f} kWh",
+                                driving_distance_icon
+                            )
 
-                            st.markdown(f"""
-                            <div class="kpi-box">
-                                <div class="kpi-label">
-                                    <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
-                                    Average waiting time
-                                </div>
-                                <div class="kpi-value">{avg_waiting_time_per_bus:.2f} min/bus</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-
-                            st.markdown(f"""
-                            <div class="kpi-box">
-                                <div class="kpi-label">
-                                    <img src="data:image/png;base64,{material_icon}" class="kpi-icon">
-                                    Material trips
-                                </div>
-                                <div class="kpi-value">{t_material_total} trips</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-
-                            st.markdown(f"""
-                            <div class="kpi-box">
-                                <div class="kpi-label">
-                                    <img src="data:image/png;base64,{charging_time_icon}" class="kpi-icon">
-                                    Charging time
-                                </div>
-                                <div class="kpi-value">{total_charging_time_hours:.2f} hours</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-
-                            st.markdown(f"""
-                            <div class="kpi-box">
-                                <div class="kpi-label">
-                                    <img src="data:image/png;base64,{driving_distance_icon}" class="kpi-icon">
-                                    Energy consumption
-                                </div>
-                                <div class="kpi-value">{total_consumption:.2f} kWh</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-
-
-
-                    # Difference card
-                    if 'improved_bp' in st.session_state:
-
+                    # ===== MAIN DIFFERENCES =====
+                    if has_improved:
                         with col_diff:
-
                             with st.container(key="kpi_difference"):
-
                                 st.markdown(
                                     '<div class="section-title">Difference</div>',
                                     unsafe_allow_html=True
                                 )
 
-                                st.markdown(f"""
-                                <div class="kpi-box">
-                                    <div class="kpi-label">
-                                        <img src="data:image/png;base64,{number_bus_used_icon}" class="kpi-icon">
-                                        Number of buses used
-                                    </div>
-                                    <div class="kpi-value">+{buses_diff_perc:.1f}%</div>
-                                </div>
-                                """, unsafe_allow_html=True)
+                                show_kpi(
+                                    "Number of buses used",
+                                    buses_diff,
+                                    number_bus_used_icon
+                                )
+                                show_kpi(
+                                    "Average waiting time",
+                                    waiting_diff,
+                                    waiting_time_icon
+                                )
+                                show_kpi(
+                                    "Material trips",
+                                    material_diff,
+                                    material_icon
+                                )
+                                show_kpi(
+                                    "Charging time",
+                                    charging_diff,
+                                    charging_time_icon
+                                )
+                                show_kpi(
+                                    "Energy consumption",
+                                    energy_diff,
+                                    driving_distance_icon
+                                )
 
-                                st.markdown(f"""
-                                <div class="kpi-box">
-                                    <div class="kpi-label">
-                                        <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
-                                        Average waiting time
-                                    </div>
-                                    <div class="kpi-value">{waiting_diff_perc:.1f}%</div>
-                                </div>
-                                """, unsafe_allow_html=True)
-
-                                st.markdown(f"""
-                                <div class="kpi-box">
-                                    <div class="kpi-label">
-                                        <img src="data:image/png;base64,{material_icon}" class="kpi-icon">
-                                        Material trips
-                                    </div>
-                                    <div class="kpi-value">+{material_diff_perc:.1f}%</div>
-                                </div>
-                                """, unsafe_allow_html=True)
-
-                                st.markdown(f"""
-                                <div class="kpi-box">
-                                    <div class="kpi-label">
-                                        <img src="data:image/png;base64,{material_distance_icon}" class="kpi-icon">
-                                        Material trip distance
-                                    </div>
-                                    <div class="kpi-value">+{material_km_diff_perc:.1f}%</div>
-                                </div>
-                                """, unsafe_allow_html=True)
-
-                                st.markdown(f"""
-                                <div class="kpi-box">
-                                    <div class="kpi-label">
-                                        <img src="data:image/png;base64,{charging_time_icon}" class="kpi-icon">
-                                        Charging time
-                                    </div>
-                                    <div class="kpi-value">{charging_diff_perc:.1f}%</div>
-                                </div>
-                                """, unsafe_allow_html=True)
-
-                                st.markdown(f"""
-                                <div class="kpi-box">
-                                    <div class="kpi-label">
-                                        <img src="data:image/png;base64,{driving_distance_icon}" class="kpi-icon">
-                                        Energy consumption
-                                    </div>
-                                    <div class="kpi-value">+{energy_diff_perc:.1f}%</div>
-                                </div>
-                                """, unsafe_allow_html=True)
-
-                                st.markdown(f"""
-                                <div class="kpi-box">
-                                    <div class="kpi-label">
-                                        <img src="data:image/png;base64,{energy_consumption_icon}" class="kpi-icon">
-                                        Total driving distance
-                                    </div>
-                                    <div class="kpi-value">+{distance_diff_perc:.1f}%</div>
-                                </div>
-                                """, unsafe_allow_html=True)
-
-            # GANTT CHART
+            # ===== GANTT CHART =====
             with col_chart:
-
                 with st.container(key="chart_card"):
 
-                    # Bus planning title + planning selection
                     with st.container(key="chart_header"):
-
                         col_chart_title, col_planning = st.columns(
                             [1, 3],
                             vertical_alignment="center"
@@ -1593,42 +1512,37 @@ elif keuze == "Visualisations":
 
                         with col_chart_title:
                             st.markdown(
-                                '<div class="chart-header-title">Bus planning</div>',
+                                '<div class="chart-header-title">'
+                                'Bus planning</div>',
                                 unsafe_allow_html=True
                             )
 
                         with col_planning:
-                            if 'improved_bp' in st.session_state:
+                            if has_improved:
                                 st.radio(
                                     "Select bus planning",
                                     ["Original planning", "Improved planning"],
-                                    index = 1,
+                                    index=1,
                                     horizontal=True,
                                     label_visibility="collapsed",
                                     key="planning_choice"
                                 )
 
-
-                    # Bus selection
                     all_buses = sorted(
                         bp["bus"].dropna().unique().tolist()
                     )
 
                     selection_key = f"selected_buses_{planning_choice}"
 
-                    # Initially display all buses
                     if selection_key not in st.session_state:
                         st.session_state[selection_key] = all_buses.copy()
 
-                    # Keep only valid bus numbers
                     st.session_state[selection_key] = [
                         bus for bus in st.session_state[selection_key]
                         if bus in all_buses
                     ]
 
-                    # Compact toolbar
                     with st.container(key="bus_toolbar"):
-
                         col_select, col_all, col_clear = st.columns(
                             [5, 1.4, 1.4],
                             gap="small",
@@ -1640,11 +1554,9 @@ elif keuze == "Visualisations":
                                 f"{len(st.session_state[selection_key])} buses selected",
                                 use_container_width=True
                             ):
-
                                 st.markdown("**Select buses to display**")
 
                                 with st.form(key=f"bus_form_{planning_choice}"):
-
                                     selected_buses = st.multiselect(
                                         "Select buses",
                                         options=all_buses,
@@ -1659,9 +1571,9 @@ elif keuze == "Visualisations":
                                         use_container_width=True
                                     )
 
-                                if apply_selection:
-                                    st.session_state[selection_key] = selected_buses.copy()
-                                    st.rerun()
+                                    if apply_selection:
+                                        st.session_state[selection_key] = selected_buses.copy()
+                                        st.rerun()
 
                         with col_all:
                             if st.button(
@@ -1681,11 +1593,7 @@ elif keuze == "Visualisations":
                                 st.session_state[selection_key] = []
                                 st.rerun()
 
-                
-
-                    # Display Gantt chart
                     if st.session_state[selection_key]:
-
                         chart_title = (
                             "Original bus plan"
                             if planning_choice == "Original planning"
@@ -1697,57 +1605,116 @@ elif keuze == "Visualisations":
                             title=chart_title,
                             selected_buses=st.session_state[selection_key]
                         )
-
                     else:
                         st.info(
-                            "Select buses and click Apply selection to display the Gantt chart."
+                            "Select buses and click Apply selection "
+                            "to display the Gantt chart."
                         )
-    # ===== ADDITIONAL KPIs BELOW THE DASHBOARD =====
-    if "show_more_kpis" not in st.session_state:
-        st.session_state["show_more_kpis"] = False
 
-    button_label = (
-        "Show fewer KPIs ▲"
-        if st.session_state["show_more_kpis"]
-        else "Show more KPIs ▼"
-    )
+        # ===== ADDITIONAL KPIs BELOW THE DASHBOARD =====
+        # This section is outside results_dashboard and its columns.
 
-    if st.button(
-        button_label,
-        key="toggle_more_kpis",
-        use_container_width=True
-    ):
-        st.session_state["show_more_kpis"] = not st.session_state["show_more_kpis"]
-        st.rerun()
+        with st.container(key="additional_kpis_section"):
+            if "show_more_kpis" not in st.session_state:
+                st.session_state["show_more_kpis"] = False
 
-    if st.session_state["show_more_kpis"]:
-        additional_kpis = [
-            ("Average service trip time", average_service_time, "min/trip"),
-            ("Average idle time", average_idle_time, "min/period"),
-            ("Material trip distance", d_material_total_km, "km"),
-            ("Average material trip time", average_material_time, "min/trip"),
-            ("Average charging time", average_charging_time, "min/session"),
-            ("Total driving distance", total_distance_km, "km")
-        ]
+            show_more = st.session_state["show_more_kpis"]
 
-        with st.container(key="additional_kpis"):
-            st.markdown(
-                '<div class="section-title">Additional KPIs</div>',
-                unsafe_allow_html=True
+            button_label = (
+                "Show fewer KPIs ▲"
+                if show_more else "Show more KPIs ▼"
             )
 
-            cols = st.columns(3, gap="medium")
+            if st.button(
+                button_label,
+                key="toggle_more_kpis",
+                use_container_width=True
+            ):
+                st.session_state["show_more_kpis"] = not show_more
+                st.rerun()
 
-            for i, (label, value, unit) in enumerate(additional_kpis):
-                with cols[i % 3]:
-                    st.markdown(f"""
-                    <div class="kpi-box">
-                        <div class="kpi-label">{label}</div>
-                        <div class="kpi-value">{value:.2f} {unit}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-   
-   
+            if st.session_state["show_more_kpis"]:
+                additional_kpis = [
+                    (
+                        "Average service trip time",
+                        average_service_time,
+                        "min/trip",
+                        waiting_time_icon,
+                        "service trip"
+                    ),
+                    (
+                        "Average idle time",
+                        average_idle_time,
+                        "min/period",
+                        waiting_time_icon,
+                        "idle"
+                    ),
+                    (
+                        "Material trip distance",
+                        d_material_total_km,
+                        "km",
+                        material_distance_icon,
+                        None
+                    ),
+                    (
+                        "Average material trip time",
+                        average_material_time,
+                        "min/trip",
+                        material_icon,
+                        "material trip"
+                    ),
+                    (
+                        "Average charging time",
+                        average_charging_time,
+                        "min/session",
+                        charging_time_icon,
+                        "charging"
+                    ),
+                    (
+                        "Total driving distance",
+                        total_distance_km,
+                        "km",
+                        energy_consumption_icon,
+                        None
+                    )
+                ]
+
+                with st.container(key="additional_kpis"):
+                    st.markdown(
+                        '<div class="section-title">Additional KPIs</div>',
+                        unsafe_allow_html=True
+                    )
+
+                    cols = st.columns(3, gap="medium")
+
+                    for i, (label, value, unit, icon, activity) in enumerate(additional_kpis):
+                        difference = None
+
+                        if has_improved:
+                            if activity is not None:
+                                difference = percentage_difference(
+                                    original_activity_times.get(activity, float("nan")),
+                                    value
+                                )
+                            elif label == "Material trip distance":
+                                difference = percentage_difference(
+                                    original_material_km,
+                                    value
+                                )
+                            elif label == "Total driving distance":
+                                difference = percentage_difference(
+                                    original_distance,
+                                    value
+                                )
+
+                        with cols[i % 3]:
+                            show_kpi(
+                                label,
+                                f"{value:.2f} {unit}",
+                                icon,
+                                difference
+                            )
+
     else:
         st.warning(
             "Upload the bus planning, timetable and distance matrix "
