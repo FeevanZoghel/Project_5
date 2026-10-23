@@ -135,3 +135,14 @@ def calculate_charging_time_kpis(bp):
     total_charging_time_hours = total_charging_time_min / 60
 
     return total_charging_time_min, total_charging_time_hours
+
+def calculate_average_activity_times(bp):
+    df = bp.copy()
+    df['start_td'] = convert_time_to_timedelta(df['start time'])
+    df['end_td'] = convert_time_to_timedelta(df['end time'])
+
+    df = df.dropna(subset=['start_td', 'end_td', 'activity'])
+    df['duration'] = (df['end_td'] - df['start_td']).dt.total_seconds() / 60
+    df.loc[df['duration'] < 0, 'duration'] += 1440
+
+    return df.groupby('activity')['duration'].mean().to_dict()

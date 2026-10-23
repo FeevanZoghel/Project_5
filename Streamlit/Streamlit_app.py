@@ -30,7 +30,8 @@ from calculations import (
     calculate_distances_and_kpis,
     calculate_waiting_time_kpis,
     calculate_energy_consumption_kpis,
-    calculate_charging_time_kpis
+    calculate_charging_time_kpis,
+    calculate_average_activity_times
 )
 
 from visualisations import gantt_chart_bus
@@ -1299,6 +1300,16 @@ elif keuze == "Visualisations":
             total_charging_time_hours
         ) = calculate_charging_time_kpis(bp)
 
+        average_activity_times = calculate_average_activity_times(bp)
+        average_activity_times = {
+            str(activity).strip().lower(): value
+            for activity, value in average_activity_times.items()
+        }
+        average_service_time = average_activity_times.get('service trip', 0)
+        average_material_time = average_activity_times.get('material trip', 0)
+        average_charging_time = average_activity_times.get('charging', 0)
+        average_idle_time = average_activity_times.get('idle', 0)
+
         total_consumption = calculate_energy_consumption_kpis(bp)
 
         # Differences between improved and original planning
@@ -1449,6 +1460,46 @@ elif keuze == "Visualisations":
                                     Average waiting time
                                 </div>
                                 <div class="kpi-value">{avg_waiting_time_per_bus:.2f} min/bus</div>
+                            </div>
+                            """, unsafe_allow_html=True)
+
+                            st.markdown(f"""
+                            <div class="kpi-box">
+                                <div class="kpi-label">
+                                    <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
+                                    Average service trip time
+                                </div>
+                                <div class="kpi-value">{average_service_time:.2f} min/trip</div>
+                            </div>
+                            """, unsafe_allow_html=True)
+
+                            st.markdown(f"""
+                            <div class="kpi-box">
+                                <div class="kpi-label">
+                                    <img src="data:image/png;base64,{material_icon}" class="kpi-icon">
+                                    Average material trip time
+                                </div>
+                                <div class="kpi-value">{average_material_time:.2f} min/trip</div>
+                            </div>
+                            """, unsafe_allow_html=True)
+
+                            st.markdown(f"""
+                            <div class="kpi-box">
+                                <div class="kpi-label">
+                                    <img src="data:image/png;base64,{charging_time_icon}" class="kpi-icon">
+                                    Average charging time
+                                </div>
+                                <div class="kpi-value">{average_charging_time:.2f} min/session</div>
+                            </div>
+                            """, unsafe_allow_html=True)
+
+                            st.markdown(f"""
+                            <div class="kpi-box">
+                                <div class="kpi-label">
+                                    <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
+                                    Average idle time
+                                </div>
+                                <div class="kpi-value">{average_idle_time:.2f} min/period</div>
                             </div>
                             """, unsafe_allow_html=True)
 
