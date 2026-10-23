@@ -790,16 +790,6 @@ if keuze == "Data Check":
                         if "Required trips" in feasibility_results and not feasibility_results["Required trips"]:
                             show_required_trip_errors(df1, df2)
 
-
-def format_kpi_difference(original, improved):
-    if original is None or improved is None:
-        return "N/A"
-    if original == 0:
-        return "0.0%" if improved == 0 else "N/A"
-    difference = (improved - original) / original * 100
-    return f"{difference:+.1f}%"
-
-
 elif keuze == "Visualisations":
 
 
