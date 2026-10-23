@@ -1436,13 +1436,14 @@ elif keuze == "Visualisations":
 
                     with col_kpi_values:
 
-                        with st.container(key="kpi_card"):
 
+                        with st.container(key="kpi_card"):
                             st.markdown(
                                 '<div class="section-title">KPIs</div>',
                                 unsafe_allow_html=True
                             )
 
+                            # ===== FIRST 5 KPIs =====
                             st.markdown(f"""
                             <div class="kpi-box">
                                 <div class="kpi-label">
@@ -1466,60 +1467,10 @@ elif keuze == "Visualisations":
                             st.markdown(f"""
                             <div class="kpi-box">
                                 <div class="kpi-label">
-                                    <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
-                                    Average service trip time
-                                </div>
-                                <div class="kpi-value">{average_service_time:.2f} min/trip</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-
-                            st.markdown(f"""
-                            <div class="kpi-box">
-                                <div class="kpi-label">
-                                    <img src="data:image/png;base64,{material_icon}" class="kpi-icon">
-                                    Average material trip time
-                                </div>
-                                <div class="kpi-value">{average_material_time:.2f} min/trip</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-
-                            st.markdown(f"""
-                            <div class="kpi-box">
-                                <div class="kpi-label">
-                                    <img src="data:image/png;base64,{charging_time_icon}" class="kpi-icon">
-                                    Average charging time
-                                </div>
-                                <div class="kpi-value">{average_charging_time:.2f} min/session</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-
-                            st.markdown(f"""
-                            <div class="kpi-box">
-                                <div class="kpi-label">
-                                    <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
-                                    Average idle time
-                                </div>
-                                <div class="kpi-value">{average_idle_time:.2f} min/period</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-
-                            st.markdown(f"""
-                            <div class="kpi-box">
-                                <div class="kpi-label">
                                     <img src="data:image/png;base64,{material_icon}" class="kpi-icon">
                                     Material trips
                                 </div>
                                 <div class="kpi-value">{t_material_total} trips</div>
-                            </div>
-                            """, unsafe_allow_html=True)
-
-                            st.markdown(f"""
-                            <div class="kpi-box">
-                                <div class="kpi-label">
-                                    <img src="data:image/png;base64,{material_distance_icon}" class="kpi-icon">
-                                    Material trip distance
-                                </div>
-                                <div class="kpi-value">{d_material_total_km:.3f} km</div>
                             </div>
                             """, unsafe_allow_html=True)
 
@@ -1543,15 +1494,82 @@ elif keuze == "Visualisations":
                             </div>
                             """, unsafe_allow_html=True)
 
-                            st.markdown(f"""
-                            <div class="kpi-box">
-                                <div class="kpi-label">
-                                    <img src="data:image/png;base64,{energy_consumption_icon}" class="kpi-icon">
-                                    Total driving distance
+                            # ===== SHOW MORE / SHOW FEWER =====
+                            if "show_more_kpis" not in st.session_state:
+                                st.session_state["show_more_kpis"] = False
+
+                            button_label = (
+                                "Show fewer KPIs ▲"
+                                if st.session_state["show_more_kpis"]
+                                else "Show more KPIs ▼"
+                            )
+
+                            if st.button(button_label, key="toggle_more_kpis", use_container_width=True):
+                                st.session_state["show_more_kpis"] = not st.session_state["show_more_kpis"]
+                                st.rerun()
+
+                            # ===== ADDITIONAL KPIs =====
+                            if st.session_state["show_more_kpis"]:
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-label">
+                                        <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
+                                        Average service trip time
+                                    </div>
+                                    <div class="kpi-value">{average_service_time:.2f} min/trip</div>
                                 </div>
-                                <div class="kpi-value">{total_distance_km:.2f} km</div>
-                            </div>
-                            """, unsafe_allow_html=True)
+                                """, unsafe_allow_html=True)
+
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-label">
+                                        <img src="data:image/png;base64,{waiting_time_icon}" class="kpi-icon">
+                                        Average idle time
+                                    </div>
+                                    <div class="kpi-value">{average_idle_time:.2f} min/period</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-label">
+                                        <img src="data:image/png;base64,{material_distance_icon}" class="kpi-icon">
+                                        Material trip distance
+                                    </div>
+                                    <div class="kpi-value">{d_material_total_km:.3f} km</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-label">
+                                        <img src="data:image/png;base64,{material_icon}" class="kpi-icon">
+                                        Average material trip time
+                                    </div>
+                                    <div class="kpi-value">{average_material_time:.2f} min/trip</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-label">
+                                        <img src="data:image/png;base64,{charging_time_icon}" class="kpi-icon">
+                                        Average charging time
+                                    </div>
+                                    <div class="kpi-value">{average_charging_time:.2f} min/session</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+
+                                st.markdown(f"""
+                                <div class="kpi-box">
+                                    <div class="kpi-label">
+                                        <img src="data:image/png;base64,{energy_consumption_icon}" class="kpi-icon">
+                                        Total driving distance
+                                    </div>
+                                    <div class="kpi-value">{total_distance_km:.2f} km</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+
 
                     # Difference card
                     if 'improved_bp' in st.session_state:
