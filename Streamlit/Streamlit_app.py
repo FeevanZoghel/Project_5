@@ -1221,13 +1221,19 @@ elif keuze == "Visualisations":
 
     /* ===== KPI AND DIFFERENCE ALIGNMENT ===== */
 
-    /* Keep KPI values and percentages on one line */
+    /* KPI and Difference values: same font size */
+    .st-key-kpi_card .kpi-value,
     .st-key-kpi_difference .kpi-value {
-        font-size: 20px !important;
-        white-space: nowrap !important;
-        overflow: visible !important;
+        font-size: 26px !important;
+        font-weight: 700 !important;
+        line-height: 1.3 !important;
+        overflow-wrap: normal !important;
     }
 
+    /* Keep percentages on one line */
+    .st-key-kpi_difference .kpi-value {
+        white-space: nowrap !important;
+    }
     /* Consistent card heights */
     .st-key-kpi_card .kpi-box,
     .st-key-kpi_difference .kpi-box {
