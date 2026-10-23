@@ -488,10 +488,26 @@ if keuze == "Data Check":
     st.title("Transdev Planning Checker")
     st.write("Upload the planning files below to validate the schedule and view the feasibility results.")
 
-    bestand1 = st.file_uploader("Upload busplanning", type=['xlsx'], accept_multiple_files=False)
-    bestand2 = st.file_uploader("Upload timetable", type=['xlsx'], accept_multiple_files=False)
-    bestand3 = st.file_uploader("Upload distance matrix", type=['xlsx'], accept_multiple_files=False)
+    def upload_file(label, key):
+        uploaded_file = st.file_uploader(
+            label,
+            type=['xlsx'],
+            accept_multiple_files=False,
+            key=f"upload_{key}"
+        )
 
+        if uploaded_file is not None:
+            st.session_state[f"{key}_filename"] = uploaded_file.name
+
+        elif key in st.session_state and f"{key}_filename" in st.session_state:
+            st.caption(f"✓ Loaded file: {st.session_state[f'{key}_filename']}")
+
+        return uploaded_file
+
+    bestand1 = upload_file("Upload busplanning", "bp")
+    bestand2 = upload_file("Upload timetable", "tt")
+    bestand3 = upload_file("Upload distance matrix", "dm")
+    
     uploaded_files = {'bp': bestand1, 'tt': bestand2, 'dm': bestand3}
 
     for key, file in uploaded_files.items():
