@@ -792,8 +792,6 @@ if keuze == "Data Check":
 
 elif keuze == "Visualisations":
 
-
-    
     st.markdown("""
     <style>
 
@@ -1670,10 +1668,16 @@ elif keuze == "Visualisations":
                 ]
 
                 with st.container(key="additional_kpis"):
-                    st.markdown(
-                        '<div class="section-title">Additional KPIs</div>',
-                        unsafe_allow_html=True
-                    )
+                    st.markdown("""
+                    <div style="
+                        color: #FFFFFF;
+                        font-size: 26px;
+                        font-weight: 700;
+                        margin-bottom: 15px;
+                    ">
+                        Additional KPIs
+                    </div>
+                    """, unsafe_allow_html=True)
 
                     cols = st.columns(3, gap="medium")
 

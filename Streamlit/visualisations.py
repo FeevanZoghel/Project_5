@@ -418,7 +418,7 @@ def gantt_chart_bus(bp, title = 'improved bus plan', selected_buses=None):
         </script>
         """
 
-        chart_height = int(fig_height * 100 + 60)
+        chart_height = max(180, int(fig_height * 50 + 80))  
 
         components.html(
             fullscreen_html,
