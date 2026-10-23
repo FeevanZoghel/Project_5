@@ -174,7 +174,7 @@ def gantt_chart_bus(bp, title = 'improved bus plan', selected_buses=None):
         ax.set_yticks(range(len(group)))
         ax.set_yticklabels([])
         # Bus 1 at the top
-        ax.set_ylim(len(group) - 0.5, -0.8)
+        ax.set_ylim(len(group) - 0.5, -1.5)
         # Draw bus labels manually
         for i, bus in enumerate(group):
             ax.text(

@@ -614,7 +614,7 @@ if keuze == "Data Check":
             min_value=0,
             max_value=100,
             value=85,
-            step=5
+            step=1
         )
 
     st.markdown("### Improve bus planning")
