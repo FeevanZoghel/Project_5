@@ -1224,7 +1224,7 @@ elif keuze == "Visualisations":
     /* KPI and Difference values: same font size */
     .st-key-kpi_card .kpi-value,
     .st-key-kpi_difference .kpi-value {
-        font-size: 20px !important;
+        font-size: 24px !important;
         font-weight: 700 !important;
         line-height: 1.3 !important;
         overflow-wrap: normal !important;
