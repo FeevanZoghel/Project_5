@@ -493,24 +493,25 @@ if keuze == "Data Check":
     bestand3 = st.file_uploader("Upload distance matrix", type=['xlsx'], accept_multiple_files=False)
 
     uploaded_files = {'bp': bestand1, 'tt': bestand2, 'dm': bestand3}
-    file_signatures = tuple(
-        (key, file.file_id if file is not None else None)
-        for key, file in uploaded_files.items()
-    )
 
-    if st.session_state.get("data_check_file_signatures") != file_signatures:
-        st.session_state["data_check_file_signatures"] = file_signatures
-        st.session_state.pop("improved_bp", None)
-        st.session_state.pop("improved_soh", None)
-        for key, file in uploaded_files.items():
-            st.session_state.pop(key, None)
-            if file is not None:
+    for key, file in uploaded_files.items():
+        if file is not None:
+            file_signature = (file.name, file.size, file.getvalue())
+
+            if st.session_state.get(f"{key}_file_signature") != file_signature:
                 try:
                     df = pd.read_excel(file)
                     df.columns = df.columns.astype(str).str.strip().str.lower()
+
                     if key == 'bp':
                         df = df.rename(columns={'unnamed: 5': 'line'})
+
                     st.session_state[key] = df
+                    st.session_state[f"{key}_file_signature"] = file_signature
+
+                    st.session_state.pop("improved_bp", None)
+                    st.session_state.pop("improved_soh", None)
+
                 except Exception as e:
                     st.error(f"Could not read {key}: {e}")
 
