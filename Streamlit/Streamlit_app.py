@@ -114,7 +114,7 @@ def load_css(filename, **variables):
     for name, value in variables.items():
         css = css.replace("{{" + name + "}}", str(value))
 
-    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
+    st.html(f"<style>{css}</style>")
 
 
 def load_html(filename, **variables):
