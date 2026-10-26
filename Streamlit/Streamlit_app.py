@@ -304,7 +304,7 @@ if keuze == "Data Check":
     col_energy, col_SoH = st.columns([2, 4], vertical_alignment="center")
     with col_energy:
         energy_method = st.selectbox(
-            "Select an energy estimation method for material trips",
+            "Select an energy estimation method for all trips",
             ["Mean", "Min", "Max"],
             index=0
         ).lower()
