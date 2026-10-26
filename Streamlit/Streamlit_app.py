@@ -379,40 +379,21 @@ if keuze == "Data Check":
             file_name="Improved_Bus_Planning.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
-
-    if data_valid and 'improved_bp' in st.session_state:
+        
         st.markdown("### Improved planning feasibility")
-        st.markdown("""
-        <style>
-        .st-key-error_details {
-            max-height: 360px;
-            overflow-y: auto;
-        }
-        </style>
-        """, unsafe_allow_html=True)
 
         with st.container(border=True, key="box_feasibility"):
-            col_title, col_radio, col_logo = st.columns([4.5, 2, 0.5], vertical_alignment="center")
-            with col_title:
-                st.markdown('<div class="feasibility-title">Feasibility checks</div>', unsafe_allow_html=True)
+            col_title, col_radio, col_logo = st.columns(
+                [4.5, 2, 0.5],
+                vertical_alignment="center"
+            )
 
-            st.markdown("""
-            <style>
-            .st-key-feasibility_planning_choice [data-testid="stRadioOption"] > div > div:first-child {
-                background: #FFFFFF !important;
-                border: 2px solid #000000 !important;
-                border-radius: 50% !important;
-            }
-            .st-key-feasibility_planning_choice [data-testid="stRadioOption"]:hover > div > div:first-child {
-                background: #000000 !important;
-                border-color: #000000 !important;
-            }
-            .st-key-feasibility_planning_choice [data-testid="stRadioOption"][data-selected="true"] > div > div:first-child {
-                background: #000000 !important;
-                border-color: #000000 !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
+            with col_title:
+                st.markdown(
+                    '<div class="feasibility-title">Feasibility checks</div>',
+                    unsafe_allow_html=True
+                )
+
 
             with col_radio:
                 planning_choice = st.radio(
