@@ -176,3 +176,30 @@ body,
     max-height: 400px !important;
     overflow-y: auto !important;
 }
+
+
+/* ===== FEASIBILITY ERROR DETAILS ===== */
+
+.st-key-error_details {
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+
+/* ===== FEASIBILITY PLANNING RADIO BUTTONS ===== */
+
+.st-key-feasibility_planning_choice [data-testid="stRadioOption"] > div > div:first-child {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+    border-radius: 50% !important;
+}
+
+.st-key-feasibility_planning_choice [data-testid="stRadioOption"]:hover > div > div:first-child {
+    background: #000000 !important;
+    border-color: #000000 !important;
+}
+
+.st-key-feasibility_planning_choice [data-testid="stRadioOption"][data-selected="true"] > div > div:first-child {
+    background: #000000 !important;
+    border-color: #000000 !important;
+}
