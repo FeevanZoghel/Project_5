@@ -12,10 +12,6 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).parent
 
-def load_css(filename):
-    css = (BASE_DIR / "styles" / filename).read_text(encoding="utf-8")
-    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
-
 from feasibility_checks import (
     validate_minimum_soc,
     validate_soh,
@@ -120,6 +116,7 @@ def load_css(filename, **variables):
 
     st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
+
 def load_html(filename, **variables):
     """
     Loads an HTML template and replaces dynamic placeholders.
@@ -137,7 +134,7 @@ def load_html(filename, **variables):
     for name, value in variables.items():
         html = html.replace("{{" + name + "}}", str(value))
 
-    return html
+    return html.strip()
 
 
 load_css(
@@ -163,13 +160,16 @@ keuze = st.sidebar.radio(
 
 st.sidebar.divider()
 
+
+sidebar_html = load_html(
+    "sidebar.html",
+    bus_sidebar_icon=bus_sidebar_icon,
+    energy_sidebar_icon=energy_sidebar_icon,
+    bar_chart_sidebar_icon=bar_chart_sidebar_icon
+)
+
 st.sidebar.markdown(
-    load_html(
-        "sidebar.html",
-        bus_sidebar_icon=bus_sidebar_icon,
-        energy_sidebar_icon=energy_sidebar_icon,
-        bar_chart_sidebar_icon=bar_chart_sidebar_icon
-    ),
+    sidebar_html,
     unsafe_allow_html=True
 )
 

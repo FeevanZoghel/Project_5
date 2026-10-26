@@ -168,3 +168,11 @@ body,
     padding-bottom: 14px;
     margin-bottom: 20px;
 }
+
+/* ===== INPUT VALIDATION ERROR DETAILS ===== */
+
+[data-testid="stExpanderDetails"] [data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) {
+    height: auto !important;
+    max-height: 400px !important;
+    overflow-y: auto !important;
+}
