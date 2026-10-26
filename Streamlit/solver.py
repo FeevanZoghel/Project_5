@@ -8,7 +8,35 @@ import pandas as pd
 
 
 def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean", progress_callback=None):
-    """Generate the improved bus planning from three input DataFrames."""
+    """
+    Optimizes an electric bus schedule while considering travel times,
+    energy consumption, battery capacity, and charging requirements.
+
+    The optimization assigns trips to buses and determines the necessary
+    material trips, idle periods, and charging activities to create a
+    feasible bus planning.
+
+    Argument:
+        bp (pd.DataFrame): Original bus planning containing trip information,
+            activities, assigned buses, and energy consumption.
+        dm (pd.DataFrame): Distance matrix containing travel distances and
+            minimum and maximum travel times between locations.
+        tt (pd.DataFrame): Timetable containing the scheduled service trips.
+        assumed_battery_value (float, optional): Assumed battery State of
+            Health (SoH) as a percentage. Defaults to 85.
+        energy_method (str, optional): Estimation method used for travel
+            times and energy consumption. Must be "min", "mean", or "max".
+            Defaults to "mean".
+        progress_callback (callable, optional): Function used to report
+            optimization progress. Defaults to None.
+
+    Returns:
+        pd.DataFrame: Improved bus planning containing the assigned buses,
+            scheduled activities, start and end times, and energy consumption.
+
+    Raises:
+        ValueError: If energy_method is not "min", "mean", or "max".
+    """
     bp = bp.copy()
     dm = dm.copy()
     tt = tt.copy()
@@ -37,6 +65,27 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
 
     if energy_method not in ("min", "mean", "max"):
         raise ValueError("energy_method must be min, mean or max")
+    def calculate_travel_time(dm_trip):
+        """
+        Calculates the estimated travel time based on the selected estimation method.
+
+        Argument:
+            dm_trip (pd.DataFrame): Distance matrix entries containing the minimum
+                and maximum travel times for a specific trip.
+
+        Returns:
+            float: Estimated travel time in minutes, using the minimum, maximum,
+                or average travel time based on energy_method.
+        """
+        min_time = dm_trip['min_travel_time'].iloc[0]
+        max_time = dm_trip['max_travel_time'].iloc[0]
+
+        if energy_method == "min":
+            return min_time
+        elif energy_method == "max":
+            return max_time
+        else:
+            return (min_time + max_time) / 2
     if not 0 < assumed_battery_value <= 100:
         raise ValueError("assumed_battery_value must be between 0 and 100")
 
@@ -52,6 +101,26 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
 
     def add_activity(ibp, bus, start_location, end_location, start_time, end_time,
                      activity, line, energy, battery_value, total_travel_time):
+        """
+        Adds a new activity to the improved bus planning DataFrame.
+
+        Argument:
+            ibp (pd.DataFrame): Improved bus planning to which the activity is added.
+            bus (int): Identifier of the bus performing the activity.
+            start_location (str): Starting location of the activity.
+            end_location (str): Ending location of the activity.
+            start_time (pd.Timestamp): Start time of the activity.
+            end_time (pd.Timestamp): End time of the activity.
+            activity (str): Type of activity, such as service trip, material trip,
+                charging, or idle.
+            line (str or None): Bus line associated with the activity, if applicable.
+            energy (float): Energy consumption in kWh. Negative values indicate charging.
+            battery_value (float): Remaining battery energy in kWh after the activity.
+            total_travel_time (float): Cumulative travel time of the bus in minutes.
+
+        Returns:
+            None: The activity is added directly to the ibp DataFrame.
+        """
 
         new_index = len(ibp)
 
@@ -60,6 +129,36 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
     def check_charging_buses(bussen_opladen, ibp, battery, charging_start, start_time,
                              benodigde_energy, charging_limit, fast_charge_per_min,
                              slow_charge_per_min, max_battery, beschikbare_bussen, dm, bp, trip):
+        
+        """
+        Checks charging buses and determines whether they can be assigned to a new trip.
+
+        The function calculates the available charging time, updates battery levels,
+        and accounts for energy consumption during idle periods. Buses located
+        outside the garage are scheduled to return for charging.
+
+        Argument:
+            bussen_opladen (list): List of buses that need to be checked for charging.
+            ibp (pd.DataFrame): Improved bus planning containing scheduled activities.
+            battery (dict): Current battery energy in kWh for each bus.
+            charging_start (dict): Starting time of the charging period for each bus.
+            start_time (pd.Timestamp): Scheduled start time of the upcoming trip.
+            benodigde_energy (float): Minimum energy required for the upcoming trip,
+                including the required battery reserve.
+            charging_limit (float): Battery energy threshold at which fast charging
+                changes to slow charging.
+            fast_charge_per_min (float): Fast charging rate in kWh per minute.
+            slow_charge_per_min (float): Slow charging rate in kWh per minute.
+            max_battery (float): Maximum available battery energy in kWh.
+            beschikbare_bussen (list): List of buses available for the upcoming trip.
+            dm (pd.DataFrame): Distance matrix containing travel times and distances.
+            bp (pd.DataFrame): Original bus planning containing energy consumption data.
+            trip (pd.Series): Upcoming service trip to be assigned.
+
+        Returns:
+            None: Updates the bus planning, battery levels, charging information,
+                and available buses directly.
+        """
 
         for bus in bussen_opladen:
 
@@ -122,7 +221,7 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
 
                 dm_material = dm[(dm['start'] == material_start) & (dm['end'] == 'ehvgar')]
 
-                material_travel_time = (dm_material['min_travel_time'].iloc[0]+dm_material['max_travel_time'].iloc[0])/2
+                material_travel_time = calculate_travel_time(dm_material)
 
                 material_energy = bp[(bp['start location'] == material_start) & (bp['end location'] == 'ehvgar') &(bp['activity'] == 'material trip')]['energy consumption'].agg(energy_method)
 
@@ -137,6 +236,26 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
                 charging_start[bus] = material_end_time
 
     def garage_to_trip(bus, trip, start_time, ibp, battery, dm, bp):
+        """
+        Schedules a material trip from the garage to the starting location of a service trip.
+
+        The function calculates the required travel time and energy consumption,
+        updates the bus battery level, and adds the material trip to the improved
+        bus planning. No activity is added if the service trip starts at the garage.
+
+        Argument:
+            bus (int): Identifier of the bus performing the material trip.
+            trip (pd.Series): Upcoming service trip containing its starting location
+                and bus line.
+            start_time (pd.Timestamp): Scheduled departure time of the service trip.
+            ibp (pd.DataFrame): Improved bus planning containing scheduled activities.
+            battery (dict): Current battery energy in kWh for each bus.
+            dm (pd.DataFrame): Distance matrix containing minimum and maximum travel times.
+            bp (pd.DataFrame): Original bus planning containing energy consumption data.
+
+        Returns:
+            None: Updates the bus planning and battery level directly.
+        """
 
         if trip['start'] == 'ehvgar':
 
@@ -144,7 +263,7 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
 
         dm_material = dm[(dm['start']=='ehvgar') & (dm['end'] == trip['start'])]
 
-        material_travel_time = (dm_material['min_travel_time'].iloc[0]+dm_material['max_travel_time'].iloc[0])/2
+        material_travel_time = calculate_travel_time(dm_material)
 
         material_start_time = start_time - pd.Timedelta(minutes = material_travel_time)
 
@@ -157,6 +276,30 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
         add_activity(ibp, bus, 'ehvgar', trip['start'], material_start_time, material_end_time, 'material trip', trip['line'], material_energy, battery[bus], material_travel_time)
 
     def check_material_trip(bus, last_activity, trip, ibp, battery, dm, bp, toevoegen=False):
+        """
+        Calculates the travel time and energy consumption of a material trip.
+
+        The function determines whether a bus needs to travel from its current
+        location to the starting location of the next service trip. If required,
+        it calculates the travel time and energy consumption. When toevoegen
+        is True, the material trip is added to the improved bus planning and
+        the battery level is updated.
+
+        Argument:
+            bus (int): Identifier of the bus performing the material trip.
+            last_activity (pd.Series): Last scheduled activity of the bus.
+            trip (pd.Series or dict): Upcoming trip containing its starting location.
+            ibp (pd.DataFrame): Improved bus planning containing scheduled activities.
+            battery (dict): Current battery energy in kWh for each bus.
+            dm (pd.DataFrame): Distance matrix containing minimum and maximum travel times.
+            bp (pd.DataFrame): Original bus planning containing energy consumption data.
+            toevoegen (bool, optional): Whether to add the material trip to the
+                planning and update the battery level. Defaults to False.
+
+        Returns:
+            tuple: Contains the estimated material travel time in minutes (float)
+                and the corresponding energy consumption in kWh (float).
+        """
 
         if last_activity['end location'] == trip['start']:
 
@@ -168,7 +311,7 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
 
             dm_material = dm[(dm['start'] == last_activity['end location']) & (dm['end'] == trip['start'])]
 
-            material_travel_time = (dm_material['min_travel_time'].iloc[0] + dm_material['max_travel_time'].iloc[0]) / 2
+            material_travel_time = calculate_travel_time(dm_material)
 
             material_energy = bp[(bp['start location'] == last_activity['end location']) & (bp['end location'] == trip['start']) & (bp['activity'] == 'material trip')]['energy consumption'].agg(energy_method)
 
@@ -183,6 +326,26 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
         return material_travel_time, material_energy
 
     def calculate_idle_time(bus, start_time, ibp, battery, toevoegen = False):
+        """
+        Calculates the idle time and energy consumption of a bus between activities.
+
+        The function determines the idle period between the bus's last scheduled
+        activity and the start of the next activity. Energy consumption is
+        calculated using a constant rate of 5 kWh per hour. When toevoegen
+        is True, the idle activity is added to the improved bus planning
+        and the battery level is updated.
+
+        Argument:
+            bus (int): Identifier of the bus.
+            start_time (pd.Timestamp): Scheduled start time of the next activity.
+            ibp (pd.DataFrame): Improved bus planning containing scheduled activities.
+            battery (dict): Current battery energy in kWh for each bus.
+            toevoegen (bool, optional): Whether to add the idle activity to the
+                planning and update the battery level. Defaults to False.
+
+        Returns:
+            float: Energy consumption during the idle period in kWh.
+        """
 
         last_activity = ibp[ibp['bus'] == bus].iloc[-1]
 
@@ -211,11 +374,11 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
 
         dm_trip = dm[(dm['start'] == trip['start']) &(dm['end'] == trip['end']) &(dm['line'] == trip['line'])]
 
-        energy_consumption = bp[(bp['start location'] == trip['start']) & (bp['end location'] == trip['end']) & (bp['line'] == trip['line']) &(bp['activity'] == 'service trip')]['energy consumption'].mean()
+        energy_consumption = bp[(bp['start location'] == trip['start']) & (bp['end location'] == trip['end']) & (bp['line'] == trip['line']) &(bp['activity'] == 'service trip')]['energy consumption'].agg(energy_method)
 
         start_time = trip['sort_time']
 
-        travel_time = (dm_trip['min_travel_time'].iloc[0]+dm_trip['max_travel_time'].iloc[0])/2
+        travel_time = calculate_travel_time(dm_trip)
 
         end_time = start_time + pd.Timedelta(minutes=travel_time)
 

@@ -8,8 +8,15 @@ import textwrap
 
 from DataFrame_check import validate_bus_planning
 
+from pathlib import Path
+
+BASE_DIR = Path(__file__).parent
+
+def load_css(filename):
+    css = (BASE_DIR / "styles" / filename).read_text(encoding="utf-8")
+    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
+
 from feasibility_checks import (
-    ASSUMED_SOH,
     validate_minimum_soc,
     validate_soh,
     validate_location_continuity,
@@ -93,150 +100,52 @@ visualisations_icon = base64.b64encode(
     (image_path / "visualisations_icon.png").read_bytes()
 ).decode()
 
-st.markdown(f'''
-<style>
 
-    /* JOUW BESTAANDE CSS VOOR DE ICONEN */
-    
-    [data-testid="stSidebar"] [data-testid="stRadioOption"] > div > div:first-child {{
-        width: 24px !important;
-        height: 24px !important;
-        min-width: 24px !important;
-        min-height: 24px !important;
+def load_css(filename, **variables):
+    """
+    Loads a CSS file and replaces dynamic placeholders with their values.
 
-        border: none !important;
-        border-radius: 0 !important;
+    Argument:
+        filename (str): Name of the CSS file located in the styles directory.
+        **variables: Dynamic values to insert into the CSS.
 
-        background-size: contain !important;
-        background-repeat: no-repeat !important;
-        background-position: center !important;
-    }}
+    Returns:
+        None: Applies the CSS styling directly to the Streamlit application.
+    """
+    css_path = base_path / "styles" / filename
+    css = css_path.read_text(encoding="utf-8")
 
-    /* Stipje verwijderen */
-    [data-testid="stSidebar"]
-    [data-testid="stRadioOption"] > div > div:first-child > * {{
-        display: none !important;
-    }}
+    for name, value in variables.items():
+        css = css.replace("{{" + name + "}}", str(value))
 
-    /* Data Check icoon */
-    [data-testid="stSidebar"]
-    [data-testid="stRadioGroup"] > div:nth-child(1)
-    [data-testid="stRadioOption"] > div > div:first-child {{
-        background-image: url("data:image/png;base64,{data_check_icon}") !important;
-    }}
+    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
-    /* Visualisations icoon */
-    [data-testid="stSidebar"]
-    [data-testid="stRadioGroup"] > div:nth-child(2)
-    [data-testid="stRadioOption"] > div > div:first-child {{
-        background-image: url("data:image/png;base64,{visualisations_icon}") !important;
-    }}
+def load_html(filename, **variables):
+    """
+    Loads an HTML template and replaces dynamic placeholders.
 
+    Args:
+        filename (str): Name of the HTML file in the templates directory.
+        **variables: Dynamic values to insert into the HTML.
 
-    /* ========================================
-       HIERONDER KOMT DE NIEUWE STYLING
-       ======================================== */
+    Returns:
+        str: HTML content with the placeholders replaced.
+    """
+    html_path = base_path / "templates" / filename
+    html = html_path.read_text(encoding="utf-8")
 
-    /* Sidebar achtergrond */
-    [data-testid="stSidebar"] {{
-        background-color: #111820 !important;
-    }}
+    for name, value in variables.items():
+        html = html.replace("{{" + name + "}}", str(value))
 
-    /* Main Menu */
-    [data-testid="stSidebar"] .sidebar-title {{
-        color: #F5F5F5 !important;
-        font-size: 22px !important;
-        font-weight: 700 !important;
-        margin-bottom: 10px !important;
-    }}
-
-    /* Lijntje */
-    [data-testid="stSidebar"] .sidebar-line {{
-        height: 1px !important;
-        background-color: #38404A !important;
-        margin-bottom: 18px !important;
-    }}
-
-    /* Menu-opties */
-    [data-testid="stSidebar"] [data-testid="stRadioOption"] {{
-        padding: 9px 12px !important;
-        border-radius: 6px !important;
-        margin-bottom: 5px !important;
-    }}
-
-    /* Niet geselecteerde tekst */
-    [data-testid="stSidebar"]
-    [data-testid="stRadioOption"]
-    [data-testid="stMarkdownContainer"] p {{
-        color: #AEB4BC !important;
-        font-size: 20px !important;
-    }}
-
-    /* Geselecteerde rode balk */
-    [data-testid="stSidebar"]
-    [data-selected="true"] > [data-testid="stRadioOption"] {{
-        background-color: #FF2D3F !important;
-        border-radius: 6px !important;
-    }}
-
-    /* Geselecteerde tekst wit */
-    [data-testid="stSidebar"]
-    [data-selected="true"] > [data-testid="stRadioOption"]
-    [data-testid="stMarkdownContainer"] p {{
-        color: white !important;
-        font-weight: 600 !important;
-    }}
-        
-    /* ===== ABOUT THIS TOOL ===== */
-
-    .sidebar-about-title {{
-        color: #FFFFFF;
-        font-size: 17px;
-        font-weight: 700;
-        margin-bottom: 12px;
-    }}
-
-    .sidebar-about-description {{
-        color: #B7BEC8;
-        font-size: 14px;
-        line-height: 1.6;
-        margin-bottom: 18px;
-    }}
-
-    .sidebar-about-card {{
-        background-color: #222B35;
-        border: 1px solid #303B47;
-        border-radius: 10px;
-        padding: 16px;
-    }}
-
-    .sidebar-about-item {{
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: #E5E7EB;
-        font-size: 14px;
-        padding: 9px 0;
-    }}
+    return html
 
 
-    .sidebar-about-icon {{
-        width: 22px;
-        height: 22px;
-        object-fit: contain;
-        flex-shrink: 0;
-    }}
-
-
-    .sidebar-footer {{
-        color: #89939F;
-        font-size: 12px;
-        text-align: center;
-        margin-top: 24px;
-    }}
-
-</style>
-''', unsafe_allow_html=True)
+load_css(
+    "sidebar.css",
+    data_check_icon=data_check_icon,
+    visualisations_icon=visualisations_icon
+)
+load_css("main.css")
 
 st.sidebar.markdown("""
 <div class="sidebar-title">
@@ -254,235 +163,17 @@ keuze = st.sidebar.radio(
 
 st.sidebar.divider()
 
-
-st.markdown("""
-<style>
-/* Sidebar open */
-[data-testid="stAppViewContainer"]:has(
-    [data-testid="stSidebar"][aria-expanded="true"]
-) [data-testid="stMainBlockContainer"] {
-    max-width: 85% !important;
-    width: 85% !important;
-}
-
-/* Sidebar ingeklapt */
-[data-testid="stAppViewContainer"]:not(:has(
-    [data-testid="stSidebar"][aria-expanded="true"]
-)) [data-testid="stMainBlockContainer"] {
-    max-width: 85% !important;
-    width: 85% !important;
-}
-
-/* Algemene instellingen */
-[data-testid="stMainBlockContainer"] {
-    padding-left: 2rem !important;
-    padding-right: 2rem !important;
-    transition: max-width 0.3s ease, width 0.3s ease;
-}
-</style>
-""", unsafe_allow_html=True)
-
-
 st.sidebar.markdown(
-    f"""
-<div class="sidebar-about-title">About this tool</div>
-
-<div class="sidebar-about-description">
-A planning optimization dashboard for electric bus operations.
-</div>
-
-<div class="sidebar-about-card">
-<div class="sidebar-about-item">
-<img src="data:image/png;base64,{bus_sidebar_icon}" class="sidebar-about-icon">
-<span>Electric bus scheduling</span>
-</div>
-<div class="sidebar-about-item">
-<img src="data:image/png;base64,{energy_sidebar_icon}" class="sidebar-about-icon">
-<span>Battery feasibility</span>
-</div>
-<div class="sidebar-about-item">
-<img src="data:image/png;base64,{bar_chart_sidebar_icon}" class="sidebar-about-icon">
-<span>Performance analysis</span>
-</div>
-</div>
-
-<div class="sidebar-footer">
-Fontys · Applied Mathematics
-</div>
-""",
+    load_html(
+        "sidebar.html",
+        bus_sidebar_icon=bus_sidebar_icon,
+        energy_sidebar_icon=energy_sidebar_icon,
+        bar_chart_sidebar_icon=bar_chart_sidebar_icon
+    ),
     unsafe_allow_html=True
 )
 
-st.markdown("""
-<style>
-
-/* ===== FEASIBILITY ===== */
-.st-key-box_feasibility {
-    background: white !important;
-    border: 3px solid #EA3323 !important;
-    border-radius: 14px !important;
-    padding: 10px !important;
-}
-
-.st-key-box_feasibility h1,
-.st-key-box_feasibility h2,
-.st-key-box_feasibility h3,
-.st-key-box_feasibility p,
-.st-key-box_feasibility span {
-    color: #222 !important;
-}
-
-.st-key-check_cards [data-testid="stColumn"] {
-    background: white !important;
-    border-top: 5px solid #EA3323 !important;
-    border-radius: 12px !important;
-    padding: 18px 20px !important;
-    box-shadow: 0 4px 14px rgba(0,0,0,.12) !important;
-}
-
-.st-key-check_cards [data-testid="stHorizontalBlock"] {
-    gap: 28px !important;
-}
-
-
-/* ===== UPLOAD ===== */
-[data-testid="stFileUploaderDropzone"] {
-    background: #F2F2F2 !important;
-    border: 3px solid #EA3323 !important;
-    border-radius: 14px !important;
-}
-
-[data-testid="stFileUploaderDropzone"] button {
-    background: white !important;
-    color: #222 !important;
-    border: 2px solid #EA3323 !important;
-    border-radius: 10px !important;
-}
-
-[data-testid="stFileUploaderDropzone"] span,
-[data-testid="stFileUploaderDropzone"] small {
-    color: #555 !important;
-}
-
-[data-testid="stFileUploaderFile"],
-[data-testid="stFileUploaderFile"] div {
-    background: white !important;
-    color: #222 !important;
-}
-
-[data-testid="stFileUploaderFile"] span,
-[data-testid="stFileUploaderFile"] small,
-[data-testid="stFileUploaderFile"] p {
-    color: #222 !important;
-}
-
-[data-testid="stFileUploader"] button {
-    border-color: #EA3323 !important;
-}
-
-
-/* ===== BACKGROUND ===== */
-html,
-body,
-[data-testid="stApp"],
-[data-testid="stAppViewContainer"],
-[data-testid="stMain"],
-.main {
-    background:
-        radial-gradient(
-            circle at 85% 10%,
-            rgba(234,51,35,.30) 0%,
-            rgba(234,51,35,.12) 20%,
-            transparent 45%
-        ),
-        linear-gradient(
-            135deg,
-            #0E1117 0%,
-            #1A1D24 55%,
-            #090B0F 100%
-        ) !important;
-    background-attachment: fixed !important;
-}
-
-
-/* ===== ERROR + DETAILS ===== */
-[data-testid="stAlert"] {
-    border-radius: 14px !important;
-}
-
-/* Foutmeldingen: rode rand */
-[data-testid="stAlert"]:has([data-testid="stNotificationContentError"]) {
-    border: 3px solid #EA3323 !important;
-}
-
-/* Succesmeldingen: geen rand */
-[data-testid="stAlert"]:has([data-testid="stNotificationContentSuccess"]) {
-    border: none !important;
-}
-
-[data-testid="stExpander"] {
-    background: white !important;
-    border: 3px solid #EA3323 !important;
-    border-radius: 14px !important;
-    overflow: hidden !important;
-}
-
-[data-testid="stExpander"] details,
-[data-testid="stExpander"] summary,
-[data-testid="stExpander"] summary:hover,
-[data-testid="stExpanderDetails"] {
-    background: white !important;
-}
-
-[data-testid="stExpander"] summary,
-[data-testid="stExpander"] p,
-[data-testid="stExpander"] span {
-    color: #222 !important;
-}
-
-[data-testid="stExpander"] summary * {
-    color: #222 !important;
-    fill: #222 !important;
-}
-
-
-/* ===== TITLES ===== */
-.st-key-box_feasibility h3 {
-    font-size: 50px !important;
-    font-weight: 700 !important;
-}
-
-.column-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #222;
-    padding-bottom: 12px;
-    margin-bottom: 18px;
-    border-bottom: 2px solid #E5E5E5;
-    position: relative;
-}
-
-.column-title::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -2px;
-    width: 70px;
-    height: 3px;
-    background: #EA3323;
-    border-radius: 3px;
-}
-
-.feasibility-title {
-    font-size: 34px;
-    font-weight: 700;
-    color: #222;
-    padding-bottom: 14px;
-    margin-bottom: 20px;
-}
-
-</style>
-""", unsafe_allow_html=True)
+load_css("data_check.css")
 
 if keuze == "Data Check":
     st.title("Transdev Planning Checker")
@@ -595,15 +286,6 @@ if keuze == "Data Check":
             for index in dm.index[invalid_distances]:
                 input_errors.append(f"Distance matrix, row {index + 2}: invalid distance.")
 
-        st.markdown("""
-        <style>
-        [data-testid="stExpanderDetails"] [data-testid="stVerticalBlockBorderWrapper"]:has([data-testid="stAlert"]) {
-            height: auto !important;
-            max-height: 400px !important;
-            overflow-y: auto !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
         
         if input_errors:
             st.error("The uploaded data contains errors.")
