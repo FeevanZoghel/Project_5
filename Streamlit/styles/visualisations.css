@@ -437,11 +437,16 @@
     .st-key-kpi_difference .kpi-value {
         white-space: nowrap !important;
     }
-    /* Consistent card heights */
+    
+     /* Consistent card heights */
     .st-key-kpi_card .kpi-box,
     .st-key-kpi_difference .kpi-box {
-        min-height: 110px !important;
+        height: 125px !important;
+        min-height: 125px !important;
         box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
     }
 
     /* Consistent labels */
