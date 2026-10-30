@@ -58,7 +58,7 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
     # Beginwaardes
 
     if energy_method not in ("Minimum", "Mean", "Maximum"):
-        raise ValueError("energy_method must be min, mean or max")
+        raise ValueError("energy_method must be Minimum, Mean or Maximum")
     def calculate_travel_time(dm_trip):
         """
         Calculates the estimated travel time based on the selected estimation method.
