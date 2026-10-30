@@ -15,24 +15,60 @@ OPERATIONAL_DAY_START = 5 * 60 + 7
 ENERGY_TOLERANCE = 0.1
 TIME_TOLERANCE = 1e-6
 
+
 def get_max_battery(assumed_soh=ASSUMED_SOH):
-    """Returns the maximum usable battery capacity in kWh."""
+    """
+    Calculates the maximum usable battery capacity based on SoH.
+
+    Args:
+        assumed_soh (float): State of Health percentage.
+            Defaults to ASSUMED_SOH.
+
+    Returns:
+        float: Maximum usable battery capacity in kWh.
+    """
     return (
         INITIAL_BATTERY_CAPACITY
         * assumed_soh
         / 100
     )
 
-
 def get_minimum_battery(assumed_soh=ASSUMED_SOH):
-    """Returns the minimum allowed battery capacity in kWh."""
+    """
+    Calculates the minimum battery capacity based on SoH and SOC.
+
+    Args:
+        assumed_soh (float): State of Health percentage.
+            Defaults to ASSUMED_SOH.
+
+    Returns:
+        float: Minimum allowed battery capacity in kWh.
+    """
     return get_max_battery(assumed_soh) * MINIMUM_SOC
 
-
 def get_operational_minutes(time_values):
-    """Converts timestamps and clock times into operational minutes."""
+    """
+    Converts time values into operational minutes, adding
+    1440 minutes to times before the operational day starts.
+
+    Args:
+        time_values (pd.Series): Series containing time values.
+
+    Returns:
+        pd.Series: Operational times expressed in minutes.
+    """
 
     def convert_time(value):
+        """
+        Converts a single time value into operational minutes.
+
+        Args:
+            value: Time value as Timedelta, Timestamp or string.
+
+        Returns:
+            float: Operational time in minutes.
+        """
+
 
         if isinstance(value, pd.Timedelta):
             minutes = value.total_seconds() / 60
@@ -62,10 +98,16 @@ def get_operational_minutes(time_values):
 
     return time_values.apply(convert_time)
 
-
 def sort_bus_planning(df):
-    """Sorts activities by bus and operational start time."""
+    """
+    Sorts bus activities by bus number and operational start time.
 
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+
+    Returns:
+        pd.DataFrame: Sorted bus planning with reset indices.
+    """
     planning = df.copy()
 
     planning["_start_minutes"] = get_operational_minutes(
@@ -77,12 +119,28 @@ def sort_bus_planning(df):
         kind="stable"
     ).reset_index(drop=True)
 
-
 def get_activity_duration_minutes(start_time, end_time):
-    """Calculates activity duration, including midnight."""
+    """
+    Calculates activity duration in minutes, including midnight.
+
+    Args:
+        start_time: Start time of the activity.
+        end_time: End time of the activity.
+
+    Returns:
+        float: Activity duration in minutes.
+    """
 
     def convert_time(value):
+        """
+        Converts a single time value into minutes since midnight.
 
+        Args:
+            value: Time value as Timedelta, Timestamp or string.
+
+        Returns:
+            float: Time expressed in minutes.
+        """
         if isinstance(value, pd.Timedelta):
             return value.total_seconds() / 60
 
@@ -111,19 +169,26 @@ def get_activity_duration_minutes(start_time, end_time):
 
     return duration
 
-
 def calculate_expected_charging_energy(
     battery_start,
     duration,
     assumed_soh=ASSUMED_SOH
 ):
     """
-    Calculates expected charging energy.
+    Calculates expected charging energy using fast and slow charging.
 
     Fast charging: 450 kW up to 90% SOC.
     Slow charging: 60 kW from 90% to 100% SOC.
-    """
 
+    Args:
+        battery_start (float): Initial battery level in kWh.
+        duration (float): Charging duration in minutes.
+        assumed_soh (float): State of Health percentage.
+            Defaults to ASSUMED_SOH.
+
+    Returns:
+        float: Expected charging energy in kWh.
+    """
     max_battery = get_max_battery(assumed_soh)
     charging_limit = 0.90 * max_battery
 
@@ -154,8 +219,18 @@ def calculate_expected_charging_energy(
     return expected_energy
 
 def validate_minimum_soc(df, assumed_soh=ASSUMED_SOH):
-    """Checks whether every bus remains above the minimum SOC."""
+    """
+    Checks whether all buses maintain the minimum required SOC.
 
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+        assumed_soh (float): State of Health percentage.
+            Defaults to ASSUMED_SOH.
+
+    Returns:
+        bool: True if all buses maintain the minimum SOC,
+            otherwise False.
+    """
     minimum_battery = get_minimum_battery(assumed_soh)
     max_battery = get_max_battery(assumed_soh)
 
@@ -175,10 +250,18 @@ def validate_minimum_soc(df, assumed_soh=ASSUMED_SOH):
 
     return True
 
-
 def show_minimum_soc_errors(df, assumed_soh=ASSUMED_SOH):
-    """Displays buses that drop below the minimum allowed SOC."""
+    """
+    Displays buses that fall below the minimum required SOC.
 
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+        assumed_soh (float): State of Health percentage.
+            Defaults to ASSUMED_SOH.
+
+    Returns:
+        None: Displays battery errors in Streamlit.
+    """
     minimum_battery = get_minimum_battery(assumed_soh)
     max_battery = get_max_battery(assumed_soh)
 
@@ -205,16 +288,30 @@ def show_minimum_soc_errors(df, assumed_soh=ASSUMED_SOH):
                 f"SoH: {assumed_soh}%)."
             )
 
-
 def validate_soh(assumed_soh):
-    """Checks whether SoH is between 85% and 95%."""
+    """
+    Checks whether SoH is between 85% and 95%.
 
+    Args:
+        assumed_soh (float): State of Health percentage.
+
+    Returns:
+        bool: True if SoH is within the allowed range,
+            otherwise False.
+    """
     return 85 <= assumed_soh <= 95
 
-
 def validate_location_continuity(df):
-    """Checks whether consecutive activities have matching locations."""
+    """
+    Checks whether consecutive bus activities have matching locations.
 
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+
+    Returns:
+        bool: True if all consecutive locations match,
+            otherwise False.
+    """
     planning = sort_bus_planning(df)
 
     for bus, bus_data in planning.groupby("bus"):
@@ -231,10 +328,16 @@ def validate_location_continuity(df):
 
     return True
 
-
 def show_location_continuity_errors(df):
-    """Displays every location mismatch."""
+    """
+    Displays location mismatches between consecutive bus activities.
 
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+
+    Returns:
+        None: Displays location mismatch errors in Streamlit.
+    """
     planning = sort_bus_planning(df)
 
     for bus, bus_data in planning.groupby("bus"):
@@ -254,8 +357,17 @@ def show_location_continuity_errors(df):
                 )
 
 def validate_required_trips(df, timetable):
-    """Checks whether all required service trips are included."""
+    """
+    Checks whether the number of planned service trips matches the timetable.
 
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+        timetable (pd.DataFrame): Timetable with required service trips.
+
+    Returns:
+        bool: True if the number of service trips matches,
+            otherwise False.
+    """
     required_trips = len(timetable)
 
     planned_trips = len(
@@ -264,10 +376,17 @@ def validate_required_trips(df, timetable):
 
     return required_trips == planned_trips
 
-
 def show_required_trip_errors(df, timetable):
-    """Displays missing or extra service trips."""
+    """
+    Displays missing or extra service trips based on the timetable.
 
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+        timetable (pd.DataFrame): Timetable with required service trips.
+
+    Returns:
+        None: Displays trip count errors in Streamlit.
+    """
     required_trips = len(timetable)
 
     planned_trips = len(
@@ -292,8 +411,16 @@ def show_required_trip_errors(df, timetable):
 
 
 def validate_minimum_charging_time(df):
-    """Checks whether every charging activity lasts at least 15 minutes."""
+    """
+    Checks whether all charging activities meet the minimum duration.
 
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+
+    Returns:
+        bool: True if all charging sessions meet the minimum
+            charging time, otherwise False.
+    """
     charging = df[df["activity"] == "charging"]
 
     for _, row in charging.iterrows():
@@ -310,8 +437,15 @@ def validate_minimum_charging_time(df):
 
 
 def show_minimum_charging_time_errors(df):
-    """Displays charging activities shorter than 15 minutes."""
+    """
+    Displays charging activities below the minimum charging duration.
 
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+
+    Returns:
+        None: Displays charging duration errors in Streamlit.
+    """
     charging = df[df["activity"] == "charging"]
 
     for _, row in charging.iterrows():
@@ -330,17 +464,21 @@ def show_minimum_charging_time_errors(df):
             )
 
 
-
 def get_charging_speed_errors(df, assumed_soh=ASSUMED_SOH):
     """
-    Simulates battery charging using the original charging logic.
+    Simulates battery charging and identifies charging constraint errors.
 
-    Fast charging: 450 kW up to 90% SOC.
-    Slow charging: 60 kW from 90% to 100% SOC.
+    Fast charging is applied up to 90% SOC, followed by slow charging.
 
-    Uses the selected SoH and correct operational-day sorting.
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+        assumed_soh (float): State of Health percentage.
+            Defaults to ASSUMED_SOH.
+
+    Returns:
+        list: Error messages for invalid charging durations,
+            battery levels or charging constraints.
     """
-
     errors = []
 
     max_battery = get_max_battery(assumed_soh)
@@ -419,27 +557,50 @@ def get_charging_speed_errors(df, assumed_soh=ASSUMED_SOH):
 
     return errors
 
-
 def validate_charging_speed(df, assumed_soh=ASSUMED_SOH):
-    """Returns True when the charging simulation is feasible."""
+    """
+    Checks whether the battery charging simulation is feasible.
 
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+        assumed_soh (float): State of Health percentage.
+            Defaults to ASSUMED_SOH.
+
+    Returns:
+        bool: True if no charging errors are found,
+            otherwise False.
+    """
     return len(
         get_charging_speed_errors(df, assumed_soh)
     ) == 0
 
-
 def show_charging_speed_errors(df, assumed_soh=ASSUMED_SOH):
-    """Displays charging simulation errors."""
+    """
+    Displays errors found during the charging simulation.
 
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+        assumed_soh (float): State of Health percentage.
+            Defaults to ASSUMED_SOH.
+
+    Returns:
+        None: Displays charging errors in Streamlit.
+    """
     errors = get_charging_speed_errors(df, assumed_soh)
 
     for error in errors:
         st.error(error)
 
-
 def get_overlapping_trip_errors(df):
-    """Finds overlapping activities for each bus."""
+    """
+    Identifies overlapping activities for each bus.
 
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+
+    Returns:
+        list: Error messages describing overlapping activities.
+    """
     errors = []
 
     planning = sort_bus_planning(df)
@@ -476,22 +637,43 @@ def get_overlapping_trip_errors(df):
 
     return errors
 
-
 def validate_no_overlapping_trips(df):
-    """Checks whether activities assigned to a bus overlap."""
+    """
+    Checks whether buses have overlapping activities.
 
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+
+    Returns:
+        bool: True if no overlapping activities are found,
+            otherwise False.
+    """
     return len(get_overlapping_trip_errors(df)) == 0
 
-
 def show_overlapping_trip_errors(df):
-    """Displays all overlapping activity errors."""
+    """
+    Displays errors for overlapping bus activities.
 
+    Args:
+        df (pd.DataFrame): Bus planning DataFrame.
+
+    Returns:
+        None: Displays overlapping activity errors in Streamlit.
+    """
     for error in get_overlapping_trip_errors(df):
         st.error(error)
 
 def status_check(text, is_valid):
-    """Displays a green check mark or a red cross."""
+    """
+    Displays a green check mark or red cross for a validation result.
 
+    Args:
+        text (str): Description of the validation check.
+        is_valid (bool): Indicates whether the check passed.
+
+    Returns:
+        None: Displays the validation status in Streamlit.
+    """
     if is_valid:
         color = "#4CAF50"
         symbol = "✓"
