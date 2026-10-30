@@ -655,7 +655,7 @@ elif keuze == "Visualisations":
                     with col_kpi_values:
                         with st.container(key="kpi_card"):
                             st.markdown(
-                                '<div class="section-title">KPIs</div>',
+                                '<div class="section-title">KPI values</div>',
                                 unsafe_allow_html=True
                             )
 
