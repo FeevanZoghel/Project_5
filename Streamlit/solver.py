@@ -57,7 +57,7 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
 
     # Beginwaardes
 
-    if energy_method not in ("minimum", "mean", "maximum"):
+    if energy_method not in ("Minimum", "Mean", "Maximum"):
         raise ValueError("energy_method must be min, mean or max")
     def calculate_travel_time(dm_trip):
         """
@@ -74,9 +74,9 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
         min_time = dm_trip['min_travel_time'].iloc[0]
         max_time = dm_trip['max_travel_time'].iloc[0]
 
-        if energy_method == "minimum":
+        if energy_method == "Minimum":
             return min_time
-        elif energy_method == "maximum":
+        elif energy_method == "Maximum":
             return max_time
         else:
             return (min_time + max_time) / 2
