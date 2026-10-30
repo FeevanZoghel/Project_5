@@ -8,18 +8,47 @@ import streamlit.components.v1 as components
 from html import escape
 
 def format_time(value):
+    """
+    Converts a time value into HH:MM:SS format.
+
+    Args:
+        value: Time value as Timedelta, Timestamp or string.
+
+    Returns:
+        str: Formatted time in HH:MM:SS format,
+            or an empty string for missing values.
+    """
     if pd.isna(value):
         return ""
+
     if isinstance(value, pd.Timedelta):
         total_seconds = round(value.total_seconds()) % 86400
         return f"{total_seconds // 3600:02d}:{(total_seconds % 3600) // 60:02d}:{total_seconds % 60:02d}"
+
     timestamp = pd.to_datetime(value, errors="coerce")
+
     if pd.notna(timestamp):
         return timestamp.round("s").strftime("%H:%M:%S")
+
     return str(value).split(".")[0]
 
 def gantt_chart_bus(bp, title = 'improved bus plan', selected_buses=None):
-    """Creates interactive Gantt charts of the bus planning."""
+    """
+    Creates interactive Gantt charts to visualize bus planning activities.
+
+    Displays service trips, material trips, idle periods and charging
+    sessions, with tooltips, bus selection and fullscreen functionality.
+
+    Args:
+        bp (pd.DataFrame): Bus planning DataFrame.
+        title (str): Title of the Gantt chart.
+            Defaults to 'improved bus plan'.
+        selected_buses (list, optional): Bus numbers to display.
+            Defaults to None, which includes all buses.
+
+    Returns:
+        None: Displays interactive Gantt charts in Streamlit.
+    """
     if selected_buses is not None:
         bp = bp[
             pd.to_numeric(bp['bus'], errors='coerce').isin(
