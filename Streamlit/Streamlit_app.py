@@ -307,7 +307,7 @@ if keuze == "Data Check":
             "Select an energy estimation method for all trips",
             ['Minimum', 'Mean', 'Maximum'],
             index=1
-        ).lower()
+        )
     with col_SoH:
         SoH = st.slider(
             "Select the State of Health (SoH) (%)",
