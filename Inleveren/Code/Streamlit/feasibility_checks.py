@@ -2,11 +2,6 @@
 import pandas as pd
 import streamlit as st
 
-
-# ============================================================
-# CONSTANTS
-# ============================================================
-
 ASSUMED_SOH = 85
 INITIAL_BATTERY_CAPACITY = 300
 MINIMUM_SOC = 0.10
@@ -19,11 +14,6 @@ OPERATIONAL_DAY_START = 5 * 60 + 7
 
 ENERGY_TOLERANCE = 0.1
 TIME_TOLERANCE = 1e-6
-
-
-# ============================================================
-# HELPER FUNCTIONS
-# ============================================================
 
 def get_max_battery(assumed_soh=ASSUMED_SOH):
     """Returns the maximum usable battery capacity in kWh."""
@@ -163,11 +153,6 @@ def calculate_expected_charging_energy(
 
     return expected_energy
 
-
-# ============================================================
-# 1. MINIMUM SOC
-# ============================================================
-
 def validate_minimum_soc(df, assumed_soh=ASSUMED_SOH):
     """Checks whether every bus remains above the minimum SOC."""
 
@@ -221,19 +206,11 @@ def show_minimum_soc_errors(df, assumed_soh=ASSUMED_SOH):
             )
 
 
-# ============================================================
-# 2. STATE OF HEALTH
-# ============================================================
-
 def validate_soh(assumed_soh):
     """Checks whether SoH is between 85% and 95%."""
 
     return 85 <= assumed_soh <= 95
 
-
-# ============================================================
-# 3. LOCATION CONTINUITY
-# ============================================================
 
 def validate_location_continuity(df):
     """Checks whether consecutive activities have matching locations."""
@@ -276,11 +253,6 @@ def show_location_continuity_errors(df):
                     f"({end_location} → {next_start})."
                 )
 
-
-# ============================================================
-# 4. REQUIRED SERVICE TRIPS
-# ============================================================
-
 def validate_required_trips(df, timetable):
     """Checks whether all required service trips are included."""
 
@@ -318,10 +290,6 @@ def show_required_trip_errors(df, timetable):
             f"({planned_trips}/{required_trips} required)."
         )
 
-
-# ============================================================
-# 5. MINIMUM CHARGING TIME
-# ============================================================
 
 def validate_minimum_charging_time(df):
     """Checks whether every charging activity lasts at least 15 minutes."""
@@ -362,9 +330,6 @@ def show_minimum_charging_time_errors(df):
             )
 
 
-# ============================================================
-# 6. CHARGING SPEED
-# ============================================================
 
 def get_charging_speed_errors(df, assumed_soh=ASSUMED_SOH):
     """
@@ -472,10 +437,6 @@ def show_charging_speed_errors(df, assumed_soh=ASSUMED_SOH):
         st.error(error)
 
 
-# ============================================================
-# 8. OVERLAPPING TRIPS
-# ============================================================
-
 def get_overlapping_trip_errors(df):
     """Finds overlapping activities for each bus."""
 
@@ -527,11 +488,6 @@ def show_overlapping_trip_errors(df):
 
     for error in get_overlapping_trip_errors(df):
         st.error(error)
-
-
-# ============================================================
-# 9. STATUS CHECK DISPLAY
-# ============================================================
 
 def status_check(text, is_valid):
     """Displays a green check mark or a red cross."""

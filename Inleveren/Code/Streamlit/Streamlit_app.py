@@ -6,7 +6,7 @@ from io import BytesIO
 import time
 import textwrap
 
-from DataFrame_check import validate_bus_planning
+from dataframe_check import validate_bus_planning
 
 from pathlib import Path
 

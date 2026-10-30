@@ -2,7 +2,7 @@
 #Naam: Dennis1_nieuwe_methode.py
 import contextlib
 import sys
-from Code_for_bus_cleaned import check_charging_constraint_and_speeds, check_location_continuity, check_bus_overlap, check_required_trips, check_valid_charging_duration 
+from Project_5.Inleveren.Code.Code_for_bus_cleaned import check_charging_constraint_and_speeds, check_location_continuity, check_bus_overlap, check_required_trips, check_valid_charging_duration 
 
 # Code_improved_bus_plan
 # Dennis

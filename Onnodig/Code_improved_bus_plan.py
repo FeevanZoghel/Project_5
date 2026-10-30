@@ -11,7 +11,7 @@ import math
 import time
 
 # Importing relevant functions
-from Code_for_bus_cleaned import run_all_feasibility_checks,run_all_kpi_calculations
+from Project_5.Inleveren.Code.Code_for_bus_cleaned import run_all_feasibility_checks,run_all_kpi_calculations
 
 # Start calculating calculation time of this code
 t_start = time.perf_counter()
