@@ -305,13 +305,13 @@ if keuze == "Data Check":
     with col_energy:
         energy_method = st.selectbox(
             "Select an energy estimation method for all trips",
-            ["Mean", "Min", "Max"],
+            ["Mean", "minimum", "maximum"],
             index=0
         ).lower()
     with col_SoH:
         SoH = st.slider(
             "Select the State of Health (SoH) (%)",
-            min_value=0,
+            min_value=85,
             max_value=100,
             value=85,
             step=1

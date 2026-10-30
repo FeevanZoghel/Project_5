@@ -1,9 +1,3 @@
-"""Improved bus planning algorithm adapted for Streamlit.
-
-The scheduling logic is taken from AA_code_improved.py. Inputs are provided
-as DataFrames and the result is returned, without file I/O or KPI exports.
-"""
-
 import pandas as pd
 
 
@@ -63,7 +57,7 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
 
     # Beginwaardes
 
-    if energy_method not in ("min", "mean", "max"):
+    if energy_method not in ("minimum", "mean", "maximum"):
         raise ValueError("energy_method must be min, mean or max")
     def calculate_travel_time(dm_trip):
         """
@@ -80,9 +74,9 @@ def solve_bus_planning(bp, dm, tt, assumed_battery_value=85, energy_method="mean
         min_time = dm_trip['min_travel_time'].iloc[0]
         max_time = dm_trip['max_travel_time'].iloc[0]
 
-        if energy_method == "min":
+        if energy_method == "minimum":
             return min_time
-        elif energy_method == "max":
+        elif energy_method == "maximum":
             return max_time
         else:
             return (min_time + max_time) / 2
