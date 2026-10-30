@@ -305,7 +305,7 @@ if keuze == "Data Check":
     with col_energy:
         energy_method = st.selectbox(
             "Select an energy estimation method for all trips",
-            ["Mean", "Minimum", "Maximum"],
+            ['Minimum', 'Mean', 'Maximum'],
             index=0
         ).lower()
     with col_SoH:
