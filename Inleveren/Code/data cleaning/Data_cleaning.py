@@ -6,7 +6,13 @@ import math as m
 import scipy.stats as sp
 from datetime import datetime as dt
 
-bus_plan = pd.read_excel('Original_bus_plan.xlsx')
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+INPUT_DIR = BASE_DIR / "Input data"
+
+bus_plan = pd.read_excel(INPUT_DIR / "Original_bus_plan.xlsx")
+
 
 # Step 1: detect inaccuracies in the data, except for the columns 'start time', 'end time', and 'energy consumption'
 
@@ -129,7 +135,10 @@ print(filtered6)  # No non-charging trips indicate battery charging according to
 # NO POSITIVE VALUES FOUND DURING CHARGING
 
 # Step 7: export dataframe to an Excel file
-bus_plan.to_excel('Bus_Plan_Cleaned.xlsx', index=False)
+bus_plan.to_excel(
+    INPUT_DIR / "Bus_Plan_Cleaned.xlsx",
+    index=False
+)
 
 # END RESULT: NO ERRORS FOUND
 print('NO ERRORS FOUND, DATA CLEANING SUCCESFULLY COMPLETED')

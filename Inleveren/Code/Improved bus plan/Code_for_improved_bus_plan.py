@@ -11,9 +11,16 @@ import time
 t_start = time.perf_counter()
 
 # Data importing
-bp = pd.read_excel('Bus_Plan_Cleaned.xlsx')
-dm = pd.read_excel('DistanceMatrix.xlsx')
-tt = pd.read_excel('Timetable.xlsx')
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+INPUT_DIR = BASE_DIR / "Input data"
+OUTPUT_DIR = BASE_DIR / "Output data"
+
+bp = pd.read_excel(INPUT_DIR / "Bus_Plan_Cleaned.xlsx")
+dm = pd.read_excel(INPUT_DIR / "DistanceMatrix.xlsx")
+tt = pd.read_excel(INPUT_DIR / "Timetable.xlsx")
+
 
 # Dataframe for improved bus plan
 ibp = pd.DataFrame(columns=['start location', 'end location','start time','end time','activity','line','energy consumption','total battery bus' ,'total travel time','bus'])
@@ -402,37 +409,41 @@ for bus in bussen:
 print(ibp)
 
 
+# Loading functions from Bus_planning_controleren.py
+import importlib.util
+
+CONTROLE_BESTAND = BASE_DIR / "Code" / "data cleaning" / "Bus_planning_controleren.py"
+
+spec = importlib.util.spec_from_file_location(
+    "Bus_planning_controleren",
+    CONTROLE_BESTAND
+)
+
+controle = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(controle)
+
+# Feasibility checks uitvoeren
+feasibility_results = controle.run_all_feasibility_checks(ibp, tt)
+
+# KPI's berekenen
+kpi_results = controle.run_all_kpi_calculations(ibp, dm, tt)
 
 
+ibp[
+    ['start location', 'end location',
+     'start time', 'end time',
+     'activity', 'line',
+     'energy consumption', 'bus']
+].to_excel(OUTPUT_DIR / "Generated_Improved_Bus_Planning.xlsx", index=False)
 
 
+output_filename = "Improved_plan_Feasibility_and_KPI_results.xlsx"
 
-
-
-
-
-
-
-
-
-
-#Loading functions from other file
-print('voor import')
-from Code_for_bus_cleaned import (run_all_feasibility_checks,run_all_kpi_calculations,export_results_to_excel)
-print('na import')
-feasibility_results = run_all_feasibility_checks(ibp, tt)
-kpi_results = run_all_kpi_calculations(ibp, dm, tt)
-
-
-
-
-
-ibp[['start location', 'end location', 'start time', 'end time', 'activity', 'line', 'energy consumption', 'bus']].to_excel('BRO.xlsx', index = False)
-
-output_filename = 'Improved_plan_Feasibility_and_KPI_results.xlsx'
-output = export_results_to_excel(feasibility_results, kpi_results, filename=output_filename)
-output
-
+controle.export_results_to_excel(
+    feasibility_results,
+    kpi_results,
+    filename=output_filename
+)
 
 
 t_end = time.perf_counter()

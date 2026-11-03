@@ -13,9 +13,16 @@ import time
 t_start = time.perf_counter()
 
 # Data importing
-bp = pd.read_excel('Bus_Plan_Cleaned.xlsx')
-dm = pd.read_excel('DistanceMatrix.xlsx')
-tt = pd.read_excel('Timetable.xlsx')
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+INPUT_DIR = BASE_DIR / "Input data"
+OUTPUT_DIR = BASE_DIR / "Output data"
+
+bp = pd.read_excel(INPUT_DIR / "Bus_Plan_Cleaned.xlsx")
+dm = pd.read_excel(INPUT_DIR / "DistanceMatrix.xlsx")
+tt = pd.read_excel(INPUT_DIR / "Timetable.xlsx")
+
 
 # Beginwaardes
 assumed_battery_value = 85
@@ -405,7 +412,9 @@ def export_results_to_excel(feasibility_results, kpi_results, filename='Feasibil
     ]
         
     # export into an Excel file
-    with pd.ExcelWriter(filename) as writer:
+    output_path = OUTPUT_DIR / filename
+
+    with pd.ExcelWriter(output_path) as writer:
         pd.DataFrame(feasibility_summary).to_excel(writer, sheet_name='Feasibility_checks', index=False)
         pd.DataFrame(list(kpi_results.items()), columns=['KPI', 'KPI-value']).to_excel(writer, sheet_name='KPI_values', index=False)  
     print(f"Results saved a file named {filename}, which is on the same folder as this .py-file.")
